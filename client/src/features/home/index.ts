@@ -1,0 +1,9 @@
+export { CTASection } from "./CTASection";
+export { DatabaseSection } from "./DatabaseSection";
+export { FaqSection } from "./FaqSection";
+export { FeatureSection } from "./FeatureSection";
+export { Footer } from "./Footer";
+export { Header } from "./Header";
+export { Hero } from "./Hero";
+export { LogoCloud } from "./LogoCloud";
+export { ProcessCard } from "./ProcessCard";

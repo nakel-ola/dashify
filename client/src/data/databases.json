@@ -1,0 +1,22 @@
+[
+  {
+    "name": "CockroachDB",
+    "url": "/logos/CockroachDB.svg"
+  },
+  {
+    "name": "Mongodb",
+    "url": "/logos/icons8-mongodb.svg"
+  },
+  {
+    "name": "Mysql",
+    "url": "/logos/icons8-mysql.svg"
+  },
+  {
+    "name": "Postgres",
+    "url": "/logos/icons8-postgres.svg"
+  },
+  {
+    "name": "MariaDB",
+    "url": "/logos/MariaDB-Foundation.svg"
+  }
+]

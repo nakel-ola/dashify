@@ -1,0 +1,166 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+
+@layer base {
+  * {
+    @apply p-0 m-0;
+    scrollbar-width: thin;
+    scrollbar-color: transparent transparent;
+    transition: all 300ms ease;
+  }
+
+  *::-webkit-scrollbar {
+    @apply w-[5px] h-[5px];
+  }
+
+  *::-webkit-scrollbar-thumb {
+    @apply rounded-[30px] bg-indigo-600;
+  }
+
+  *::-webkit-scrollbar-track {
+    @apply bg-transparent relative top-0 right-0;
+  }
+
+  *::-webkit-scrollbar-track-piece {
+    @apply bg-transparent;
+  }
+
+  *::-ms-scrollbar {
+    @apply w-[5px] h-[5px];
+  }
+
+  body {
+    @apply bg-white dark:bg-dark;
+  }
+
+  .highlighted-keys .active rect:first-child {
+    fill-opacity: 0.4;
+  }
+
+  .highlighted-keys .active rect:not(:first-child) {
+    stroke-opacity: 1;
+  }
+
+  .highlighted-keys .active path {
+    fill-opacity: 1;
+  }
+
+  .page-max-width {
+    @apply mx-auto w-full max-w-7xl;
+  }
+}
+
+@layer utilities {
+  .text-shadow {
+    text-shadow: rgb(0 0 0 / 56%) 0px 3px 12px;
+  }
+
+  .text-gradient {
+    background: linear-gradient(
+      to right bottom,
+      rgb(255, 255, 255) 30%,
+      rgba(255, 255, 255, 0.38)
+    );
+    background-clip: text;
+    color: transparent;
+  }
+
+  .mask-radial-faded {
+    mask-image: radial-gradient(
+      circle at center center,
+      black,
+      transparent 80%
+    );
+  }
+
+  .mask-linear-faded {
+    mask-image: linear-gradient(black, transparent 70%);
+  }
+
+  .mask-keyboard {
+    mask-image: linear-gradient(
+      transparent 0%,
+      rgba(0, 0, 0, 0.57) 33.98%,
+      black 100%
+    );
+  }
+
+  .mask-shortcutkeys {
+    mask-image: linear-gradient(
+      to right,
+      transparent,
+      black 40%,
+      black calc(60%),
+      transparent 100%
+    );
+  }
+
+  .click {
+    @apply active:scale-95;
+  }
+
+  .honey-comb {
+    background: radial-gradient(
+          circle farthest-side at 0% 50%,
+          #43a047 23.5%,
+          #0000 0
+        )
+        33.6px 48px,
+      radial-gradient(circle farthest-side at 0% 50%, #ffffff 24%, #0000 0)
+        30.4px 48px,
+      linear-gradient(#43a047 14%, #0000 0, #0000 85%, #43a047 0) 0 0,
+      linear-gradient(
+          150deg,
+          #43a047 24%,
+          #ffffff 0,
+          #ffffff 26%,
+          #0000 0,
+          #0000 74%,
+          #ffffff 0,
+          #ffffff 76%,
+          #43a047 0
+        )
+        0 0,
+      linear-gradient(
+          30deg,
+          #43a047 24%,
+          #ffffff 0,
+          #ffffff 26%,
+          #0000 0,
+          #0000 74%,
+          #ffffff 0,
+          #ffffff 76%,
+          #43a047 0
+        )
+        0 0,
+      linear-gradient(90deg, #ffffff 2%, #43a047 0, #43a047 98%, #ffffff 0%) 0 0
+        #43a047;
+    background-size: 65px 96px;
+    background-color: #43a047;
+  }
+
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  input:-webkit-autofill:active {
+    -webkit-background-clip: text;
+    /* -webkit-text-fill-color: #ffffff; */
+    transition: background-color 5000s ease-in-out 0s;
+    box-shadow: inset 0 0 20px 20px transparent;
+  }
+
+  .scrollbar-hidden::-webkit-scrollbar {
+    display: none;
+  }
+
+  .scrollbar-hidden::-ms-overflow-style {
+    display: none;
+  }
+
+  .scrollbar-hidden {
+    scrollbar-width: none;
+  }
+}
