@@ -30,7 +30,7 @@ export default function Faq() {
             Help Center
           </p>
 
-          <p className="text-gray-light mt-4">
+          <p className="text-gray-light mt-4 px-5">
             freedom bread will frog vessels value short attack pictured managed
             shinning chose dog we zero additional necessary stepped rice
             business rest motion older pleasure

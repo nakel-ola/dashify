@@ -19,8 +19,6 @@ const MenuCard = (props: Props) => {
   const ref = useRef<HTMLDivElement>(null);
   const [_, setIsLocked] = useLockedBody(true);
 
-  const { theme } = useNextTheme();
-
   const screen = useWindowSize();
 
   useOnClickOutside(ref, () => {
@@ -51,7 +49,11 @@ const MenuCard = (props: Props) => {
         <div className="px-5 flex items-center justify-between pt-5">
           <Link href="" className="flex items-center cursor-pointer">
             <img className="h-8 w-auto" src="/logo.png" alt="Dashify" />
-            <p className={cn("text-xl ml-2 font-medium text-black dark:text-white")}>
+            <p
+              className={cn(
+                "text-xl ml-2 font-medium text-black dark:text-white"
+              )}
+            >
               Dashify
             </p>
           </Link>
@@ -76,11 +78,11 @@ const MenuCard = (props: Props) => {
         <div className="px-5 space-y-8 py-5">
           <Button
             variant="outline"
-            className="flex items-center justify-center w-full"
+            className="flex items-center justify-center w-full py-4"
           >
             Log in
           </Button>
-          <Button className="flex items-center justify-center w-full">
+          <Button className="flex items-center justify-center w-full py-4">
             Sign up
           </Button>
         </div>

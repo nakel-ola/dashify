@@ -14,9 +14,5 @@
   {
     "name": "Postgres",
     "url": "/logos/icons8-postgres.svg"
-  },
-  {
-    "name": "MariaDB",
-    "url": "/logos/MariaDB-Foundation.svg"
   }
 ]

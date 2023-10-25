@@ -1,5 +1,8 @@
 /* eslint-disable @next/next/no-img-element */
+import { RippleCard } from "@/components/RippleCard";
+import { Button } from "@/components/ui/button";
 import useNextTheme from "@/hooks/useNextTheme";
+import useWindowPosition from "@/hooks/useWindowPosition";
 import { cx } from "class-variance-authority";
 import { ArrowDown2, Moon, Notification, Sun1 } from "iconsax-react";
 import { useSession } from "next-auth/react";
@@ -13,6 +16,8 @@ export const Header = (props: Props) => {
   const { theme, setTheme } = useNextTheme();
 
   const isDarkMode = theme === "dark";
+
+  const scroll = useWindowPosition();
 
   return (
     <Fragment>
@@ -38,16 +43,17 @@ export const Header = (props: Props) => {
           </div>
 
           <div className="flex items-center space-x-2 md:space-x-5 lg:space-x-8">
-            <button
-              className="h-[35px] w-[35px] rounded-full border flex items-center justify-center border-white text-white"
+            <RippleCard
+              Component="button"
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+              className="w-[45px] text-white hover:bg-slate-100/10 flex items-center justify-center transition-transform py-1.5 rounded-full"
             >
               {theme === "dark" ? (
-                <Sun1 className="text-white" />
+                <Sun1 className="text-white h-[25px] w-[25px]" />
               ) : (
-                <Moon className="text-white" />
+                <Moon className="text-white h-[25px] w-[25px]" />
               )}
-            </button>
+            </RippleCard>
             <div className="flex items-center space-x-2 cursor-pointer">
               <Avatar className="h-[30px] w-[30px]">
                 <AvatarImage src="/profile-pic.png" />
@@ -57,7 +63,7 @@ export const Header = (props: Props) => {
                 {data?.user.firstName}
               </p>
 
-              <ArrowDown2 className="text-white" />
+              <ArrowDown2 className="text-white " />
             </div>
           </div>
         </div>

@@ -18,7 +18,7 @@ export const DatabaseCard = (props: DatabaseCardProps) => {
         <RippleCard
           key={index}
           className={cn(
-            "relative border-[1.5px]  w-[150px] h-[80px] shrink-0 rounded-md flex flex-col justify-center items-center transition-all duration-300",
+            "relative border-[1.5px]  w-[150px] h-[80px] shrink-0 rounded-md flex flex-col justify-center items-center transition-all duration-300 hover:bg-slate-100 dark:hover:bg-slate-100/10",
             active?.toLowerCase() === name.toLowerCase()
               ? "border-indigo-600 "
               : " border-slate-100 dark:border-neutral-800"

@@ -25,7 +25,7 @@ export default function AboutUs() {
             We love creators
           </p>
 
-          <p className="text-gray-light mt-4">
+          <p className="text-gray-light mt-4 px-5">
             later average person flower both society every thy twelve sing rough
             aboard handsome it stronger affect win today lungs office grabbed
             sweet star gate
@@ -68,7 +68,7 @@ export default function AboutUs() {
 
         <div className="h-[200px] lg:h-[430px] w-full my-24">
           <img
-            src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?ixlib=rb-4.0.3&amp;ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&amp;auto=format&amp;fit=crop&amp;w=2832&amp;q=80"
+            src="/photo-1529156069898-49953e39b3ac.jpeg"
             alt=""
             className="h-full w-full object-cover"
           />
@@ -85,8 +85,12 @@ export default function AboutUs() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 pt-10">
             {items.map((item, index) => (
               <div key={index} className="">
-                <p className="text-2xl font-medium text-black dark:text-white">{item.title}</p>
-                <p className="text-neutral-600 dark:text-neutral-400 pt-2">{item.description}</p>
+                <p className="text-2xl font-medium text-black dark:text-white">
+                  {item.title}
+                </p>
+                <p className="text-neutral-600 dark:text-neutral-400 pt-2">
+                  {item.description}
+                </p>
               </div>
             ))}
           </div>

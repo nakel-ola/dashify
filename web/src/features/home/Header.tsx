@@ -35,7 +35,8 @@ export const Header = (props: HeaderProps) => {
           scroll.y > scrollY[0] ? "backdrop-blur-[12px]" : ""
         )}
       >
-        <div
+        <Link
+          href="/"
           onClick={() => setTheme(isDarkMode ? "light" : "dark")}
           className="flex items-center cursor-pointer"
         >
@@ -53,7 +54,7 @@ export const Header = (props: HeaderProps) => {
           >
             Dashify
           </p>
-        </div>
+        </Link>
 
         <div className="hidden lg:flex items-center space-x-1">
           {navigation.map(({ href, name }, index) => (

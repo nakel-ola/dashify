@@ -228,7 +228,7 @@ export const CreateCard = (props: CreateCardProps) => {
                 Database
               </label>
 
-              <div className="mt-2 w-full overflow-hidden max-w-lg">
+              <div className="mt-2 w-full max-w-lg">
                 <DatabaseCard
                   active={database}
                   onChange={(value) => setForm({ ...form, database: value })}

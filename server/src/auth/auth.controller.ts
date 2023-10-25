@@ -43,7 +43,7 @@ export class AuthController {
     example: 'Bearer .....',
   })
   @UseGuards(AuthGuard)
-  @Put('update')
+  @Put('/update')
   updateUser(@Request() req, @Body() args: UpdateAuthDto) {
     return this.authService.updateUser(req.user, args);
   }

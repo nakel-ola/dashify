@@ -40,6 +40,7 @@ const Login = (props: Props) => {
             duration: 3000,
             variant: "default",
             title: "Successfully logged in",
+            
           });
           router.replace("/dashboard");
         } else {
