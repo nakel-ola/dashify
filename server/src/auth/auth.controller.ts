@@ -13,7 +13,17 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
-import { LoginAuthDto, RegisterAuthDto, TokensDto, UpdateAuthDto } from './dto';
+import {
+  ChangePasswordDto,
+  LoginAuthDto,
+  MessageDto,
+  RegisterAuthDto,
+  ResetAuthDto,
+  TokensDto,
+  UpdateAuthDto,
+  ValidateEmailDto,
+  ValidateResetTokenDto,
+} from './dto';
 import { AuthGuard } from './guard/auth.guard';
 import { RefreshAuthGuard } from './guard/refresh-auth.guard';
 
@@ -23,17 +33,50 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @ApiOperation({ summary: 'Register' })
-  @ApiOkResponse({ type: TokensDto })
+  @ApiOkResponse({ type: MessageDto })
   @Post('/register')
-  register(@Body() registerAuthDto: RegisterAuthDto) {
-    return this.authService.register(registerAuthDto);
+  register(@Body() args: RegisterAuthDto) {
+    return this.authService.register(args);
   }
 
   @ApiOperation({ summary: 'Login' })
   @ApiOkResponse({ type: TokensDto })
   @Post('/login')
-  login(@Body() loginAuthDto: LoginAuthDto) {
-    return this.authService.login(loginAuthDto);
+  login(@Body() args: LoginAuthDto) {
+    return this.authService.login(args);
+  }
+
+  @ApiOperation({ summary: 'Validate email address' })
+  @ApiHeader({
+    name: 'x-access-token',
+    required: true,
+    example: 'Bearer .....',
+  })
+  @UseGuards(AuthGuard)
+  @Put('/validate-email')
+  validateEmail(@Request() req, @Body() args: ValidateEmailDto) {
+    return this.authService.validateEmail(req.user.uid, args);
+  }
+
+  @ApiOperation({ summary: 'Reset Password' })
+  @ApiOkResponse({ type: MessageDto })
+  @Post('/reset-password')
+  resetPassword(@Body() args: ResetAuthDto) {
+    return this.authService.resetPassword(args);
+  }
+
+  @ApiOperation({ summary: 'Validate reset Token' })
+  @ApiOkResponse({ type: MessageDto })
+  @Post('/validate-reset-token')
+  validateResetEmailToken(@Body() args: ValidateResetTokenDto) {
+    return this.authService.validateResetToken(args);
+  }
+
+  @ApiOperation({ summary: 'Change Password' })
+  @ApiOkResponse({ type: MessageDto })
+  @Post('/change-password')
+  changePassword(@Body() args: ChangePasswordDto) {
+    return this.authService.changePassword(args);
   }
 
   @ApiOperation({ summary: 'Update user details' })

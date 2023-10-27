@@ -1,7 +1,8 @@
+"use client";
 import { MouseEvent } from "react";
 
 type Color = "light" | "dark" | string;
-const ripple = (
+export const ripple = (
   event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
   color: Color
 ) => {
@@ -93,5 +94,3 @@ const ripple = (
 
   setTimeout(() => circle.remove(), 500);
 };
-
-export default ripple;

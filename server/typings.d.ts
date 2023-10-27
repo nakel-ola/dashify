@@ -1,0 +1,3 @@
+type MessageType = {
+  message: string;
+};

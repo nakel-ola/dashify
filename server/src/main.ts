@@ -17,7 +17,11 @@ async function bootstrap() {
     credentials: true,
   });
 
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(
+    new ValidationPipe({
+      forbidUnknownValues: true,
+    }),
+  );
 
   const config = new DocumentBuilder()
     .setTitle('Dashify API')
