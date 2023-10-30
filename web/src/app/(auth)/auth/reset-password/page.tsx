@@ -27,7 +27,7 @@ const ResetPasswordSchema = Yup.object().shape({
     .required("Password is required"),
 });
 
-export const mailformat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+const mailformat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
 export default function ResetPassword() {
   const [isVisible, setIsVisible] = useState(false);
