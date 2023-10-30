@@ -34,9 +34,7 @@ export default function Cryptr(secret: string, options?: Options) {
   }
 
   this.encrypt = function encrypt(value: string) {
-    if (value == null) {
-      throw new Error('value must not be null or undefined');
-    }
+    if (value == null) throw new Error('value must not be null or undefined');
 
     const iv = crypto.randomBytes(ivLength);
     const salt = crypto.randomBytes(saltLength);

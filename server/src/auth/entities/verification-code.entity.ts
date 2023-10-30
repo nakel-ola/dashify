@@ -2,7 +2,6 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  Index,
   ObjectId,
   ObjectIdColumn,
   UpdateDateColumn,
@@ -18,8 +17,8 @@ export class VerificationCode {
   @ObjectIdColumn()
   id!: ObjectId;
 
-  @Column({ unique: true })
-  code: string;
+  @Column()
+  token: string;
 
   @Column()
   uid: string;
@@ -27,8 +26,10 @@ export class VerificationCode {
   @Column()
   type: VerificationType;
 
+  @Column()
+  expiresAt: Date;
+
   @CreateDateColumn()
-  @Index({ expireAfterSeconds: 600 })
   createdAt: Date;
 
   @UpdateDateColumn()

@@ -1,7 +1,7 @@
 import CredentialsProvider from "next-auth/providers/credentials";
 import { NextResponse } from "next/server";
 import { decodeToken } from "react-jwt";
-import { formatErrorMessage } from "../../lib/format-error-message";
+import { formatErrorMessage } from "../../../../lib/format-error-message";
 
 type Input = {
   email: string;

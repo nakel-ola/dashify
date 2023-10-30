@@ -162,3 +162,11 @@
     scrollbar-width: none;
   }
 }
+
+.pincode-input-container {
+  @apply flex justify-between px-0 mt-2.5;
+}
+
+.pincode-input-text {
+  @apply rounded-md !border-[1.5px] !border-slate-100 dark:!border-neutral-800 !text-black dark:!text-white !h-10 !w-10;
+}

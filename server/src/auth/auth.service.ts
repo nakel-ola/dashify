@@ -11,11 +11,11 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
-import * as argon from 'argon2';
+import * as bcrypt from 'bcrypt';
 import { Repository } from 'typeorm';
 import { v4 } from 'uuid';
 import clean from '../common/clean';
-import { nanoid } from '../common/nanoid';
+import { customAlphabet } from '../common/nanoid';
 import { User } from '../users/entities/user.entity';
 import { UserType } from '../users/types/user.type';
 import {
@@ -25,7 +25,6 @@ import {
   ResetAuthDto,
   UpdateAuthDto,
   ValidateEmailDto,
-  ValidateResetTokenDto,
 } from './dto';
 import {
   VerificationCode,
@@ -39,7 +38,7 @@ export class AuthService {
   constructor(
     @InjectRepository(User) private userRepository: Repository<User>,
     @InjectRepository(VerificationCode)
-    private verificateRepository: Repository<VerificationCode>,
+    private verificationRepository: Repository<VerificationCode>,
     private jwtService: JwtService,
     private configService: ConfigService,
     private readonly mailerService: MailerService,
@@ -55,8 +54,11 @@ export class AuthService {
     if (user)
       throw new ConflictException('Account already exists, please login');
 
+    // generating password hash salt
+    const salt = await bcrypt.genSalt();
+
     // hashing user password
-    const hash = await argon.hash(password);
+    const hash = await bcrypt.hash(password, salt);
 
     // generating user id
     const uid = v4();
@@ -77,18 +79,9 @@ export class AuthService {
         'A server error has occured, please try again',
       );
 
-    const code = nanoid();
+    const code = await this.saveVerificationCode(uid, VerificationType.EMAIL);
 
-    const storeVerificationCode = await this.verificateRepository.save({
-      code,
-      uid,
-      type: VerificationType.EMAIL,
-    });
-
-    if (!storeVerificationCode)
-      throw new InternalServerErrorException(
-        'A server error has occured, please try again',
-      );
+    const link = this.getClientURL() + `/verify/${code}/email`;
 
     await this.mailerService.sendMail({
       to: email,
@@ -96,9 +89,7 @@ export class AuthService {
       template: 'welcome',
       context: {
         firstName,
-        link:
-          this.configService.get('ALLOWED_ORIGINS')[0] +
-          `/verify/${code}/email`,
+        link,
       },
     });
 
@@ -120,7 +111,7 @@ export class AuthService {
     if (!user) throw new ConflictException('Invalid credentials');
 
     // if user exists then compare if stored password matches with input password
-    const isPassword = await argon.verify(user.password, password);
+    const isPassword = await bcrypt.compare(password, user.password);
 
     // if passwords does not match throw an error
     if (!isPassword) throw new ConflictException('Invalid credentials');
@@ -139,27 +130,47 @@ export class AuthService {
   async validateEmail(uid: string, data: ValidateEmailDto) {
     const { token } = data;
 
-    // searching database if user with email is already registered
-    const user: Pick<UserType, 'email' | 'uid' | 'firstName'> =
-      await this.userRepository.findOne({
-        where: { uid },
-        select: ['email', 'uid', 'firstName'],
-      });
-
-    // if user does not exists then throw an error
-    if (!user) throw new NotFoundException(`User not found`);
-
-    const userToken = await this.verificateRepository.findOne({
-      where: { code: token, uid: user.uid, type: VerificationType.EMAIL },
+    const savedToken = await this.verificationRepository.findOne({
+      where: { uid, type: VerificationType.EMAIL },
     });
 
-    if (!userToken) throw new ConflictException("Can't validate token");
+    if (!savedToken) throw new NotFoundException('Token not found');
+
+    const isTokenExpired = this.isExpirationTimeExpired(savedToken.expiresAt);
+
+    if (isTokenExpired) throw new ConflictException('Token expired');
+
+    const isTokenAMatch = await bcrypt.compare(token, savedToken.token);
+
+    if (!isTokenAMatch) throw new ConflictException("Can't validate token");
+
+    this.userRepository.update({ uid }, { emailVerified: true });
 
     return { message: 'Token validation successfull' };
   }
 
+  // TODO: test this method
+  async resendEmailVerification(user: UserType) {
+    const code = this.saveVerificationCode(user.uid, VerificationType.EMAIL);
+
+    await this.mailerService.sendMail({
+      to: user.email,
+      subject: 'Verify your Dashify account.',
+      template: 'welcome',
+      context: {
+        firstName: user.firstName,
+        link:
+          this.configService.get('ALLOWED_ORIGINS')[0] +
+          `/verify/${code}/email`,
+      },
+    });
+
+    return { message: 'Email verification sent' };
+  }
+
   async resetPassword(data: ResetAuthDto): Promise<MessageType> {
     const { email } = data;
+
     // searching database if user with email is already registered
     const user: Pick<UserType, 'email' | 'uid' | 'firstName'> =
       await this.userRepository.findOne({
@@ -171,28 +182,20 @@ export class AuthService {
     if (!user)
       throw new ConflictException(`No user with email: ${email} exists`);
 
-    const code = nanoid();
-
-    const storeVerificationCode = await this.verificateRepository.save({
-      code,
-      uid: user.uid,
-      type: VerificationType.PASSWORD,
-    });
-
-    if (!storeVerificationCode)
-      throw new InternalServerErrorException(
-        'A server error has occured, please try again',
-      );
+    const code = await this.saveVerificationCode(
+      user.uid,
+      VerificationType.PASSWORD,
+      6,
+      '1234567890',
+    );
 
     await this.mailerService.sendMail({
       to: email,
       subject: 'Verify your Dashify account.',
-      template: 'reset-password',
+      template: 'reset-password-code',
       context: {
         firstName: user.firstName,
-        link:
-          this.configService.get('ALLOWED_ORIGINS')[0] +
-          `/verify/${code}/password`,
+        code,
       },
     });
 
@@ -200,30 +203,9 @@ export class AuthService {
     return { message: 'Reset Password email has been sent to your email' };
   }
 
-  async validateResetToken(data: ValidateResetTokenDto): Promise<MessageType> {
-    const { token, email } = data;
-
-    // searching database if user with email is already registered
-    const user: Pick<UserType, 'email' | 'uid' | 'firstName'> =
-      await this.userRepository.findOne({
-        where: { email },
-        select: ['email', 'uid', 'firstName'],
-      });
-
-    // if user does not exists then throw an error
-    if (!user) throw new NotFoundException(`User not found`);
-
-    const userToken = await this.verificateRepository.findOne({
-      where: { code: token, uid: user.uid, type: VerificationType.EMAIL },
-    });
-
-    if (!userToken) throw new ConflictException("Can't validate token");
-
-    return { message: 'Token validation successfull' };
-  }
-
   async changePassword(data: ChangePasswordDto) {
     const { email, token, password } = data;
+
     // searching database if user with email is already registered
     const user: Pick<UserType, 'email' | 'uid' | 'firstName'> =
       await this.userRepository.findOne({
@@ -235,20 +217,36 @@ export class AuthService {
     if (!user)
       throw new NotFoundException(`No user with email: ${email} exists`);
 
-    const userToken = await this.verificateRepository.findOne({
-      where: { code: token, uid: user.uid, type: VerificationType.PASSWORD },
+    const savedToken = await this.verificationRepository.findOne({
+      where: { uid: user.uid, type: VerificationType.PASSWORD },
     });
 
-    if (!userToken) throw new ConflictException("Can't change password");
+    // throw an error if the user id does not exist in the verification collection
+    if (!savedToken) throw new ConflictException("Can't change password");
+
+    // checking if token has expired
+    const isTokenExpired = this.isExpirationTimeExpired(savedToken.expiresAt);
+
+    // throw an error if it has expired
+    if (isTokenExpired) throw new ConflictException('Token expired');
+
+    // comparing token and saved token to see if type match
+    const isTokenAMatch = await bcrypt.compare(token, savedToken.token);
+
+    // throw an error if they dont match
+    if (!isTokenAMatch) throw new ConflictException("Can't validate token");
+
+    // generating password hash salt
+    const salt = await bcrypt.genSalt();
 
     // hashing user password
-    const hash = await argon.hash(password);
+    const hash = await bcrypt.hash(password, salt);
 
     // updated user old password with new password
     await this.userRepository.update({ uid: user.uid }, { password: hash });
 
-    await this.verificateRepository.delete({
-      code: token,
+    await this.verificationRepository.delete({
+      token: token,
       uid: user.uid,
     });
 
@@ -277,7 +275,7 @@ export class AuthService {
     return { accessToken };
   }
 
-  async signTokens(sub: string, email: string, emailVerified = false) {
+  private async signTokens(sub: string, email: string, emailVerified = false) {
     const accessToken = await this.signToken({
       sub,
       email,
@@ -296,7 +294,7 @@ export class AuthService {
     return { accessToken, refreshToken };
   }
 
-  async signToken(args: SignTokenType) {
+  private async signToken(args: SignTokenType) {
     const { sub, email, secret, expiresIn } = args;
     const token = await this.jwtService.signAsync(
       { sub, email },
@@ -304,5 +302,60 @@ export class AuthService {
     );
 
     return token;
+  }
+
+  private async saveVerificationCode(
+    uid: string,
+    type: VerificationType,
+    size = 53,
+    alphabet = '1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz',
+  ) {
+    // generating code
+    const nanoid = customAlphabet(alphabet, size);
+
+    const code = nanoid();
+
+    // generating code hash salt
+    const salt = await bcrypt.genSalt();
+
+    // hashing code
+    const token = await bcrypt.hash(code, salt);
+
+    // saving the token to the database
+    const storeVerificationCode = await this.verificationRepository.save({
+      token,
+      uid,
+      type,
+      expiresAt: this.createExpirationTime(600),
+    });
+
+    // this.verificationRepository.
+
+    if (!storeVerificationCode)
+      throw new InternalServerErrorException(
+        'A server error has occured, please try again',
+      );
+
+    return code;
+  }
+
+  private createExpirationTime(seconds: number): Date {
+    const milliseconds = seconds * 1000;
+    const currentDate = new Date();
+    currentDate.setTime(currentDate.getTime() + milliseconds);
+    return currentDate;
+  }
+
+  private isExpirationTimeExpired(expirationTime: Date): boolean {
+    const now = new Date();
+    return now.getTime() > expirationTime.getTime();
+  }
+
+  private getClientURL() {
+    const origins = this.configService.get('ALLOWED_ORIGINS');
+
+    const arr = JSON.parse(origins);
+
+    return arr[0];
   }
 }

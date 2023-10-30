@@ -4,6 +4,7 @@ import CustomInput from "@/components/custom-input";
 import { PasswordEye } from "@/components/password-eye";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
+import { isObjectValueEmpty } from "@/lib/is-object-value-empty";
 import { useFormik } from "formik";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -41,6 +42,7 @@ export default function Register() {
     },
     validationSchema: SignUpSchema,
     validateOnChange: true,
+    validateOnMount: true,
     validateOnBlur: true,
     onSubmit: async (values) => {
       setIsLoading(true);
@@ -130,7 +132,11 @@ export default function Register() {
           }
         />
         <div>
-          <Button disabled={isLoading} type="submit" className="w-full mt-5">
+          <Button
+            disabled={!isObjectValueEmpty(errors) || isLoading}
+            type="submit"
+            className="w-full mt-5"
+          >
             <MoonLoader
               size={20}
               color="white"

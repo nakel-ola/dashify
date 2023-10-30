@@ -3,6 +3,7 @@ import CustomInput from "@/components/custom-input";
 import { PasswordEye } from "@/components/password-eye";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
+import { isObjectValueEmpty } from "@/lib/is-object-value-empty";
 import { useFormik } from "formik";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
@@ -39,6 +40,7 @@ export default function Login() {
     validationSchema: LoginSchema,
     validateOnChange: true,
     validateOnBlur: true,
+    validateOnMount: true,
     onSubmit: async (values) => {
       setIsLoading(true);
       await signIn("credentials", { redirect: false, ...values })
@@ -89,7 +91,7 @@ export default function Login() {
           labelRight={
             <div className="text-sm">
               <Link
-                href="/auth/forget-password"
+                href="/auth/reset-password"
                 className="font-semibold text-indigo-600 hover:text-apple-400"
               >
                 Forgot password?
@@ -106,7 +108,11 @@ export default function Login() {
         />
 
         <div>
-          <Button disabled={isLoading} type="submit" className="w-full mt-5">
+          <Button
+            disabled={!isObjectValueEmpty(errors) || isLoading}
+            type="submit"
+            className="w-full mt-5"
+          >
             <MoonLoader
               size={20}
               color="white"

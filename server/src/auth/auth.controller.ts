@@ -22,7 +22,6 @@ import {
   TokensDto,
   UpdateAuthDto,
   ValidateEmailDto,
-  ValidateResetTokenDto,
 } from './dto';
 import { AuthGuard } from './guard/auth.guard';
 import { RefreshAuthGuard } from './guard/refresh-auth.guard';
@@ -47,15 +46,19 @@ export class AuthController {
   }
 
   @ApiOperation({ summary: 'Validate email address' })
-  @ApiHeader({
-    name: 'x-access-token',
-    required: true,
-    example: 'Bearer .....',
-  })
+  @ApiHeader({ name: 'x-access-token', required: true, example: 'Bearer ...' })
   @UseGuards(AuthGuard)
-  @Put('/validate-email')
+  @Post('/validate-email')
   validateEmail(@Request() req, @Body() args: ValidateEmailDto) {
     return this.authService.validateEmail(req.user.uid, args);
+  }
+
+  @ApiOperation({ summary: 'Resend verification email' })
+  @ApiHeader({ name: 'x-access-token', required: true, example: 'Bearer ...' })
+  @UseGuards(AuthGuard)
+  @Post('/resend-email-verification')
+  resendEmailVerification(@Request() req) {
+    return this.authService.resendEmailVerification(req.user.uid);
   }
 
   @ApiOperation({ summary: 'Reset Password' })
@@ -63,13 +66,6 @@ export class AuthController {
   @Post('/reset-password')
   resetPassword(@Body() args: ResetAuthDto) {
     return this.authService.resetPassword(args);
-  }
-
-  @ApiOperation({ summary: 'Validate reset Token' })
-  @ApiOkResponse({ type: MessageDto })
-  @Post('/validate-reset-token')
-  validateResetEmailToken(@Body() args: ValidateResetTokenDto) {
-    return this.authService.validateResetToken(args);
   }
 
   @ApiOperation({ summary: 'Change Password' })
@@ -80,11 +76,7 @@ export class AuthController {
   }
 
   @ApiOperation({ summary: 'Update user details' })
-  @ApiHeader({
-    name: 'x-access-token',
-    required: true,
-    example: 'Bearer .....',
-  })
+  @ApiHeader({ name: 'x-access-token', required: true, example: 'Bearer ...' })
   @UseGuards(AuthGuard)
   @Put('/update')
   updateUser(@Request() req, @Body() args: UpdateAuthDto) {
@@ -92,11 +84,7 @@ export class AuthController {
   }
 
   @ApiOperation({ summary: 'Get Refresh token' })
-  @ApiHeader({
-    name: 'x-refresh-token',
-    required: true,
-    example: 'Bearer .....',
-  })
+  @ApiHeader({ name: 'x-refresh-token', required: true, example: 'Bearer ...' })
   @UseGuards(RefreshAuthGuard)
   @Post('/refresh')
   refresh(@Request() req) {
@@ -105,11 +93,7 @@ export class AuthController {
   }
 
   @ApiOperation({ summary: 'Logout' })
-  @ApiHeader({
-    name: 'x-access-token',
-    required: true,
-    example: 'Bearer .....',
-  })
+  @ApiHeader({ name: 'x-access-token', required: true, example: 'Bearer ...' })
   @UseGuards(AuthGuard)
   @Post('/logout')
   logout() {

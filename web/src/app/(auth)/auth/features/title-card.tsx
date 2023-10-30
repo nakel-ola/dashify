@@ -63,6 +63,15 @@ const items = [
     },
   },
   {
+    id: "/auth/reset-password",
+    title: "Reset password",
+    subtitle: "I know my password?",
+    subtitleLink: {
+      href: "/auth/login",
+      text: "Login",
+    },
+  },
+  {
     id: "/auth/change-password",
     title: "Change password",
     subtitle: "Enter a new password",

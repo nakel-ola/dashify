@@ -1,7 +1,7 @@
 import { NextAuthOptions } from "next-auth";
 import { isExpired } from "react-jwt";
-import { LoginCredential } from "../../services/auth/login-credential";
-import { refreshToken } from "../../services/auth/refresh-token";
+import { LoginCredential } from "../../app/(auth)/auth/services/login-credential";
+import { refreshToken } from "../../app/(auth)/auth/services/refresh-token";
 
 export const nextAuthOptions: NextAuthOptions = {
   session: { strategy: "jwt", maxAge: 3600 * 24 },
