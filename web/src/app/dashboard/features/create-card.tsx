@@ -43,7 +43,7 @@ export const CreateCard = (props: Props) => {
       name: "",
       database: "",
       host: "",
-      port: null,
+      port: "",
       databaseName: "",
       username: "",
       password: "",
