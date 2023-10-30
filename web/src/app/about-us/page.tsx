@@ -1,34 +1,27 @@
 import Image from "next/image";
 import React, { Fragment } from "react";
 import { Footer, Navbar } from "../features";
+import { BlackGradientCard } from "./features";
 
 export default function AboutUs() {
   return (
     <Fragment>
       <Navbar scrollY={[100, 280, 280]} />
 
-      <div className="-mt-[68px] bg-black [background-size:_75px_75px] [background-image:_linear-gradient(to_right,_#262626_1px,_transparent_1px),_linear-gradient(to_bottom,_#262626_1px,_transparent_1px)]">
-        <div
-          className="mx-auto max-w-2xl text-center pt-[110px] pb-[42px]"
-          style={{
-            background:
-              "radial-gradient(ellipse 50% 80% at 50% 50%,rgba(93,52,221,0.4),transparent)",
-          }}
-        >
-          <h2 className="text-base font-semibold leading-7 text-indigo-600">
-            About Us
-          </h2>
-          <p className="mt-2 text-4xl font-bold tracking-tight text-white sm:text-5xl">
-            We love creators
-          </p>
+      <BlackGradientCard>
+        <h2 className="text-base font-semibold leading-7 text-indigo-600">
+          About Us
+        </h2>
+        <p className="mt-2 text-4xl font-bold tracking-tight text-white sm:text-5xl">
+          We love creators
+        </p>
 
-          <p className="text-gray-light mt-4 px-5">
-            later average person flower both society every thy twelve sing rough
-            aboard handsome it stronger affect win today lungs office grabbed
-            sweet star gate
-          </p>
-        </div>
-      </div>
+        <p className="text-gray-light mt-4 px-5">
+          later average person flower both society every thy twelve sing rough
+          aboard handsome it stronger affect win today lungs office grabbed
+          sweet star gate
+        </p>
+      </BlackGradientCard>
 
       <div className="page-max-width flex flex-col items-center pb-20 ">
         <div className="w-full mt-10 px-5 lg:px-10">
