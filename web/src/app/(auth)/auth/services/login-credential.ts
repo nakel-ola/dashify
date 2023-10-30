@@ -1,7 +1,7 @@
 import CredentialsProvider from "next-auth/providers/credentials";
-import { NextResponse } from "next/server";
 import { decodeToken } from "react-jwt";
 import { formatErrorMessage } from "../../../../lib/format-error-message";
+import { fetchUser } from "./fetch-user";
 
 type Input = {
   email: string;
@@ -43,10 +43,19 @@ export const LoginCredential = CredentialsProvider<Credentials>({
 
       if (!decodedToken) throw new Error("Something went wrong");
 
+      const user = await fetchUser(data.accessToken);
+
       return {
         id: decodedToken.sub,
+        uid: decodedToken.sub,
         email: decodedToken.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
         emailVerified: decodedToken.emailVerified,
+        photoUrl: user.photoUrl,
+        gender: user.gender,
+        createdAt: user.createdAt,
+        updatedAt: user.updatedAt,
         accessToken: data.accessToken,
         refreshToken: data.refreshToken,
       };

@@ -1,19 +1,27 @@
 import { formatErrorMessage } from "@/lib/format-error-message";
 import { getAccessToken } from "@/lib/get-access-token";
 
-export async function resendEmailVerification() {
+type ProjectsResponse = {
+  results: Projects[];
+  totalItems: number;
+};
+export async function fetchProjects(
+  offset: number,
+  limit: number = 10
+): Promise<ProjectsResponse> {
   const accessToken = await getAccessToken();
 
   if (!accessToken) throw new Error("Please login");
 
   const res = await fetch(
-    `${process.env.SERVER_URL}/auth/resend-email-verification`,
+    `${process.env.SERVER_URL}/projects?offset=${offset}&limit=${limit}`,
     {
-      method: "POST",
+      method: "GET",
       headers: {
         "Content-type": "application/json",
         "x-access-token": `Bearer ${accessToken}`,
       },
+      next: { tags: ["projects"] },
     }
   );
 

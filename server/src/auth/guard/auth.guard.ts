@@ -10,6 +10,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Request } from 'express';
 import { Repository } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
+import { userSelect } from '../../common/repository-select';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -32,6 +33,7 @@ export class AuthGuard implements CanActivate {
 
       const user = await this.userRepository.findOne({
         where: { uid: payload.sub },
+        select: userSelect,
       });
 
       if (!user) new UnauthorizedException();

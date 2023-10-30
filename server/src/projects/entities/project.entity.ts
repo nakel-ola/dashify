@@ -14,6 +14,11 @@ enum DatabaseType {
   COCKROACHDB = 'cockroachdb',
 }
 
+enum UserRole {
+  OWNER = 'owner',
+  COLLABORATOR = 'collaborator',
+}
+
 @Entity()
 class DatabaseConfig {
   @Column({ nullable: false })
@@ -62,6 +67,15 @@ class Collection {
   widgets?: Widgets[];
 }
 
+@Entity()
+class User {
+  @Column({ unique: true })
+  uid: string;
+
+  @Column({ type: 'enum', enum: UserRole })
+  role: 'owner' | 'collaborator';
+}
+
 @Entity('projects')
 export class Project {
   @ObjectIdColumn()
@@ -77,7 +91,7 @@ export class Project {
   name: string;
 
   @Column({ nullable: false })
-  userIds: string[];
+  users: User[];
 
   @Column({ type: 'enum', enum: DatabaseType, nullable: false })
   database: 'mongodb' | 'postgres' | 'mysql' | 'cockroachdb';

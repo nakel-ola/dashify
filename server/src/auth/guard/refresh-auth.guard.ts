@@ -9,6 +9,7 @@ import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Request } from 'express';
 import { Repository } from 'typeorm';
+import { userSelect } from '../../common/repository-select';
 import { User } from '../../users/entities/user.entity';
 
 @Injectable()
@@ -32,6 +33,7 @@ export class RefreshAuthGuard implements CanActivate {
 
       const user = await this.userRepository.findOne({
         where: { uid: payload.sub },
+        select: userSelect,
       });
 
       if (!user) new UnauthorizedException();

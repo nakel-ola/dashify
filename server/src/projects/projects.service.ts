@@ -41,7 +41,7 @@ export class ProjectsService {
       name,
       database,
       logo: null,
-      userIds: [user.uid],
+      users: [{ uid: user.uid, role: 'owner' as const }],
       projectId,
       databaseConfig: {
         name: cryptr.encrypt(databaseConfig.name),
@@ -56,14 +56,15 @@ export class ProjectsService {
 
     const project = await this.projectRepository.save({ ...data });
 
-    const newProject = await this.formatProject(project);
+    const formattedProject = await this.formatProject(project);
 
-    return newProject;
+    return formattedProject;
   }
 
   async findAll(uid: string, offset: number, limit: number) {
+    const where = { users: { $elemMatch: { uid } } } as any;
     const projects = await this.projectRepository.find({
-      where: { userIds: uid },
+      where,
       skip: offset,
       take: limit,
     });
@@ -78,12 +79,14 @@ export class ProjectsService {
       newProjects.push(item);
     }
 
-    return newProjects;
+    const totalItems = await this.projectRepository.countBy(where);
+
+    return { totalItems, results: newProjects };
   }
 
   async findOne(projectId: string, uid: string) {
     const project = await this.projectRepository.findOne({
-      where: { userIds: uid, projectId },
+      where: { users: { uid }, projectId },
     });
 
     const newProject = await this.formatProject(project);
@@ -96,13 +99,13 @@ export class ProjectsService {
   }
 
   async remove(projectId: string, uid: string) {
-    await this.projectRepository.delete({ projectId, userIds: uid });
+    await this.projectRepository.delete({ projectId, users: { uid } });
     return { message: 'Project deleted successfully' };
   }
 
   async getDatabaseCredentials(projectId: string, uid: string) {
     const project = await this.projectRepository.findOne({
-      where: { userIds: uid, projectId },
+      where: { users: { uid }, projectId },
       select: ['databaseConfig'],
     });
 
@@ -134,7 +137,8 @@ export class ProjectsService {
   }
 
   private async formatProject(project: Project) {
-    const users = await this.usersService.getUserByBatch(project.userIds ?? []);
+    const userIds = project.users.map((user) => user.uid);
+    const users = await this.usersService.getUserByBatch(userIds ?? []);
     return clean({ ...project, users, databaseConfig: null, userIds: null });
   }
 

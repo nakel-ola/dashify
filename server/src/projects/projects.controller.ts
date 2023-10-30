@@ -18,10 +18,12 @@ import {
   ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
+import { SkipThrottle } from '@nestjs/throttler';
 import { AuthGuard } from '../auth/guard/auth.guard';
 import { CreateProjectDto, UpdateProjectDto } from './dto';
 import { ProjectsService } from './projects.service';
 
+@SkipThrottle()
 @ApiTags('projects')
 @ApiHeader({
   name: 'x-access-token',

@@ -25,6 +25,8 @@ async function validateEmail(token: string) {
 
   if (!res.ok) throw new Error(formatErrorMessage(data.message));
 
+  session.user.emailVerified = true;
+
   return data;
 }
 

@@ -67,7 +67,7 @@ export default async function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <link rel="icon" href="/logo.jpg" />
+        <link rel="icon" href="/logo.png" />
         <link
           rel="apple-touch-icon"
           sizes="180x180"
@@ -98,6 +98,7 @@ export default async function RootLayout({
           defaultTheme="system"
           enableSystem
           disableTransitionOnChange
+          storageKey="dashify-theme"
         >
           <AuthProvider session={session}>{children}</AuthProvider>
           <Toaster />
