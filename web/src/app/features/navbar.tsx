@@ -50,19 +50,7 @@ export const Navbar = (props: Props) => {
             className="h-8 w-auto"
           />
 
-          <p
-            className={cn(
-              "text-xl ml-2 font-medium dark:text-white",
-              scroll.y > scrollY[1]
-                ? "text-black lg:text-white"
-                : "text-white lg:text-black",
-              scroll.y > scrollY[2] ? "lg:text-black" : "lg:text-white",
-              scroll.y > scrollY[3] ? "lg:text-white" : "",
-              scroll.y > scrollY[4] ? "text-white" : ""
-            )}
-          >
-            Dashify
-          </p>
+          <p className="text-xl ml-2 font-black text-indigo-600">Dashify</p>
         </Link>
 
         <div className="hidden lg:flex items-center space-x-1">
