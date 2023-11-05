@@ -1,8 +1,8 @@
-import { cn } from '@/lib/utils';
-import React from 'react';
-import { Input, InputProps } from './ui/input';
+import { cn } from "@/lib/utils";
+import React from "react";
+import { Input, InputProps } from "./ui/input";
 
-export interface Props extends Omit<InputProps, 'error'> {
+export interface Props extends Omit<InputProps, "error"> {
   label?: string;
   classes?: {
     root?: string;
@@ -14,6 +14,7 @@ export interface Props extends Omit<InputProps, 'error'> {
   };
   labelRight?: React.ReactNode;
   error?: string;
+  showErrorMessage?: boolean;
 }
 
 const CustomInput = (props: Props) => {
@@ -26,6 +27,7 @@ const CustomInput = (props: Props) => {
     onClick,
     labelRight,
     error,
+    showErrorMessage = true,
     ...rest
   } = props;
 
@@ -33,16 +35,16 @@ const CustomInput = (props: Props) => {
     <div className={classes?.root}>
       <div
         className={cn(
-          'flex items-center justify-between mb-2',
-          classes?.labelRoot,
+          "flex items-center justify-between mb-2",
+          classes?.labelRoot
         )}
       >
         {label && (
           <label
             htmlFor={name || id}
             className={cn(
-              'block text-base font-semibold leading-6 text-black dark:text-white',
-              classes?.label,
+              "block text-base font-semibold leading-6 text-black dark:text-white",
+              classes?.label
             )}
           >
             {label}
@@ -63,9 +65,9 @@ const CustomInput = (props: Props) => {
         {...rest}
       />
 
-      {error ? (
-        <div className='mt-2'>
-          <p className='text-red-500'>{error}</p>
+      {showErrorMessage && error ? (
+        <div className="mt-2">
+          <p className="text-red-500">{error}</p>
         </div>
       ) : null}
     </div>

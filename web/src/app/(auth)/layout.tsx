@@ -2,6 +2,12 @@ import Image from "next/image";
 import Link from "next/link";
 import React, { Fragment, PropsWithChildren } from "react";
 import { TitleCard } from "./auth/features";
+import type { Metadata } from "next";
+
+
+export const metadata: Metadata = {
+  title: "Auth | Dashify",
+};
 
 export default function AuthLayout({ children }: PropsWithChildren) {
   return (

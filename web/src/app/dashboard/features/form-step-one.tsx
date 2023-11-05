@@ -7,11 +7,6 @@ import React, { ChangeEvent, Fragment, useState } from "react";
 import { DatabaseCard } from "./database-card";
 import { CreateProjectForm } from "./type";
 
-type ImageType = {
-  file: File | null;
-  url: string | ArrayBuffer;
-};
-
 type Props = {
   isLoading: boolean;
   handleChange: {
@@ -33,6 +28,7 @@ type Props = {
     value: any,
     shouldValidate?: boolean | undefined
   ) => Promise<void> | Promise<FormikErrors<CreateProjectForm>>;
+  projectId: string;
 };
 
 export const FormStepOne = (props: Props) => {
@@ -40,22 +36,22 @@ export const FormStepOne = (props: Props) => {
     handleBlur,
     handleChange,
     isLoading,
-
+    projectId,
     errors,
     values,
     setFieldValue,
   } = props;
 
-  const [image, setImage] = useState<ImageType>({ file: null, url: "" });
+  const [url, setUrl] = useState<string | ArrayBuffer>("");
 
   const onAvatarChange = async (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       const fileList = e.target.files;
+      setFieldValue("image", fileList[0]);
       const newUrl = await toBase64(fileList[0]);
-      setImage({ url: newUrl, file: fileList[0] });
+      setUrl(newUrl);
     }
   };
-
   return (
     <Fragment>
       <div className="">
@@ -78,14 +74,14 @@ export const FormStepOne = (props: Props) => {
 
         <div className="flex items-center space-x-4 mt-2">
           <Avatar className="h-[60px] w-[60px] p-0">
-            <AvatarImage src={image.url.toString()} alt="" />
+            <AvatarImage src={url.toString()} alt="" />
             <AvatarFallback className="p-0">
               <Image
                 src="/default-avatar.svg"
                 alt=""
                 width={200}
                 height={200}
-                className="h-full w-full object-cover"
+                className="h-full w-full object-cover grayscale dark:grayscale-0 dark:invert"
               />
             </AvatarFallback>
           </Avatar>
@@ -109,7 +105,14 @@ export const FormStepOne = (props: Props) => {
         onChange={handleChange}
         onBlur={handleBlur}
         error={errors.name && values.name.length > 0 ? errors.name : undefined}
+        showErrorMessage={false}
       />
+
+      {values.name.length > 0 ? (
+        <div className="my-2 p-1.5 cursor-pointer px-3 rounded-full bg-slate-100 dark:bg-neutral-800 w-fit">
+          <p>{projectId}</p>
+        </div>
+      ) : null}
 
       <div>
         <label

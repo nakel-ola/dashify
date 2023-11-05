@@ -1,6 +1,11 @@
 import { getUser } from "@/lib/get-user";
+import type { Metadata } from "next";
 import { Fragment, type PropsWithChildren } from "react";
 import { Header } from "./features";
+
+export const metadata: Metadata = {
+  title: "Dashboard | Dashify",
+};
 
 export default async function DashboardLayout({ children }: PropsWithChildren) {
   const user = await getUser();

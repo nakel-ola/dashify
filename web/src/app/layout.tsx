@@ -3,9 +3,10 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
 import { nextAuthOptions } from "@/lib/auth/next-auth-options";
 import { cn } from "@/lib/utils";
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { getServerSession } from "next-auth";
 import { Signika_Negative } from "next/font/google";
+import NextTopLoader from "nextjs-toploader";
 import "./globals.css";
 
 const font = Signika_Negative({
@@ -14,8 +15,9 @@ const font = Signika_Negative({
   display: "swap",
   variable: "--font-signika-negative",
 });
+
 export const metadata: Metadata = {
-  title: { default: "Dashify", template: "%S | Dashify" },
+  title: "Dashify",
   applicationName: "Dashify",
   description: "",
   authors: [{ name: "Nunu Olamilekan", url: "https://nakel.vercel.app/" }],
@@ -37,16 +39,7 @@ export const metadata: Metadata = {
     index: false,
     follow: false,
   },
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
-    { media: "(prefers-color-scheme: dark)", color: "#000000" },
-  ],
   manifest: `${process.env.BASE_URL}/favicons/site.webmanifest`,
-  viewport: {
-    width: "device-width",
-    initialScale: 1,
-    maximumScale: 1,
-  },
   alternates: {
     canonical: "/",
   },
@@ -55,6 +48,17 @@ export const metadata: Metadata = {
     "msapplication-TileColor": "#4f46e5",
     "msapplication-config": `${process.env.BASE_URL}/favicons/browserconfig.xml`,
   },
+};
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#000000" },
+  ],
+
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
 };
 
 export default async function RootLayout({
@@ -93,6 +97,7 @@ export default async function RootLayout({
         <link rel="shortcut icon" href={"/favicons/favicon.ico"} />
       </head>
       <body className={cn(font.className, "flex flex-col justify-center")}>
+        <NextTopLoader />
         <ThemeProvider
           attribute="class"
           defaultTheme="system"

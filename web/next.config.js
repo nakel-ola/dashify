@@ -15,6 +15,9 @@ const nextConfig = {
       },
     ];
   },
+  images: {
+    remotePatterns: [{ hostname: "storage.googleapis.com" }],
+  },
 };
 
 module.exports = nextConfig;

@@ -33,7 +33,7 @@ export const Modal = (props: PropsWithChildren<ModalProps>) => {
 
   return (
     <AnimatePresence>
-      {open && (
+      {open ? (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -42,9 +42,9 @@ export const Modal = (props: PropsWithChildren<ModalProps>) => {
         >
           <motion.div
             ref={ref}
-            initial={{ scale: 0.8 }}
+            initial={{ scale: 0 }}
             animate={{ scale: 1 }}
-            exit={{ scale: 0.8 }}
+            exit={{ scale: 0 }}
             transition={{ duration: 0.12 }}
             className="relative"
           >
@@ -75,7 +75,7 @@ export const Modal = (props: PropsWithChildren<ModalProps>) => {
             </button>
           </motion.div>
         </motion.div>
-      )}
+      ): null}
     </AnimatePresence>
   );
 };

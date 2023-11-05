@@ -1,1 +1,1 @@
-export * from "./black-gradient-card";
+export * from "../../features/black-gradient-card";

@@ -4,9 +4,14 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { Metadata } from "next";
 import React, { Fragment } from "react";
 import { BlackGradientCard } from "../about-us/features";
 import { Footer, Navbar } from "../features";
+
+export const metadata: Metadata = {
+  title: "FAQ | Dashify",
+};
 
 export default function FAQ() {
   return (

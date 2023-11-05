@@ -6,11 +6,13 @@ import { useToast } from "@/components/ui/use-toast";
 import { isObjectValueEmpty } from "@/lib/is-object-value-empty";
 import { useFormik } from "formik";
 import { signIn } from "next-auth/react";
+import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import React, { useState } from "react";
+import React, { Fragment, useState } from "react";
 import { MoonLoader } from "react-spinners";
 import * as Yup from "yup";
+
 
 const LoginSchema = Yup.object().shape({
   email: Yup.string().email("Invalid email").required("Email is Required"),
@@ -59,70 +61,75 @@ export default function Login() {
     },
   });
   return (
-    <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-      <form className="space-y-6" onSubmit={handleSubmit}>
-        <CustomInput
-          label="Email address"
-          name="email"
-          type="email"
-          autoComplete="email"
-          required
-          readOnly={isLoading}
-          value={values.email}
-          onChange={handleChange}
-          onBlur={handleBlur}
-          error={
-            errors.email && values.email.length > 0 ? errors.email : undefined
-          }
-        />
-        <CustomInput
-          label="Password"
-          name="password"
-          type={isVisible ? "text" : "password"}
-          readOnly={isLoading}
-          value={values.password}
-          onChange={handleChange}
-          onBlur={handleBlur}
-          error={
-            errors.password && values.password.length > 0
-              ? errors.password
-              : undefined
-          }
-          labelRight={
-            <div className="text-sm">
-              <Link
-                href="/auth/reset-password"
-                className="font-semibold text-indigo-600 hover:text-apple-400"
-              >
-                Forgot password?
-              </Link>
-            </div>
-          }
-          required
-          endIcon={
-            <PasswordEye
-              isVisible={isVisible}
-              onClick={() => setIsVisible(!isVisible)}
-            />
-          }
-        />
+    <Fragment>
+      <Head>
+        <title>Login | Dashify</title>
+      </Head>
+      <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+        <form className="space-y-6" onSubmit={handleSubmit}>
+          <CustomInput
+            label="Email address"
+            name="email"
+            type="email"
+            autoComplete="email"
+            required
+            readOnly={isLoading}
+            value={values.email}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            error={
+              errors.email && values.email.length > 0 ? errors.email : undefined
+            }
+          />
+          <CustomInput
+            label="Password"
+            name="password"
+            type={isVisible ? "text" : "password"}
+            readOnly={isLoading}
+            value={values.password}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            error={
+              errors.password && values.password.length > 0
+                ? errors.password
+                : undefined
+            }
+            labelRight={
+              <div className="text-sm">
+                <Link
+                  href="/auth/reset-password"
+                  className="font-semibold text-indigo-600 hover:text-apple-400"
+                >
+                  Forgot password?
+                </Link>
+              </div>
+            }
+            required
+            endIcon={
+              <PasswordEye
+                isVisible={isVisible}
+                onClick={() => setIsVisible(!isVisible)}
+              />
+            }
+          />
 
-        <div>
-          <Button
-            disabled={!isObjectValueEmpty(errors) || isLoading}
-            type="submit"
-            className="w-full mt-5"
-          >
-            <MoonLoader
-              size={20}
-              color="white"
-              className="mr-2 text-white"
-              loading={isLoading}
-            />
-            Sign in
-          </Button>
-        </div>
-      </form>
-    </div>
+          <div>
+            <Button
+              disabled={!isObjectValueEmpty(errors) || isLoading}
+              type="submit"
+              className="w-full mt-5"
+            >
+              <MoonLoader
+                size={20}
+                color="white"
+                className="mr-2 text-white"
+                loading={isLoading}
+              />
+              Sign in
+            </Button>
+          </div>
+        </form>
+      </div>
+    </Fragment>
   );
 }

@@ -1,12 +1,17 @@
 "use client";
-import CustomInput from "@/components/custom-input";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/components/ui/use-toast";
+import { nanoid } from "@/lib/nanoid";
+import slugify from "@/lib/slugify";
 import { cn } from "@/lib/utils";
 import { useFormik } from "formik";
+import { useSession } from "next-auth/react";
+import { revalidateTag } from "next/cache";
+import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { MoonLoader } from "react-spinners";
 import * as Yup from "yup";
-import { DatabaseForm } from "./database-form";
+import { createProject } from "../services/create-project";
 import { FormStepOne } from "./form-step-one";
 import { FormStepTwo } from "./form-step-two";
 import { CreateProjectForm } from "./type";
@@ -25,11 +30,14 @@ const Schema = Yup.object().shape({
   password: Yup.string().min(8),
 });
 
+const id = nanoid(5, "abcdefghijklmnopqrstuvwxyz0123456789").toLowerCase();
 export const CreateCard = (props: Props) => {
   const { onClose } = props;
 
   const [isLoading, setIsLoading] = useState(false);
   const [active, setActive] = useState(0);
+  const { toast } = useToast();
+  const router = useRouter();
 
   const {
     handleSubmit,
@@ -41,6 +49,7 @@ export const CreateCard = (props: Props) => {
   } = useFormik<CreateProjectForm>({
     initialValues: {
       name: "",
+      image: null,
       database: "",
       host: "",
       port: "",
@@ -53,9 +62,29 @@ export const CreateCard = (props: Props) => {
     validateOnBlur: true,
     validateOnMount: true,
     onSubmit: async (values) => {
+      if (active === 0) {
+        setActive(1);
+        return;
+      }
+
       setIsLoading(true);
+
+      await createProject({ ...values, projectId })
+        .then((results) => {
+          toast({ variant: "default", title: results.message });
+          revalidateTag("projects");
+          router.push(`/project/${projectId}/overview`);
+          onClose();
+        })
+        .catch((err) => {
+          console.log(err);
+          toast({ variant: "destructive", title: err.message });
+        })
+        .finally(() => setIsLoading(false));
     },
   });
+
+  const projectId = slugify(values.name) + "-" + id;
 
   const onContinueClick = () => {
     if (active === 0) setActive(1);
@@ -85,6 +114,7 @@ export const CreateCard = (props: Props) => {
             isLoading={isLoading}
             setFieldValue={setFieldValue}
             values={values}
+            projectId={projectId}
           />
         ) : (
           <FormStepTwo
@@ -122,31 +152,9 @@ export const CreateCard = (props: Props) => {
               {active === 0 ? "Cancel" : "Go Back"}
             </Button>
 
-            {active === 0 ? (
-              <Button
-                type="button"
-                disabled={isLoading}
-                onClick={onContinueClick}
-                className=""
-              >
-                Continue
-              </Button>
-            ) : (
-              <Button
-                type="submit"
-                disabled={isLoading}
-                onClick={handleSubmit as any}
-                className=""
-              >
-                <MoonLoader
-                  size={20}
-                  color="white"
-                  className="mr-2 text-white"
-                  loading={isLoading}
-                />
-                Create Dash
-              </Button>
-            )}
+            <Button type="submit" disabled={isLoading} className="">
+              {active === 0 ? "Continue" : "Create Dash"}
+            </Button>
           </div>
         </div>
       </form>

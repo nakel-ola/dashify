@@ -1,5 +1,6 @@
 import { nextAuthOptions } from "@/lib/auth/next-auth-options";
 import { formatErrorMessage } from "@/lib/format-error-message";
+import { Metadata } from "next";
 import { getServerSession } from "next-auth";
 import { SuccessCard } from "./features";
 
@@ -34,6 +35,10 @@ type Props = {
   params: {
     token: string;
   };
+};
+
+export const metadata: Metadata = {
+  title: "Verify Email | Dashify",
 };
 export default async function EmailVerification({ params: { token } }: Props) {
   await validateEmail(token);

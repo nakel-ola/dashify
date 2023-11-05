@@ -5,8 +5,10 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { isObjectValueEmpty } from "@/lib/is-object-value-empty";
 import { useFormik } from "formik";
+import { Metadata } from "next";
+import Head from "next/head";
 import { useRouter } from "next/navigation";
-import React, { useState } from "react";
+import React, { Fragment, useState } from "react";
 import PinInput from "react-pin-input";
 import { MoonLoader } from "react-spinners";
 import * as Yup from "yup";
@@ -85,97 +87,104 @@ export default function ResetPassword() {
       .finally(() => setIsCodeLoading(false));
   };
   return (
-    <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-      <form className="space-y-6" onSubmit={handleSubmit}>
-        <div className="flex gap-3">
+    <Fragment>
+      <Head>
+        <title>Reset Password | Dashify</title>
+      </Head>
+      <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+        <form className="space-y-6" onSubmit={handleSubmit}>
+          <div className="flex gap-3">
+            <CustomInput
+              label="Email address"
+              name="email"
+              type="email"
+              autoComplete="email"
+              required
+              readOnly={isLoading}
+              value={values.email}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              className="w-full"
+              classes={{ inputRoot: "w-full", input: "w-full", root: "w-full" }}
+              error={
+                errors.email && values.email.length > 0
+                  ? errors.email
+                  : undefined
+              }
+            />
+
+            {!codeSent && (
+              <Button
+                type="button"
+                disabled={!values.email.match(mailformat)}
+                className="mt-8 shrink-0 rounded-md h-10"
+                onClick={sendCode}
+              >
+                {isCodeLoading ? (
+                  <MoonLoader size={15} color="#ffffff" className="mr-2" />
+                ) : null}
+                Send code
+              </Button>
+            )}
+          </div>
+
+          <div className="">
+            <label className="block text-base font-semibold leading-6 text-black dark:text-white">
+              Reset password code
+            </label>
+            <PinInput
+              length={6}
+              initialValue=""
+              secret
+              secretDelay={100}
+              disabled={!codeSent}
+              onChange={(value) => setFieldValue("token", value)}
+              type="numeric"
+              inputMode="number"
+              onComplete={(value, index) => {}}
+              regexCriteria={/^[ A-Za-z0-9_@./#&+-]*$/}
+            />
+          </div>
+
           <CustomInput
-            label="Email address"
-            name="email"
-            type="email"
-            autoComplete="email"
-            required
-            readOnly={isLoading}
-            value={values.email}
+            label="Password"
+            name="password"
+            type={isVisible ? "text" : "password"}
+            readOnly={isLoading || !codeSent}
+            value={values.password}
             onChange={handleChange}
             onBlur={handleBlur}
-            className="w-full"
-            classes={{ inputRoot: "w-full", input: "w-full", root: "w-full" }}
             error={
-              errors.email && values.email.length > 0 ? errors.email : undefined
+              errors.password && values.password.length > 0
+                ? errors.password
+                : undefined
+            }
+            required
+            endIcon={
+              <PasswordEye
+                isVisible={isVisible}
+                onClick={() => setIsVisible(!isVisible)}
+              />
             }
           />
 
-          {!codeSent && (
+          <div>
             <Button
-              type="button"
-              disabled={!values.email.match(mailformat)}
-              className="mt-8 shrink-0 rounded-md h-10"
-              onClick={sendCode}
+              disabled={!isObjectValueEmpty(errors) || isLoading}
+              type="submit"
+              className="w-full mt-5"
             >
-              {isCodeLoading ? (
-                <MoonLoader size={15} color="#ffffff" className="mr-2" />
-              ) : null}
-              Send code
+              <MoonLoader
+                size={20}
+                color="white"
+                className="mr-2 text-white"
+                loading={isLoading}
+              />
+              Submit
             </Button>
-          )}
-        </div>
-
-        <div className="">
-          <label className="block text-base font-semibold leading-6 text-black dark:text-white">
-            Reset password code
-          </label>
-          <PinInput
-            length={6}
-            initialValue=""
-            secret
-            secretDelay={100}
-            disabled={!codeSent}
-            onChange={(value) => setFieldValue("token", value)}
-            type="numeric"
-            inputMode="number"
-            onComplete={(value, index) => {}}
-            regexCriteria={/^[ A-Za-z0-9_@./#&+-]*$/}
-          />
-        </div>
-
-        <CustomInput
-          label="Password"
-          name="password"
-          type={isVisible ? "text" : "password"}
-          readOnly={isLoading || !codeSent}
-          value={values.password}
-          onChange={handleChange}
-          onBlur={handleBlur}
-          error={
-            errors.password && values.password.length > 0
-              ? errors.password
-              : undefined
-          }
-          required
-          endIcon={
-            <PasswordEye
-              isVisible={isVisible}
-              onClick={() => setIsVisible(!isVisible)}
-            />
-          }
-        />
-
-        <div>
-          <Button
-            disabled={!isObjectValueEmpty(errors) || isLoading}
-            type="submit"
-            className="w-full mt-5"
-          >
-            <MoonLoader
-              size={20}
-              color="white"
-              className="mr-2 text-white"
-              loading={isLoading}
-            />
-            Submit
-          </Button>
-        </div>
-      </form>
-    </div>
+          </div>
+        </form>
+      </div>
+    </Fragment>
   );
 }

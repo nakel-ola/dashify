@@ -268,8 +268,8 @@ export class AuthService {
       sub: user.uid,
       email: user.email,
       emailVerified: user.emailVerified,
-      secret: this.configService.get('JWT_REFRESH_SECRET'),
-      expiresIn: this.configService.get('REFRESH_EXPIRES_IN'),
+      secret: this.configService.get('JWT_ACCESS_SECRET'),
+      expiresIn: this.configService.get('ACCESS_EXPIRES_IN'),
     });
 
     return { accessToken };

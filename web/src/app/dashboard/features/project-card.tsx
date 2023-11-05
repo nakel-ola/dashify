@@ -1,8 +1,7 @@
 "use client";
 import { RippleCard } from "@/components/ripple-card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import databases from "@/data/databases.json";
-import truncate from "@/lib/truncate";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React from "react";
@@ -23,9 +22,8 @@ export const ProjectCard = (props: Props) => {
       className="cursor-pointer border-[1.5px] rounded-lg h-[180px] bg-white dark:bg-dark border-slate-200 dark:border-neutral-800 py-2 px-3 flex flex-col hover:scale-[1.02] active:scale-[0.99]"
     >
       <div className="flex items-center">
-        <Avatar className="h-10 w-10">
+        <Avatar className="h-10 w-10" fallback={name.substring(0, 2)}>
           <AvatarImage src={logo!} />
-          <AvatarFallback>{name.substring(0, 2)}</AvatarFallback>
         </Avatar>
 
         <div className="pl-2">
@@ -49,12 +47,10 @@ export const ProjectCard = (props: Props) => {
           {users.map((user, index) => (
             <Avatar
               key={index}
+              fallback={user.lastName.charAt(0) + user.firstName.charAt(0)}
               className="h-[40px] w-[40px] border-2 border-slate-200 dark:border-neutral-800"
             >
               <AvatarImage src={user.photoUrl ?? ""} />
-              <AvatarFallback>
-                {user.lastName.charAt(0) + user.firstName.charAt(0)}
-              </AvatarFallback>
             </Avatar>
           ))}
         </div>

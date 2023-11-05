@@ -5,8 +5,7 @@ import { Add } from "iconsax-react";
 import React, { Fragment, useState } from "react";
 import { CreateCard } from "./create-card";
 
-type Props = {};
-export const AddCard = (props: Props) => {
+export const AddCard = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (

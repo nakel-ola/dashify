@@ -25,7 +25,8 @@ export class ProjectsService {
   ) {}
 
   async create(createProjectDto: CreateProjectDto, user: User) {
-    const { database, projectId, name, databaseConfig } = createProjectDto;
+    const { database, projectId, name, logo, databaseConfig } =
+      createProjectDto;
 
     const dbCollections = await getDatabaseCollections(createProjectDto);
 
@@ -40,7 +41,7 @@ export class ProjectsService {
     const data = {
       name,
       database,
-      logo: null,
+      logo,
       users: [{ uid: user.uid, role: 'owner' as const }],
       projectId,
       databaseConfig: {
@@ -86,7 +87,7 @@ export class ProjectsService {
 
   async findOne(projectId: string, uid: string) {
     const project = await this.projectRepository.findOne({
-      where: { users: { uid }, projectId },
+      where: { users: { $elemMatch: { uid } } as any, projectId },
     });
 
     const newProject = await this.formatProject(project);

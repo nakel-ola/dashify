@@ -11,6 +11,7 @@ import { Project } from './projects/entities';
 import { ProjectsModule } from './projects/projects.module';
 import { User } from './users/entities/user.entity';
 import { UsersModule } from './users/users.module';
+import { UploadModule } from './upload/upload.module';
 
 @Module({
   imports: [
@@ -58,6 +59,7 @@ import { UsersModule } from './users/users.module';
     UsersModule,
     AuthModule,
     ProjectsModule,
+    UploadModule,
   ],
   controllers: [AppController],
   providers: [AppService],

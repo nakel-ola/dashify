@@ -37,41 +37,43 @@ export const Navbar = (props: Props) => {
           scroll.y > scrollY[0] ? "backdrop-blur-[12px]" : ""
         )}
       >
-        <Link
-          href="/"
-          onClick={() => setTheme(isDarkMode ? "light" : "dark")}
-          className="flex items-center cursor-pointer"
-        >
-          <Image
-            src="/logo.png"
-            width={32}
-            height={32}
-            alt="Dashify logo"
-            className="h-8 w-auto"
-          />
+        <div className="flex">
+          <Link
+            href="/"
+            onClick={() => setTheme(isDarkMode ? "light" : "dark")}
+            className="flex items-center cursor-pointer"
+          >
+            <Image
+              src="/logo.png"
+              width={32}
+              height={32}
+              alt="Dashify logo"
+              className="h-8 w-auto"
+            />
 
-          <p className="text-xl ml-2 font-black text-indigo-600">Dashify</p>
-        </Link>
+            <p className="text-xl ml-2 font-black text-indigo-600">Dashify</p>
+          </Link>
 
-        <div className="hidden lg:flex items-center space-x-1">
-          {navigation.map(({ href, name }, index) => (
-            <Link key={index} href={href}>
-              <Button
-                variant="ghost"
-                className={cn(
-                  "dark:hover:bg-slate-100/10 dark:text-white text-sm shadow-none font-medium hover:scale-100 active:scale-100",
-                  scroll.y > scrollY[1]
-                    ? "text-black hover:bg-slate-100"
-                    : "text-white ",
-                  scroll.y > scrollY[3]
-                    ? "text-white lg:text-white hover:bg-slate-100/10"
-                    : ""
-                )}
-              >
-                {name}
-              </Button>
-            </Link>
-          ))}
+          <div className="hidden lg:flex items-center space-x-1 ml-5">
+            {navigation.map(({ href, name }, index) => (
+              <Link key={index} href={href}>
+                <Button
+                  variant="ghost"
+                  className={cn(
+                    "dark:hover:bg-slate-100/10 dark:text-white text-sm shadow-none font-medium hover:scale-100 active:scale-100",
+                    scroll.y > scrollY[1]
+                      ? "text-black hover:bg-slate-100"
+                      : "text-white ",
+                    scroll.y > scrollY[3]
+                      ? "text-white lg:text-white hover:bg-slate-100/10"
+                      : ""
+                  )}
+                >
+                  {name}
+                </Button>
+              </Link>
+            ))}
+          </div>
         </div>
 
         <div className="flex items-center space-x-5">

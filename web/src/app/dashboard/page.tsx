@@ -8,6 +8,7 @@ type Props = {
   };
 };
 const limit = 10;
+
 export default async function Dashboard(props: Props) {
   const {
     searchParams: { page = "1" },

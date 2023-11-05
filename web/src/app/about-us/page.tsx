@@ -1,7 +1,12 @@
+import { Metadata } from "next";
 import Image from "next/image";
 import React, { Fragment } from "react";
 import { Footer, Navbar } from "../features";
 import { BlackGradientCard } from "./features";
+
+export const metadata: Metadata = {
+  title: "About Us | Dashify",
+};
 
 export default function AboutUs() {
   return (

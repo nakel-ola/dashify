@@ -25,6 +25,7 @@ export const PaginateCard = (props: Props) => {
         onPageChange={onPageChange}
         pageRangeDisplayed={5}
         pageCount={pageCount}
+        disableInitialCallback
         previousLabel={<ArrowLeft2 className="h-6 w-6" />}
         renderOnZeroPageCount={null}
         initialPage={page}

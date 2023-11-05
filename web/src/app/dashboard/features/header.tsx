@@ -8,9 +8,10 @@ import Link from "next/link";
 import React from "react";
 import { ThemeButton } from "./theme-button";
 
-type Props = {};
-export const Header = async (props: Props) => {
+export const Header = async () => {
   const session = await getServerSession(nextAuthOptions);
+
+  const user = session?.user;
 
   return (
     <div
@@ -42,8 +43,13 @@ export const Header = async (props: Props) => {
         <div className="flex items-center space-x-2 md:space-x-5">
           <ThemeButton />
           <div className="flex items-center space-x-2 cursor-pointer">
-            <Avatar className="h-[30px] w-[30px]">
-              <AvatarImage src="/profile-pic.png" />
+            <Avatar
+              fallback={
+                `${user?.lastName.charAt(0)}` + user?.firstName.charAt(0)
+              }
+              className="h-[40px] w-[40px]"
+            >
+              <AvatarImage src={user?.photoUrl} />
             </Avatar>
 
             <p className="text-lg font-medium text-white hidden lg:flex">

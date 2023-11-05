@@ -6,8 +6,9 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { isObjectValueEmpty } from "@/lib/is-object-value-empty";
 import { useFormik } from "formik";
+import Head from "next/head";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import { MoonLoader } from "react-spinners";
 import * as Yup from "yup";
 
@@ -58,95 +59,101 @@ export default function Register() {
     },
   });
   return (
-    <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-      <form className="space-y-6" onSubmit={handleSubmit}>
-        <div className="grid grid-cols-2 gap-5">
+    <Fragment>
+      <Head>
+        <title>Register | Dashify</title>
+      </Head>
+
+      <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+        <form className="space-y-6" onSubmit={handleSubmit}>
+          <div className="grid grid-cols-2 gap-5">
+            <CustomInput
+              label="First name"
+              name="firstName"
+              type="text"
+              autoComplete="given-name"
+              required
+              readOnly={isLoading}
+              value={values.firstName}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              error={
+                errors.firstName && values.firstName.length > 0
+                  ? errors.firstName
+                  : undefined
+              }
+            />
+            <CustomInput
+              label="Last name"
+              name="lastName"
+              type="text"
+              autoComplete="family-name"
+              required
+              readOnly={isLoading}
+              value={values.lastName}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              error={
+                errors.lastName && values.lastName.length > 0
+                  ? errors.lastName
+                  : undefined
+              }
+            />
+          </div>
+
           <CustomInput
-            label="First name"
-            name="firstName"
-            type="text"
-            autoComplete="given-name"
+            label="Email address"
+            name="email"
+            type="email"
+            autoComplete="email"
             required
             readOnly={isLoading}
-            value={values.firstName}
+            value={values.email}
             onChange={handleChange}
             onBlur={handleBlur}
             error={
-              errors.firstName && values.firstName.length > 0
-                ? errors.firstName
-                : undefined
+              errors.email && values.email.length > 0 ? errors.email : undefined
             }
           />
+
           <CustomInput
-            label="Last name"
-            name="lastName"
-            type="text"
-            autoComplete="family-name"
-            required
+            label="Password"
+            name="password"
+            type={isVisible ? "text" : "password"}
             readOnly={isLoading}
-            value={values.lastName}
+            value={values.password}
             onChange={handleChange}
             onBlur={handleBlur}
             error={
-              errors.lastName && values.lastName.length > 0
-                ? errors.lastName
+              errors.password && values.password.length > 0
+                ? errors.password
                 : undefined
             }
+            required
+            endIcon={
+              <PasswordEye
+                isVisible={isVisible}
+                onClick={() => setIsVisible(!isVisible)}
+              />
+            }
           />
-        </div>
-
-        <CustomInput
-          label="Email address"
-          name="email"
-          type="email"
-          autoComplete="email"
-          required
-          readOnly={isLoading}
-          value={values.email}
-          onChange={handleChange}
-          onBlur={handleBlur}
-          error={
-            errors.email && values.email.length > 0 ? errors.email : undefined
-          }
-        />
-
-        <CustomInput
-          label="Password"
-          name="password"
-          type={isVisible ? "text" : "password"}
-          readOnly={isLoading}
-          value={values.password}
-          onChange={handleChange}
-          onBlur={handleBlur}
-          error={
-            errors.password && values.password.length > 0
-              ? errors.password
-              : undefined
-          }
-          required
-          endIcon={
-            <PasswordEye
-              isVisible={isVisible}
-              onClick={() => setIsVisible(!isVisible)}
-            />
-          }
-        />
-        <div>
-          <Button
-            disabled={!isObjectValueEmpty(errors) || isLoading}
-            type="submit"
-            className="w-full mt-5"
-          >
-            <MoonLoader
-              size={20}
-              color="white"
-              className="mr-2 text-white"
-              loading={isLoading}
-            />
-            Register
-          </Button>
-        </div>
-      </form>
-    </div>
+          <div>
+            <Button
+              disabled={!isObjectValueEmpty(errors) || isLoading}
+              type="submit"
+              className="w-full mt-5"
+            >
+              <MoonLoader
+                size={20}
+                color="white"
+                className="mr-2 text-white"
+                loading={isLoading}
+              />
+              Register
+            </Button>
+          </div>
+        </form>
+      </div>
+    </Fragment>
   );
 }
