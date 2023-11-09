@@ -1,11 +1,7 @@
 import { formatErrorMessage } from "@/lib/format-error-message";
 import { getAccessToken } from "@/lib/get-access-token";
 
-export async function resendEmailVerification() {
-  const accessToken = await getAccessToken();
-
-  if (!accessToken) throw new Error("Please login");
-
+export async function resendEmailVerification(accessToken: string) {
   const res = await fetch(
     `${process.env.SERVER_URL}/auth/resend-email-verification`,
     {

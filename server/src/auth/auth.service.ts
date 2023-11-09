@@ -81,7 +81,7 @@ export class AuthService {
 
     const code = await this.saveVerificationCode(uid, VerificationType.EMAIL);
 
-    const link = this.getClientURL() + `/verify/${code}/email`;
+    const link = this.getClientURL() + `/verify/${code}`;
 
     await this.mailerService.sendMail({
       to: email,
@@ -134,17 +134,21 @@ export class AuthService {
       where: { uid, type: VerificationType.EMAIL },
     });
 
-    if (!savedToken) throw new NotFoundException('Token not found');
+    if (!savedToken) throw new NotFoundException('TOKEN_NOT_FOUND');
 
     const isTokenExpired = this.isExpirationTimeExpired(savedToken.expiresAt);
 
-    if (isTokenExpired) throw new ConflictException('Token expired');
+    if (isTokenExpired) throw new ConflictException('TOKEN_EXPIRED');
 
     const isTokenAMatch = await bcrypt.compare(token, savedToken.token);
 
     if (!isTokenAMatch) throw new ConflictException("Can't validate token");
 
-    this.userRepository.update({ uid }, { emailVerified: true });
+    await this.userRepository.update({ uid }, { emailVerified: true });
+    await this.verificationRepository.delete({
+      uid,
+      type: VerificationType.EMAIL,
+    });
 
     return { message: 'Token validation successfull' };
   }
@@ -159,9 +163,7 @@ export class AuthService {
       template: 'welcome',
       context: {
         firstName: user.firstName,
-        link:
-          this.configService.get('ALLOWED_ORIGINS')[0] +
-          `/verify/${code}/email`,
+        link: this.configService.get('ALLOWED_ORIGINS')[0] + `/verify/${code}`,
       },
     });
 
@@ -245,9 +247,10 @@ export class AuthService {
     // updated user old password with new password
     await this.userRepository.update({ uid: user.uid }, { password: hash });
 
+    // delete used token from the database
     await this.verificationRepository.delete({
-      token: token,
       uid: user.uid,
+      type: VerificationType.PASSWORD,
     });
 
     return { message: 'Password change successfully' };
@@ -348,7 +351,7 @@ export class AuthService {
 
   private isExpirationTimeExpired(expirationTime: Date): boolean {
     const now = new Date();
-    return now.getTime() > expirationTime.getTime();
+    return now.getTime() > new Date(expirationTime).getTime();
   }
 
   private getClientURL() {

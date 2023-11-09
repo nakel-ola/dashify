@@ -1,3 +1,4 @@
+import { queryClient } from "@/lib/tanstack-query";
 import React, { Fragment } from "react";
 import { AddCard, PaginateCard, ProjectCard } from "./features";
 import { fetchProjects } from "./services/fetch-projects";
@@ -15,7 +16,11 @@ export default async function Dashboard(props: Props) {
   } = props;
 
   const offset = limit * (Number(page) - 1);
-  const data = await fetchProjects(offset, limit);
+
+  const data = await queryClient.fetchQuery({
+    queryKey: ["projects"],
+    queryFn: () => fetchProjects(offset, limit),
+  });
 
   const pageCount = Math.ceil((data?.totalItems ?? 0) / limit);
 

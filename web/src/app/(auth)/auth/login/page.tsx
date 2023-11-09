@@ -13,7 +13,6 @@ import React, { Fragment, useState } from "react";
 import { MoonLoader } from "react-spinners";
 import * as Yup from "yup";
 
-
 const LoginSchema = Yup.object().shape({
   email: Yup.string().email("Invalid email").required("Email is Required"),
   password: Yup.string()
@@ -29,12 +28,19 @@ const LoginSchema = Yup.object().shape({
 
 export default function Login() {
   const [isVisible, setIsVisible] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
 
   const { toast } = useToast();
   const router = useRouter();
 
-  const { handleSubmit, handleChange, handleBlur, values, errors } = useFormik({
+  const {
+    handleSubmit,
+    handleChange,
+    handleBlur,
+    values,
+    errors,
+    isValid,
+    isSubmitting,
+  } = useFormik({
     initialValues: {
       email: "",
       password: "",
@@ -44,9 +50,8 @@ export default function Login() {
     validateOnBlur: true,
     validateOnMount: true,
     onSubmit: async (values) => {
-      setIsLoading(true);
-      await signIn("credentials", { redirect: false, ...values })
-        .then(({ ok, error }: any) => {
+      await signIn("credentials", { redirect: false, ...values }).then(
+        ({ ok, error }: any) => {
           if (ok) {
             toast({ variant: "default", title: "Successfully logged in" });
             router.replace("/dashboard");
@@ -56,8 +61,8 @@ export default function Login() {
               title: error ?? "Uh oh! Something went wrong.",
             });
           }
-        })
-        .finally(() => setIsLoading(false));
+        }
+      );
     },
   });
   return (
@@ -73,7 +78,7 @@ export default function Login() {
             type="email"
             autoComplete="email"
             required
-            readOnly={isLoading}
+            readOnly={isSubmitting}
             value={values.email}
             onChange={handleChange}
             onBlur={handleBlur}
@@ -85,7 +90,7 @@ export default function Login() {
             label="Password"
             name="password"
             type={isVisible ? "text" : "password"}
-            readOnly={isLoading}
+            readOnly={isSubmitting}
             value={values.password}
             onChange={handleChange}
             onBlur={handleBlur}
@@ -115,17 +120,17 @@ export default function Login() {
 
           <div>
             <Button
-              disabled={!isObjectValueEmpty(errors) || isLoading}
+              disabled={!isValid || isSubmitting}
               type="submit"
               className="w-full mt-5"
             >
+              Sign in
               <MoonLoader
                 size={20}
                 color="white"
-                className="mr-2 text-white"
-                loading={isLoading}
+                className="ml-2 text-white"
+                loading={isSubmitting}
               />
-              Sign in
             </Button>
           </div>
         </form>

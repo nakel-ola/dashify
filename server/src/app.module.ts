@@ -3,16 +3,16 @@ import { PugAdapter } from '@nestjs-modules/mailer/dist/adapters/pug.adapter';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { join } from 'path';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { VerificationCode } from './auth/entities/verification-code.entity';
 import { Project } from './projects/entities';
 import { ProjectsModule } from './projects/projects.module';
+import { UploadModule } from './upload/upload.module';
 import { User } from './users/entities/user.entity';
 import { UsersModule } from './users/users.module';
-import { UploadModule } from './upload/upload.module';
-
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -46,7 +46,7 @@ import { UploadModule } from './upload/upload.module';
           },
           // for handlebars
           template: {
-            dir: __dirname + '/emails-template',
+            dir: join(__dirname, '../src/emails-template'),
             adapter: new PugAdapter(),
             options: {
               strict: true,

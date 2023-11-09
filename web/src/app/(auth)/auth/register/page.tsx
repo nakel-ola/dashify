@@ -29,12 +29,19 @@ const SignUpSchema = Yup.object().shape({
 
 export default function Register() {
   const [isVisible, setIsVisible] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
 
   const { toast } = useToast();
   const router = useRouter();
 
-  const { handleSubmit, handleChange, handleBlur, values, errors } = useFormik({
+  const {
+    handleSubmit,
+    handleChange,
+    handleBlur,
+    values,
+    errors,
+    isValid,
+    isSubmitting,
+  } = useFormik({
     initialValues: {
       email: "",
       firstName: "",
@@ -46,16 +53,17 @@ export default function Register() {
     validateOnMount: true,
     validateOnBlur: true,
     onSubmit: async (values) => {
-      setIsLoading(true);
       await createAccount(values)
         .then((results) => {
           toast({ variant: "default", title: results.message });
           router.push("/auth/login");
         })
         .catch((err) => {
-          toast({ variant: "destructive", title: err });
-        })
-        .finally(() => setIsLoading(false));
+          toast({
+            variant: "destructive",
+            title: err.message ?? "Uh oh! Something went wrong.",
+          });
+        });
     },
   });
   return (
@@ -73,7 +81,7 @@ export default function Register() {
               type="text"
               autoComplete="given-name"
               required
-              readOnly={isLoading}
+              readOnly={isSubmitting}
               value={values.firstName}
               onChange={handleChange}
               onBlur={handleBlur}
@@ -89,7 +97,7 @@ export default function Register() {
               type="text"
               autoComplete="family-name"
               required
-              readOnly={isLoading}
+              readOnly={isSubmitting}
               value={values.lastName}
               onChange={handleChange}
               onBlur={handleBlur}
@@ -107,7 +115,7 @@ export default function Register() {
             type="email"
             autoComplete="email"
             required
-            readOnly={isLoading}
+            readOnly={isSubmitting}
             value={values.email}
             onChange={handleChange}
             onBlur={handleBlur}
@@ -120,7 +128,7 @@ export default function Register() {
             label="Password"
             name="password"
             type={isVisible ? "text" : "password"}
-            readOnly={isLoading}
+            readOnly={isSubmitting}
             value={values.password}
             onChange={handleChange}
             onBlur={handleBlur}
@@ -139,17 +147,17 @@ export default function Register() {
           />
           <div>
             <Button
-              disabled={!isObjectValueEmpty(errors) || isLoading}
+              disabled={!isValid || isSubmitting}
               type="submit"
               className="w-full mt-5"
             >
+              Register
               <MoonLoader
                 size={20}
                 color="white"
-                className="mr-2 text-white"
-                loading={isLoading}
+                className="ml-2 text-white"
+                loading={isSubmitting}
               />
-              Register
             </Button>
           </div>
         </form>

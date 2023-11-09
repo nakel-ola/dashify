@@ -3,9 +3,7 @@ import CustomInput from "@/components/custom-input";
 import { PasswordEye } from "@/components/password-eye";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
-import { isObjectValueEmpty } from "@/lib/is-object-value-empty";
 import { useFormik } from "formik";
-import { Metadata } from "next";
 import Head from "next/head";
 import { useRouter } from "next/navigation";
 import React, { Fragment, useState } from "react";
@@ -33,7 +31,6 @@ const mailformat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
 export default function ResetPassword() {
   const [isVisible, setIsVisible] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const [isCodeLoading, setIsCodeLoading] = useState(false);
   const [codeSent, setCodeSent] = useState(false);
 
@@ -48,6 +45,8 @@ export default function ResetPassword() {
     values,
     errors,
     setFieldValue,
+    isSubmitting,
+    isValid,
   } = useFormik({
     initialValues: {
       email: "",
@@ -69,8 +68,7 @@ export default function ResetPassword() {
         })
         .catch((err) => {
           toast({ variant: "destructive", title: err.message });
-        })
-        .finally(() => setIsLoading(false));
+        });
     },
   });
 
@@ -100,7 +98,7 @@ export default function ResetPassword() {
               type="email"
               autoComplete="email"
               required
-              readOnly={isLoading}
+              readOnly={isSubmitting}
               value={values.email}
               onChange={handleChange}
               onBlur={handleBlur}
@@ -150,7 +148,7 @@ export default function ResetPassword() {
             label="Password"
             name="password"
             type={isVisible ? "text" : "password"}
-            readOnly={isLoading || !codeSent}
+            readOnly={isSubmitting || !codeSent}
             value={values.password}
             onChange={handleChange}
             onBlur={handleBlur}
@@ -170,17 +168,17 @@ export default function ResetPassword() {
 
           <div>
             <Button
-              disabled={!isObjectValueEmpty(errors) || isLoading}
+              disabled={!isValid || isSubmitting}
               type="submit"
               className="w-full mt-5"
             >
+              Submit
               <MoonLoader
                 size={20}
                 color="white"
-                className="mr-2 text-white"
-                loading={isLoading}
+                className="ml-2 text-white"
+                loading={isSubmitting}
               />
-              Submit
             </Button>
           </div>
         </form>

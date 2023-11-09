@@ -1,3 +1,4 @@
+"use server";
 import { formatErrorMessage } from "@/lib/format-error-message";
 import { getAccessToken } from "@/lib/get-access-token";
 import { CreateProjectForm } from "../features/type";

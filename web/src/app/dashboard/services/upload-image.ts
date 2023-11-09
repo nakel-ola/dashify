@@ -1,3 +1,4 @@
+"use server";
 import { formatErrorMessage } from "@/lib/format-error-message";
 
 export async function uploadImage(
@@ -5,8 +6,6 @@ export async function uploadImage(
   accessToken: string
 ): Promise<string> {
   const formData = new FormData();
-
-  console.log(file);
 
   formData.append("file", file, file.name);
 
