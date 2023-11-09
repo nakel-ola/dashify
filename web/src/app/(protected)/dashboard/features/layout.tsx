@@ -1,7 +1,7 @@
 import { getUser } from "@/lib/get-user";
 import type { Metadata } from "next";
 import { Fragment, type PropsWithChildren } from "react";
-import { Header } from "./features";
+import { Header } from ".";
 
 export const metadata: Metadata = {
   title: "Dashboard | Dashify",
