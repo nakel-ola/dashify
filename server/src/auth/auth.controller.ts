@@ -15,12 +15,14 @@ import {
 import { AuthService } from './auth.service';
 import {
   ChangePasswordDto,
+  DeleteAccountDto,
   LoginAuthDto,
   MessageDto,
   RegisterAuthDto,
   ResetAuthDto,
   TokensDto,
   UpdateAuthDto,
+  UpdatePasswordDto,
   ValidateEmailDto,
 } from './dto';
 import { AuthGuard } from './guard/auth.guard';
@@ -75,6 +77,15 @@ export class AuthController {
     return this.authService.changePassword(args);
   }
 
+  @ApiOperation({ summary: 'Update Password' })
+  @ApiHeader({ name: 'x-access-token', required: true, example: 'Bearer ...' })
+  @ApiOkResponse({ type: MessageDto })
+  @UseGuards(AuthGuard)
+  @Post('/update-password')
+  updatePassword(@Request() req, @Body() args: UpdatePasswordDto) {
+    return this.authService.updatePassword(req.user.uid, args);
+  }
+
   @ApiOperation({ summary: 'Update user details' })
   @ApiHeader({ name: 'x-access-token', required: true, example: 'Bearer ...' })
   @UseGuards(AuthGuard)
@@ -88,7 +99,6 @@ export class AuthController {
   @UseGuards(RefreshAuthGuard)
   @Post('/refresh')
   refresh(@Request() req) {
-    console.log(req.user);
     return this.authService.getRefreshToken(req.user);
   }
 
@@ -98,5 +108,13 @@ export class AuthController {
   @Post('/logout')
   logout() {
     console.log('Logout');
+  }
+
+  @ApiOperation({ summary: 'Delete Account' })
+  @ApiHeader({ name: 'x-access-token', required: true, example: 'Bearer ...' })
+  @UseGuards(AuthGuard)
+  @Post('/delete-account')
+  deleteAccount(@Request() req, args: DeleteAccountDto) {
+    return this.authService.deleteAccount(req.user, args);
   }
 }

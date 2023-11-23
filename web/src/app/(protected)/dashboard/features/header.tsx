@@ -1,23 +1,31 @@
+"use client";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 import { ThemeButton } from "./theme-button";
 import { UserCard } from "./user-card";
+import { useWindowPosition } from "@/hooks/use-window-position";
 
-export const Header = async () => {
+// bg-black sticky top-0 z-50 bg-[size:_75px_75px] bg-[image:_linear-gradient(to_right,_#262626_1px,_transparent_1px),_linear-gradient(to_bottom,_#262626_1px,_transparent_1px)]
+
+interface Props {
+  scrollY: number;
+}
+
+export const Header = (props: Props) => {
+  const { scrollY } = props;
+
+  const scroll = useWindowPosition();
+
+  const isScrollUp = scroll.y > scrollY;
+
   return (
-    <div
-      className="bg-black sticky top-0 z-50"
-      style={{
-        backgroundSize: "75px 75px",
-        backgroundImage:
-          "linear-gradient(to right, #262626 1px, transparent 1px), linear-gradient(to bottom, #262626 1px, transparent 1px)",
-      }}
-    >
+    <div className={cn("sticky top-0 z-50")}>
       <div
         className={cn(
-          "px-5 lg:px-10 py-4 flex items-center justify-between bg-transparent transition-all duration-300  page-max-width"
+          "px-5 lg:px-10 py-4 flex items-center justify-between bg-transparent transition-all duration-300  page-max-width",
+          isScrollUp ? "backdrop-blur-[12px]" : ""
         )}
       >
         <Link href="/">
@@ -34,8 +42,8 @@ export const Header = async () => {
         </Link>
 
         <div className="flex items-center space-x-2 md:space-x-5">
-          <ThemeButton />
-          <UserCard />
+          <ThemeButton isScrollUp={isScrollUp} />
+          <UserCard isScrollUp={isScrollUp} />
         </div>
       </div>
     </div>

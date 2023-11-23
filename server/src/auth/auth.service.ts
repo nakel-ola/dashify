@@ -20,10 +20,12 @@ import { User } from '../users/entities/user.entity';
 import { UserType } from '../users/types/user.type';
 import {
   ChangePasswordDto,
+  DeleteAccountDto,
   LoginAuthDto,
   RegisterAuthDto,
   ResetAuthDto,
   UpdateAuthDto,
+  UpdatePasswordDto,
   ValidateEmailDto,
 } from './dto';
 import {
@@ -54,11 +56,8 @@ export class AuthService {
     if (user)
       throw new ConflictException('Account already exists, please login');
 
-    // generating password hash salt
-    const salt = await bcrypt.genSalt();
-
     // hashing user password
-    const hash = await bcrypt.hash(password, salt);
+    const hash = await this.hashPassword(password);
 
     // generating user id
     const uid = v4();
@@ -111,10 +110,7 @@ export class AuthService {
     if (!user) throw new ConflictException('Invalid credentials');
 
     // if user exists then compare if stored password matches with input password
-    const isPassword = await bcrypt.compare(password, user.password);
-
-    // if passwords does not match throw an error
-    if (!isPassword) throw new ConflictException('Invalid credentials');
+    await this.comparePassword(password, user.password);
 
     // if password match create an access token and refresh token
     const tokens = await this.signTokens(
@@ -153,7 +149,7 @@ export class AuthService {
     return { message: 'Token validation successfull' };
   }
 
-  // TODO: test this method
+  // TODO: test resendEmailVerification
   async resendEmailVerification(user: UserType) {
     const code = this.saveVerificationCode(user.uid, VerificationType.EMAIL);
 
@@ -238,11 +234,8 @@ export class AuthService {
     // throw an error if they dont match
     if (!isTokenAMatch) throw new ConflictException("Can't validate token");
 
-    // generating password hash salt
-    const salt = await bcrypt.genSalt();
-
     // hashing user password
-    const hash = await bcrypt.hash(password, salt);
+    const hash = await this.hashPassword(password);
 
     // updated user old password with new password
     await this.userRepository.update({ uid: user.uid }, { password: hash });
@@ -254,6 +247,31 @@ export class AuthService {
     });
 
     return { message: 'Password change successfully' };
+  }
+
+  async updatePassword(uid: string, data: UpdatePasswordDto) {
+    const { currentPassword, newPassword } = data;
+
+    if (currentPassword === newPassword)
+      throw new ConflictException(
+        "New Password can't be the same as current password",
+      );
+
+    const storeUser = await this.userRepository.findOne({ where: { uid } });
+
+    // if stored user does not exists then throw an error
+    if (!storeUser) throw new ConflictException('Invalid credentials');
+
+    // if stored user exists then compare if stored password matches with current password
+    await this.comparePassword(currentPassword, storeUser.password);
+
+    // hashing user new password
+    const hash = await this.hashPassword(newPassword);
+
+    // updated user current password with new password
+    await this.userRepository.update({ uid }, { password: hash });
+
+    return { message: 'Password Updated successfully' };
   }
 
   async updateUser(user: UserType, args: UpdateAuthDto) {
@@ -276,6 +294,44 @@ export class AuthService {
     });
 
     return { accessToken };
+  }
+
+  async deleteAccount(user: UserType, args: DeleteAccountDto) {
+    const storeUser = await this.userRepository.findOne({
+      where: { uid: user.uid },
+    });
+
+    // if stored user does not exists then throw an error
+    if (!storeUser) throw new ConflictException('Invalid credentials');
+
+    // if stored user exists then compare if stored password matches with current password
+    await this.comparePassword(args.password, storeUser.password);
+
+    await this.userRepository.delete({
+      uid: user.uid,
+    });
+
+    return { message: 'Account delete successfully. It is sad to loss use' };
+  }
+
+  private async comparePassword(password: string, encryptedPassword: string) {
+    // if user exists then compare if stored password matches with input password
+    const isPassword = await bcrypt.compare(password, encryptedPassword);
+
+    // if passwords does not match throw an error
+    if (!isPassword) throw new ConflictException('Invalid credentials');
+
+    return true;
+  }
+
+  private async hashPassword(password: string) {
+    // generating password hash salt
+    const salt = await bcrypt.genSalt();
+
+    // hashing user password
+    const hash = await bcrypt.hash(password, salt);
+
+    return hash;
   }
 
   private async signTokens(sub: string, email: string, emailVerified = false) {

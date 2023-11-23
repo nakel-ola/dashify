@@ -2,7 +2,7 @@ export const refreshToken = async (token: string): Promise<string> => {
   try {
     const res = await fetch(`${process.env.SERVER_URL!}/auth/refresh`, {
       headers: {
-        "x-access-token": `Bearer ${token}`,
+        "x-refresh-token": `Bearer ${token}`,
         origin: process.env.BASE_URL!,
       },
     });

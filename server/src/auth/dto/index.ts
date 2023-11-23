@@ -1,4 +1,5 @@
 export * from './change-password.dto';
+export * from './update-password.dto';
 export * from './login-auth.dto';
 export * from './message.dto';
 export * from './register-auth.dto';
@@ -7,3 +8,4 @@ export * from './tokens.dto';
 export * from './update-auth.dto';
 export * from './validate-email.dto';
 export * from './validate-reset-token.dto';
+export * from './delete-account.dto';

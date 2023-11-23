@@ -26,7 +26,7 @@ export default async function Dashboard(props: Props) {
 
   return (
     <Fragment>
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 px-5 lg:px-10 gap-8 py-10 -mt-[180px] lg:-mt-[150px] page-max-width">
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 px-5 lg:px-10 gap-8 py-10 -mt-[150px] lg:-mt-[130px] page-max-width">
         <AddCard />
 
         {data.results.map((item, index) => (

@@ -3,7 +3,7 @@ import { Fragment } from "react";
 
 export default function Loading() {
   return (
-    <div className="grid md:grid-cols-2 lg:grid-cols-3 px-5 lg:px-10 gap-8 py-10 -mt-[180px] lg:-mt-[150px] page-max-width">
+    <div className="grid md:grid-cols-2 lg:grid-cols-3 px-5 lg:px-10 gap-8 py-10 -mt-[150px] lg:-mt-[130px] page-max-width">
       {[0, 1, 2, 3, 4].map((_, i) => (
         <div
           key={i}
