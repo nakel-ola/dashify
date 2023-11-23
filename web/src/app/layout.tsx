@@ -9,6 +9,7 @@ import { Signika_Negative } from "next/font/google";
 import NextTopLoader from "nextjs-toploader";
 import "./globals.css";
 import TanstackProvider from "@/providers/tanstack-provider";
+import { AuthStateChanged } from "@/components/auth-state-changed";
 
 const font = Signika_Negative({
   subsets: ["latin"],
@@ -98,7 +99,7 @@ export default async function RootLayout({
         <link rel="shortcut icon" href={"/favicons/favicon.ico"} />
       </head>
       <body className={cn(font.className, "flex flex-col justify-center")}>
-        <NextTopLoader color="#4f46e5" height={0} />
+        <NextTopLoader color="#4f46e5" height={0}  />
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
@@ -107,7 +108,9 @@ export default async function RootLayout({
           storageKey="dashify-theme"
         >
           <AuthProvider session={session}>
-            <TanstackProvider>{children}</TanstackProvider>
+            <AuthStateChanged>
+              <TanstackProvider>{children}</TanstackProvider>
+            </AuthStateChanged>
           </AuthProvider>
           <Toaster />
         </ThemeProvider>

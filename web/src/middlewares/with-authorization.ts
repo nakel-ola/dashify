@@ -1,10 +1,7 @@
 import { getToken } from "next-auth/jwt";
 import { NextFetchEvent, NextRequest, NextResponse } from "next/server";
 import { MiddlewareFactory } from "./types";
-
-const protectedRoutes = ["/dashboard", "/account", "/project"];
-
-const unauthenticatedRoutes = ["/auth"];
+import auth from "@/data/auth.json";
 
 export const withAuthorization: MiddlewareFactory = (next) => {
   return async (request: NextRequest, _next: NextFetchEvent) => {
@@ -17,14 +14,16 @@ export const withAuthorization: MiddlewareFactory = (next) => {
 
     if (!token) {
       // redirect if user is not authenticated and is in a protected route
-      if (protectedRoutes.some((path) => pathname.startsWith(path))) {
+      if (auth.protectedRoutes.some((path) => pathname.startsWith(path))) {
         return NextResponse.redirect(new URL("/", request.url));
       }
     }
 
     if (token) {
       // redirect if user is authenticated
-      if (unauthenticatedRoutes.some((path) => pathname.startsWith(path))) {
+      if (
+        auth.unauthenticatedRoutes.some((path) => pathname.startsWith(path))
+      ) {
         return NextResponse.redirect(new URL("/dashboard", request.url));
       }
     }
