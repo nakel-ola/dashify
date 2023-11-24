@@ -11,12 +11,12 @@ type DatabaseCardProps = {
 export const DatabaseCard = (props: DatabaseCardProps) => {
   const { active, onChange } = props;
   return (
-    <div className="flex items-center w-full overflow-x-scroll space-x-3 scrollbar-hidden">
+    <div className="flex items-center w-full overflow-x-scroll  mt-2 space-x-3 scrollbar-hidden">
       {databases.map(({ name, url }, index) => (
         <RippleCard
           key={index}
           className={cn(
-            "relative border-[1.5px]  w-[150px] h-[80px] shrink-0 rounded-md flex flex-col justify-center items-center transition-all duration-300 hover:bg-slate-100 dark:hover:bg-slate-100/10",
+            "relative border-[1.5px] w-[150px] h-[80px] shrink-0 rounded-md flex flex-col justify-center items-center transition-all duration-300 hover:bg-slate-100 dark:hover:bg-slate-100/10",
             active?.toLowerCase() === name.toLowerCase()
               ? "border-indigo-600 "
               : " border-slate-100 dark:border-neutral-800"

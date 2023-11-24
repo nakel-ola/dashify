@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
@@ -31,6 +31,7 @@ export const Modal = (props: PropsWithChildren<ModalProps>) => {
 
   useEffect(() => {
     if (open) setLock(true);
+    else setLock(false);
   }, [open, setLock]);
 
   return (
@@ -77,7 +78,7 @@ export const Modal = (props: PropsWithChildren<ModalProps>) => {
             </button>
           </motion.div>
         </motion.div>
-      ): null}
+      ) : null}
     </AnimatePresence>
   );
 };

@@ -11,7 +11,7 @@ export const ThemeButton = () => {
     <RippleCard
       Component="button"
       onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-      className="w-[40px] h-[40px] text-black dark:text-white bg-slate-100 dark:bg-neutral-800 flex items-center justify-center transition-transform rounded-md"
+      className="w-[40px] h-[40px] text-black dark:text-white bg-slate-100/10 flex items-center justify-center transition-transform rounded-full"
     >
       <Sun1 className="text-white dark:block hidden" />
 

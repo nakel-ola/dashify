@@ -122,12 +122,10 @@ export const FormStepOne = (props: Props) => {
           Database
         </label>
 
-        <div className="mt-2 w-full max-w-lg">
-          <DatabaseCard
-            active={values.database}
-            onChange={(value) => setFieldValue("database", value)}
-          />
-        </div>
+        <DatabaseCard
+          active={values.database}
+          onChange={(value) => setFieldValue("database", value)}
+        />
       </div>
     </Fragment>
   );

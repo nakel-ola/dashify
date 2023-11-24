@@ -16,9 +16,7 @@ import { CreateProjectForm } from "./type";
 import { Modal } from "@/components/modal";
 import { useModelStore } from "../../store/ModelStore";
 
-type Props = {
-  // onClose: () => void;
-};
+type Props = {};
 
 const Schema = Yup.object().shape({
   name: Yup.string().min(3),
@@ -31,6 +29,17 @@ const Schema = Yup.object().shape({
 });
 
 const id = nanoid(5, "abcdefghijklmnopqrstuvwxyz0123456789").toLowerCase();
+
+const initialValues = {
+  name: "",
+  image: null,
+  database: "",
+  host: "",
+  port: "",
+  databaseName: "",
+  username: "",
+  password: "",
+};
 export const CreateCard = (props: Props) => {
   const [isLoading, setIsLoading] = useState(false);
   const [active, setActive] = useState(0);
@@ -45,6 +54,8 @@ export const CreateCard = (props: Props) => {
     values,
     errors,
     setFieldValue,
+    resetForm,
+    handleReset,
   } = useFormik<CreateProjectForm>({
     initialValues: {
       name: "",
@@ -85,84 +96,88 @@ export const CreateCard = (props: Props) => {
 
   const projectId = slugify(values.name) + "-" + id;
 
-  const onContinueClick = () => {
-    if (active === 0) setActive(1);
+  const handleClick = (value: boolean) => {
+    if (!value) {
+      resetForm();
+      setActive(0);
+    }
+
+    setIsOpen(value);
   };
 
+  
   const onCancelClick = () => {
-    if (active === 0) setIsOpen(false);
+    if (active === 0) handleClick(false);
     else setActive(0);
   };
+
   return (
     <Modal
       open={isOpen}
-      onOpenChange={setIsOpen}
-      className="sm:max-w-[425px] lg:w-[425px]"
+      onOpenChange={handleClick}
+      className="!max-w-[425px] !w-[90%] lg:!w-[425px] "
     >
-      <div>
-        <div className="">
-          <h2 className="font-sans text-4xl text-black dark:text-white font-semibold">
-            Create a new dash
-          </h2>
-          <p className="text-gray-dark dark:text-gray-light">
-            Fill in the details
-          </p>
-        </div>
-
-        <form onSubmit={handleSubmit} className="space-y-6 mt-6">
-          {active === 0 ? (
-            <FormStepOne
-              errors={errors}
-              handleBlur={handleBlur}
-              handleChange={handleChange}
-              isLoading={isLoading}
-              setFieldValue={setFieldValue}
-              values={values}
-              projectId={projectId}
-            />
-          ) : (
-            <FormStepTwo
-              errors={errors}
-              handleBlur={handleBlur}
-              handleChange={handleChange}
-              isLoading={isLoading}
-              values={values}
-            />
-          )}
-
-          <div className="flex items-center justify-between">
-            <div className="flex space-x-2">
-              {[0, 1].map((value) => (
-                <div
-                  key={value}
-                  className={cn(
-                    "rounded-lg h-2",
-                    active === value
-                      ? "w-5  bg-black dark:bg-white"
-                      : "w-2 bg-slate-200 dark:bg-neutral-800"
-                  )}
-                ></div>
-              ))}
-            </div>
-
-            <div className="flex space-x-5">
-              <Button
-                type="button"
-                disabled={isLoading}
-                variant="outline"
-                onClick={onCancelClick}
-                className="border-slate-200 dark:border-neutral-800 text-gray-dark dark:text-gray-light hover:bg-slate-100 hover:dark:bg-neutral-800"
-              >
-                {active === 0 ? "Cancel" : "Go Back"}
-              </Button>
-
-              <Button type="submit" disabled={isLoading} className="">
-                {active === 0 ? "Continue" : "Create Dash"}
-              </Button>
-            </div>
-          </div>
-        </form>
+      <div className="">
+        <h2 className="font-sans text-4xl text-black dark:text-white font-semibold">
+          Create a new dash
+        </h2>
+        <p className="text-gray-dark dark:text-gray-light">
+          Fill in the details
+        </p>
       </div>
+
+      <form onSubmit={handleSubmit} className="space-y-6 mt-6 w-full">
+        {active === 0 ? (
+          <FormStepOne
+            errors={errors}
+            handleBlur={handleBlur}
+            handleChange={handleChange}
+            isLoading={isLoading}
+            setFieldValue={setFieldValue}
+            values={values}
+            projectId={projectId}
+          />
+        ) : (
+          <FormStepTwo
+            errors={errors}
+            handleBlur={handleBlur}
+            handleChange={handleChange}
+            isLoading={isLoading}
+            values={values}
+          />
+        )}
+        <div className="flex items-center justify-between ">
+          <div className="flex space-x-2">
+            {[0, 1].map((value) => (
+              <div
+                key={value}
+                className={cn(
+                  "rounded-lg h-2",
+                  active === value
+                    ? "w-5  bg-black dark:bg-white"
+                    : "w-2 bg-slate-200 dark:bg-neutral-800"
+                )}
+              ></div>
+            ))}
+          </div>
+
+          <div className="flex space-x-5 ">
+            <Button
+              type="button"
+              disabled={isLoading}
+              variant="outline"
+              onClick={onCancelClick}
+              className="border-slate-200 dark:border-neutral-800 text-gray-dark dark:text-gray-light hover:bg-slate-100 hover:dark:bg-neutral-800"
+            >
+              {active === 0 ? "Cancel" : "Go Back"}
+            </Button>
+
+            <Button type="submit" disabled={isLoading} className="">
+              {active === 0 ? "Continue" : "Create Dash"}
+            </Button>
+          </div>
+        </div>
+      </form>
     </Modal>
   );
 };
