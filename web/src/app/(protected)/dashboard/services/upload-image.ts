@@ -1,4 +1,3 @@
-"use server";
 import { formatErrorMessage } from "@/lib/format-error-message";
 
 export async function uploadImage(
@@ -8,6 +7,7 @@ export async function uploadImage(
   const formData = new FormData();
 
   formData.append("file", file, file.name);
+  console.log(file);
 
   const res = await fetch(`${process.env.SERVER_URL}/upload`, {
     method: "POST",

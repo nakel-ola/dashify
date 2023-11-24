@@ -7,12 +7,6 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-export enum Gender {
-  MALE = 'male',
-  FEMALE = 'female',
-  NONE = 'none',
-}
-
 @Entity('users')
 export class User {
   @ObjectIdColumn()
@@ -32,9 +26,6 @@ export class User {
 
   @Column()
   photoUrl: string;
-
-  @Column()
-  gender: Gender;
 
   @Column()
   emailVerified: boolean;

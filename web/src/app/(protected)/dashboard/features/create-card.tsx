@@ -29,17 +29,6 @@ const Schema = Yup.object().shape({
 });
 
 const id = nanoid(5, "abcdefghijklmnopqrstuvwxyz0123456789").toLowerCase();
-
-const initialValues = {
-  name: "",
-  image: null,
-  database: "",
-  host: "",
-  port: "",
-  databaseName: "",
-  username: "",
-  password: "",
-};
 export const CreateCard = (props: Props) => {
   const [isLoading, setIsLoading] = useState(false);
   const [active, setActive] = useState(0);
@@ -55,7 +44,6 @@ export const CreateCard = (props: Props) => {
     errors,
     setFieldValue,
     resetForm,
-    handleReset,
   } = useFormik<CreateProjectForm>({
     initialValues: {
       name: "",
@@ -105,7 +93,6 @@ export const CreateCard = (props: Props) => {
     setIsOpen(value);
   };
 
-  
   const onCancelClick = () => {
     if (active === 0) handleClick(false);
     else setActive(0);

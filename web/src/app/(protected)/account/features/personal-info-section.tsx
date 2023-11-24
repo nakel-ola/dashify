@@ -13,10 +13,23 @@ import { useEffectOnce } from "usehooks-ts";
 import { clean } from "@/utils/clean";
 import { updateUser } from "../services/update-user";
 import { useToast } from "@/components/ui/use-toast";
+import { ChangeEvent, Fragment, useState } from "react";
+import { toBase64 } from "@/lib/to-base64";
 
 const Schema = Yup.object().shape({
   firstName: Yup.string().min(3).max(50).required("First Name is required"),
   lastName: Yup.string().min(3).max(50).required("Last Name is required"),
+  image: Yup.mixed()
+    .test("file", "Please upload a file", (value) => {
+      if (!value) return false;
+
+      const isFile = value instanceof File;
+
+      if (!isFile) return true;
+
+      return true;
+    })
+    .nullable(),
 });
 
 type FormType = Yup.InferType<typeof Schema>;
@@ -41,20 +54,26 @@ export const PersonalInfoSection = (props: Props) => {
     initialValues: {
       firstName: "",
       lastName: "",
+      image: null,
     },
     validationSchema: Schema,
     validateOnChange: true,
     validateOnBlur: true,
+    validateOnMount: true,
     onSubmit: async (values) => {
       const args = clean({
         firstName:
           values.firstName !== user?.firstName ? values.firstName : null,
         lastName: values.lastName !== user?.lastName ? values.lastName : null,
-      });
+        image: values.image !== user?.photoUrl ? values.image : null,
+      })
 
-      await updateUser(args)
-        .then(async () => {
-          await update({ ...data, user: { ...user, ...args } });
+      await updateUser({ ...args })
+        .then(async (result) => {
+          await update({
+            ...data,
+            user: { ...user, ...args, photoUrl: result.photoUrl },
+          });
           toast({
             variant: "default",
             title: "Details updated successfully",
@@ -69,6 +88,7 @@ export const PersonalInfoSection = (props: Props) => {
   const isDisabled = () => {
     if (values.firstName !== user?.firstName) return false;
     if (values.lastName !== user?.lastName) return false;
+    if (values.image !== user?.photoUrl) return false;
 
     if (isSubmitting) return true;
 
@@ -78,6 +98,7 @@ export const PersonalInfoSection = (props: Props) => {
   useEffectOnce(() => {
     setFieldValue("firstName", user?.firstName);
     setFieldValue("lastName", user?.lastName);
+    setFieldValue("image", user?.photoUrl);
   });
 
   return (
@@ -87,7 +108,10 @@ export const PersonalInfoSection = (props: Props) => {
   share."
     >
       <form onSubmit={handleSubmit} className="space-y-6 w-full lg:w-[80%]">
-        <UserImage />
+        <UserImage
+          value={user?.photoUrl}
+          onChange={(file) => setFieldValue("image", file)}
+        />
 
         <div className="grid grid-cols-2 gap-5">
           <CustomInput
@@ -154,33 +178,64 @@ export const PersonalInfoSection = (props: Props) => {
   );
 };
 
-const UserImage = () => {
+type UserImageProps = {
+  onChange: (value: File) => void;
+  value: any;
+};
+
+const UserImage = (props: UserImageProps) => {
+  const { onChange, value } = props;
+  const [url, setUrl] = useState<string | null>(null);
+
+  const onAvatarChange = async (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      const fileList = e.target.files;
+      onChange(fileList[0]);
+      const newUrl = await toBase64(fileList[0]);
+      setUrl(newUrl.toString());
+    }
+  };
   return (
-    <div className="flex items-center gap-5">
-      <Avatar className="h-[100px] w-[100px] p-0">
-        <AvatarImage src="" alt="" />
-        <AvatarFallback className="p-0">
-          <Image
-            src="/default-avatar.svg"
+    <Fragment>
+      <input
+        type="file"
+        id="image"
+        name="image"
+        accept="image/*"
+        multiple={false}
+        className="hidden"
+        onChange={(e) => onAvatarChange?.(e)}
+      />
+      <div className="flex items-center gap-5">
+        <Avatar className="h-[100px] w-[100px] p-0">
+          <AvatarImage
+            src={url ?? value}
             alt=""
-            width={200}
-            height={200}
-            className="h-full w-full object-cover grayscale dark:grayscale-0 dark:invert"
+            className="h-full w-full !object-cover"
           />
-        </AvatarFallback>
-      </Avatar>
+          <AvatarFallback className="p-0">
+            <Image
+              src="/default-avatar.svg"
+              alt=""
+              width={200}
+              height={200}
+              className="h-full w-full object-cover grayscale dark:grayscale-0 dark:invert"
+            />
+          </AvatarFallback>
+        </Avatar>
 
-      <div className="">
-        <label
-          htmlFor="image"
-          className="bg-slate-100 dark:bg-neutral-800 rounded-lg px-2 py-2 hover:scale-[1.02] active:scale-[0.99] cursor-pointer"
-        >
-          {" "}
-          Change image
-        </label>
+        <div className="">
+          <label
+            htmlFor="image"
+            className="bg-slate-100 dark:bg-neutral-800 rounded-lg px-2 py-2 hover:scale-[1.02] active:scale-[0.99] cursor-pointer"
+          >
+            {" "}
+            Change image
+          </label>
 
-        <p className="text-sm mt-3">JPG, GIF or PNG. 1MB max.</p>
+          <p className="text-sm mt-3">JPG, GIF or PNG. 1MB max.</p>
+        </div>
       </div>
-    </div>
+    </Fragment>
   );
 };

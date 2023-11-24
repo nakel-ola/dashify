@@ -18,7 +18,6 @@ interface UserType {
   lastName: string;
   emailVerified: boolean;
   photoUrl: string;
-  gender: string;
   createdAt: Date;
   updatedAt: Date;
   accessToken: string;

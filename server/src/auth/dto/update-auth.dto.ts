@@ -1,5 +1,4 @@
-import { IsEnum, IsOptional, IsUrl, MinLength } from 'class-validator';
-import { Gender } from '../../users/entities/user.entity';
+import { IsOptional, IsUrl, MinLength } from 'class-validator';
 
 export class UpdateAuthDto {
   @IsOptional()
@@ -13,8 +12,4 @@ export class UpdateAuthDto {
   @IsOptional()
   @MinLength(3)
   lastName: string;
-
-  @IsOptional()
-  @IsEnum(Gender)
-  gender: Gender;
 }

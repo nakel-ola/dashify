@@ -5,7 +5,6 @@ export type UserType = {
   lastName: string;
   email: string;
   photoUrl: string;
-  gender: string;
   emailVerified: boolean;
   password: string;
   createdAt: Date;

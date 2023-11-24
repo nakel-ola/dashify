@@ -53,7 +53,6 @@ export const LoginCredential = CredentialsProvider<Credentials>({
         lastName: user.lastName,
         emailVerified: decodedToken.emailVerified,
         photoUrl: user.photoUrl,
-        gender: user.gender,
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
         accessToken: data.accessToken,

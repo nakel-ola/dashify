@@ -93,7 +93,10 @@ export const DeleteAccountSection = (props: Props) => {
             >
               Cancel
             </Button>
-            <Button className="bg-red-500 ">
+            <Button
+              onClick={handleDelete}
+              className="bg-red-500 hover:bg-red-500/90"
+            >
               Delete
               <MoonLoader
                 size={20}
