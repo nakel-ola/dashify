@@ -7,8 +7,6 @@ import { ThemeButton } from "./theme-button";
 import { UserCard } from "./user-card";
 import { useWindowPosition } from "@/hooks/use-window-position";
 
-// bg-black sticky top-0 z-50 bg-[size:_75px_75px] bg-[image:_linear-gradient(to_right,_#262626_1px,_transparent_1px),_linear-gradient(to_bottom,_#262626_1px,_transparent_1px)]
-
 interface Props {
   scrollY: number;
 }
@@ -25,7 +23,7 @@ export const Header = (props: Props) => {
       <div
         className={cn(
           "px-5 lg:px-10 py-4 flex items-center justify-between bg-transparent transition-all duration-300  page-max-width",
-          isScrollUp ? "backdrop-blur-[12px]" : ""
+          scroll.y > 40 ? "backdrop-blur-[12px]" : ""
         )}
       >
         <Link href="/">

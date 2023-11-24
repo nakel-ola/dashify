@@ -9,7 +9,6 @@ type Args = {
   image?: File;
 };
 export async function updateUser(args: Args) {
-  console.log(args);
   const accessToken = await getAccessToken();
 
   if (!accessToken) throw new Error("Please login");
