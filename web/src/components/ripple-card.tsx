@@ -1,3 +1,5 @@
+"use client";
+
 import { useNextTheme } from "@/hooks/use-next-theme";
 import { cn } from "@/lib/utils";
 import type { HTMLAttributes, MouseEvent } from "react";

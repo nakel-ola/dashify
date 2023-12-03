@@ -1,4 +1,5 @@
-import { useRouter } from "next/router";
+"use client";
+import { useParams } from "next/navigation";
 
 type GetQueryObj = {
   projectId: string;
@@ -6,9 +7,9 @@ type GetQueryObj = {
 };
 
 export const useQueries = (): [GetQueryObj, string[]] => {
-  const router = useRouter();
+  const params = useParams();
 
-  const values = (router.query.index ?? []) as string[];
+  const values = (params.index ?? []) as string[];
 
   return [
     {
