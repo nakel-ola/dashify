@@ -29,7 +29,7 @@ export const LogoCard = (props: Props) => {
         </RippleCard>
       ) : null}
       <Link
-        href={`/project/${projectId}/overviews`}
+        href={`/project/${projectId}/overview`}
         className="flex items-center cursor-pointer"
       >
         {logo ? (

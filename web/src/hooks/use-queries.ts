@@ -13,9 +13,9 @@ export const useQueries = (): [GetQueryObj, string[]] => {
 
   return [
     {
-      projectId: values[0],
-      pageName: values[1],
+      projectId: params.projectId as string,
+      pageName: values[0],
     },
-    values.slice(2),
+    values.slice(1),
   ];
 };
