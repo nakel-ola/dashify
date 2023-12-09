@@ -27,6 +27,8 @@ import {
 } from "@tanstack/react-table";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { RippleCard } from "@/components/ripple-card";
+import { InvitationModel } from "./invitation-model";
+import { useState } from "react";
 
 const data: Payment[] = [
   {
@@ -132,6 +134,8 @@ const columns: ColumnDef<Payment>[] = [
 
 type Props = {};
 export const MembersSection = (props: Props) => {
+  const [isOpen, setIsOpen] = useState(false);
+
   const table = useReactTable({
     data,
     columns,
@@ -155,7 +159,7 @@ export const MembersSection = (props: Props) => {
         }}
       >
         <div className="flex flex-col lg:items-end">
-          <Button className="flex gap-2">
+          <Button className="flex gap-2" onClick={() => setIsOpen(true)}>
             <Add />
             Invite project members
           </Button>
@@ -179,7 +183,7 @@ export const MembersSection = (props: Props) => {
         />
 
         <Select>
-          <SelectTrigger className="w-[180px] !h-10 mt-2">
+          <SelectTrigger className="w-[180px] !h-10">
             <SelectValue placeholder="Roles" />
           </SelectTrigger>
           <SelectContent position="item-aligned">
@@ -239,6 +243,8 @@ export const MembersSection = (props: Props) => {
           </TableBody>
         </Table>
       </div>
+
+      <InvitationModel open={isOpen} onClose={() => setIsOpen(false)} />
     </div>
   );
 };

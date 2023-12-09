@@ -33,26 +33,28 @@ const CustomInput = (props: Props) => {
 
   return (
     <div className={classes?.root}>
-      <div
-        className={cn(
-          "flex items-center justify-between mb-2",
-          classes?.labelRoot
-        )}
-      >
-        {label && (
-          <label
-            htmlFor={name || id}
-            className={cn(
-              "block text-base font-semibold leading-6 text-black dark:text-white",
-              classes?.label
-            )}
-          >
-            {label}
-          </label>
-        )}
+      {label || labelRight ? (
+        <div
+          className={cn(
+            "flex items-center justify-between mb-2",
+            classes?.labelRoot
+          )}
+        >
+          {label && (
+            <label
+              htmlFor={name || id}
+              className={cn(
+                "block text-base font-semibold leading-6 text-black dark:text-white",
+                classes?.label
+              )}
+            >
+              {label}
+            </label>
+          )}
 
-        {labelRight}
-      </div>
+          {labelRight}
+        </div>
+      ) : null}
       <Input
         classes={{
           root: classes?.inputRoot,
