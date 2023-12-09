@@ -29,7 +29,7 @@ export const UserCard = (props: Props) => {
                 fallback={
                   `${user?.lastName.charAt(0)}` + user?.firstName.charAt(0)
                 }
-                className="h-[40px] w-[40px]"
+                className="h-[35px] w-[35px]"
               >
                 <AvatarImage src={user?.photoUrl} />
               </Avatar>

@@ -70,7 +70,7 @@ const columns: ColumnDef<Payment>[] = [
     header: "Name",
     cell: ({ row }) => (
       <div className="flex items-center gap-2">
-        <Avatar fallback={row.getValue("name")} className="h-[40px] w-[40px]">
+        <Avatar fallback={row.getValue("name")} className="h-[35px] w-[35px]">
           <AvatarImage src={row.getValue("photoUrl")} />
         </Avatar>
 
@@ -121,9 +121,9 @@ const columns: ColumnDef<Payment>[] = [
       return (
         <RippleCard
           Component="button"
-          className="w-[40px] h-[40px] text-black dark:text-white bg-slate-100 dark:bg-slate-100/10 flex items-center justify-center transition-transform rounded-full"
+          className="w-[35px] h-[35px] text-black dark:text-white bg-slate-100/50 dark:bg-slate-100/10 flex items-center justify-center transition-transform rounded-full"
         >
-          <Trash className="text-red-500" variant="Bold" />
+          <Trash className="text-red-500" variant="Bold" size={20} />
         </RippleCard>
       );
     },
@@ -171,7 +171,9 @@ export const MembersSection = (props: Props) => {
 
       <div className="flex items-center mt-10 gap-5">
         <CustomInput
-          startIcon={<SearchNormal1 />}
+          startIcon={
+            <SearchNormal1 size={20} className="text-black dark:text-white" />
+          }
           placeholder="Filter by name or email"
           classes={{ root: "w-full" }}
         />
@@ -189,7 +191,7 @@ export const MembersSection = (props: Props) => {
         </Select>
       </div>
 
-      <div className="rounded-md border mt-10">
+      <div className="rounded-md border-[1.5px] border-slate-100 dark:border-neutral-800 mt-10">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
