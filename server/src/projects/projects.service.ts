@@ -34,7 +34,7 @@ export class ProjectsService {
     const cryptr = new Cryptr(key);
 
     const collections: Collection[] = [
-      { name: 'overviews', icon: 'Category', fields: [] },
+      { name: 'overview', icon: 'Category', fields: [] },
       ...dbCollections,
     ];
 

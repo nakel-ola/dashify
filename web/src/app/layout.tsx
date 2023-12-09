@@ -99,7 +99,7 @@ export default async function RootLayout({
         <link rel="shortcut icon" href={"/favicons/favicon.ico"} />
       </head>
       <body className={cn(font.className, "flex flex-col justify-center")}>
-        <NextTopLoader color="#4f46e5" height={0}  />
+        <NextTopLoader color="#4f46e5" shadow={false} />
         <ThemeProvider
           attribute="class"
           defaultTheme="system"

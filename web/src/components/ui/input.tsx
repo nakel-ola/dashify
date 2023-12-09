@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 
 export interface InputProps
   extends React.InputHTMLAttributes<HTMLInputElement> {
+  startIcon?: React.ReactNode;
   endIcon?: React.ReactNode;
   error?: boolean;
   classes?: {
@@ -19,6 +20,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>((props, ref) => {
     className,
     type,
     endIcon,
+    startIcon,
     error,
     onFocus,
     readOnly,
@@ -39,6 +41,8 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>((props, ref) => {
           : "  border-slate-100 dark:border-neutral-800"
       )}
     >
+      {startIcon && <span className={cn("px-2", classes?.icon)}>{startIcon}</span>}
+
       <input
         type={type}
         className={cn(

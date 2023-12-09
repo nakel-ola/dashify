@@ -1,10 +1,10 @@
 "use client";
 
-import { useQueries } from "@/hooks/use-queries";
+import { useQueries } from "@/app/(protected)/project/hooks/use-queries";
 import { useSidebarStore } from "../store/sidebar-store";
-import { Icons } from "./Icons";
+import { IconNames, Icons } from "./Icons";
 import { cn } from "@/lib/utils";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { capitalizeFirstLetter } from "@/lib/capitalize-first-letter";
 import { Fragment, useEffect, useRef } from "react";
 import { AnimatePresence, motion } from "framer-motion";
@@ -16,7 +16,7 @@ import { X } from "lucide-react";
 type Props = {
   name: string;
   logo: string | null;
-  items: { name: string; icon: string | null }[];
+  items: { name: string; icon: IconNames }[];
 };
 export const Sidebar = (props: Props) => {
   return (
@@ -76,9 +76,7 @@ const MobileWrapper = (props: Props) => {
 const Content = (props: Props) => {
   const { items, logo, name } = props;
 
-  const [{ pageName, projectId }] = useQueries();
-
-  const router = useRouter();
+  const [{ projectId }] = useQueries();
 
   const { setIsOpen } = useSidebarStore();
 
@@ -100,72 +98,59 @@ const Content = (props: Props) => {
         </RippleCard>
       </div>
 
-      <div>
+      <div className="pt-5">
         {items.map(({ icon, name }, index) => (
-          <div
-            key={index}
-            className={cn(
-              "flex items-center m-2 p-2 hover:bg-slate-100 hover:dark:bg-neutral-800 rounded-lg cursor-pointer",
-              pageName === name ? "bg-slate-100 dark:bg-neutral-800" : ""
-            )}
-            onClick={() => router.push(`/project/${projectId}/${name}`)}
-          >
-            <div className="">
-              <Icons
-                iconName={icon! as any}
-                variant={pageName === name ? "Bold" : "Outline"}
-                className={cn(
-                  pageName === name
-                    ? "text-black dark:text-white"
-                    : "text-gray-dark dark:text-gray-light"
-                )}
-              />
-            </div>
-
-            <p
-              className={cn(
-                "pl-2",
-                pageName === name
-                  ? "text-black dark:text-white"
-                  : "text-gray-dark dark:text-gray-light"
-              )}
-            >
-              {capitalizeFirstLetter(name)}
-            </p>
-          </div>
+          <Card key={index} iconName={icon} name={name} />
         ))}
       </div>
 
-      <div
-        className={cn(
-          "flex items-center m-2 mb-3 p-2 hover:bg-slate-100 hover:dark:bg-neutral-800 rounded-lg cursor-pointer mt-auto",
-          pageName === "settings" ? "bg-slate-100 dark:bg-neutral-800" : ""
-        )}
-        onClick={() => router.push(`/project/${projectId}/settings`)}
-      >
-        <div className="">
-          <Icons
-            iconName="Setting"
-            variant={pageName === "settings" ? "Bold" : "Outline"}
-            className={cn(
-              pageName === "settings"
-                ? "text-black dark:text-white"
-                : "text-gray-dark dark:text-gray-light"
-            )}
-          />
-        </div>
+      <Card iconName="Setting" name="settings" />
+    </div>
+  );
+};
 
-        <p
+type CardProps = {
+  iconName: IconNames;
+  name: string;
+};
+const Card = (props: CardProps) => {
+  const { iconName, name } = props;
+  const pathname = usePathname();
+  const router = useRouter();
+  const [{ pageName, projectId }] = useQueries();
+
+  const isActive = pathname.startsWith(`/project/${projectId}/${name}`);
+
+  return (
+    <div
+      className={cn(
+        "flex items-center m-2 mb-3 p-2 hover:bg-slate-100 hover:dark:bg-neutral-800 rounded-lg cursor-pointer mt-auto",
+        isActive ? "bg-slate-100 dark:bg-neutral-800" : ""
+      )}
+      onClick={() => router.push(`/project/${projectId}/${name}`)}
+    >
+      <div className="">
+        <Icons
+          iconName={iconName}
+          variant={isActive ? "Bold" : "Outline"}
           className={cn(
-            "pl-2",
-            pageName === "settings"
+            isActive
               ? "text-black dark:text-white"
               : "text-gray-dark dark:text-gray-light"
           )}
-        >
-          Settings
-        </p>
+        />
       </div>
+
+      <p
+        className={cn(
+          "pl-2",
+          isActive
+            ? "text-black dark:text-white"
+            : "text-gray-dark dark:text-gray-light"
+        )}
+      >
+        {capitalizeFirstLetter(name)}
+      </p>
     </div>
   );
 };

@@ -13,5 +13,5 @@ export const DataWrapper = (props: PropsWithChildren<Props>) => {
   useEffectOnce(() => {
     setProject(project);
   });
-  return children;
+  return <div className="col-span-10 lg:col-span-8 h-full overflow-y-scroll">{children}</div>;
 };
