@@ -1,15 +1,8 @@
 "use client";
+
 import { TitleSection } from "@/app/(protected)/account/features/title-section";
 import { RippleCard } from "@/components/ripple-card";
 import { Button } from "@/components/ui/button";
-import {
-  ColumnDef,
-  flexRender,
-  getCoreRowModel,
-  useReactTable,
-} from "@tanstack/react-table";
-import { Add, Trash } from "iconsax-react";
-import { useMemo, useState } from "react";
 import {
   Table,
   TableBody,
@@ -19,35 +12,46 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
-import { CorsOriginModel } from "./cors-origin-model";
+import {
+  ColumnDef,
+  flexRender,
+  getCoreRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
+import { Add, Trash } from "iconsax-react";
+import { useMemo, useState } from "react";
 import { DeleteModel } from "./delete-model";
+import { TokensModel } from "./tokens-model";
 
 const data: CorsType[] = [
   {
     id: "m5gr84i9",
-    url: "https://thepmtribe-testing.vercel.app",
+    name: "Vercel Token",
+    permissions: "editor",
     createdAt: "1 week",
   },
   {
     id: "m5gr84i553",
-    url: "https://www.thepmtribe.com",
+    name: "Application Token",
+    permissions: "editor",
     createdAt: "1 week",
   },
 ];
 
 type CorsType = {
   id: string;
-  url: string;
+  name: string;
+  permissions: string;
   createdAt: string;
 };
 
 type Props = {};
-export const CorsOriginsSection = (props: Props) => {
+export const TokensSection = (props: Props) => {
   const [isOpen, setIsOpen] = useState(false);
 
-  const [corsId, setCorsId] = useState<string | null>(null);
+  const [tokenId, setTokenId] = useState<string | null>(null);
 
-  const handleDeleteClick = (id: string) => setCorsId(id);
+  const handleDeleteClick = (id: string) => setTokenId(id);
 
   const columns = useMemo<ColumnDef<CorsType>[]>(
     () => [
@@ -59,27 +63,28 @@ export const CorsOriginsSection = (props: Props) => {
         ),
       },
       {
-        accessorKey: "url",
-        header: "Origin",
+        accessorKey: "name",
+        header: "Name",
         cell: ({ row }) => (
           <div className="">
-            <p className="text-black dark:text-white">{row.getValue("url")}</p>
+            <p className="text-black dark:text-white">{row.getValue("name")}</p>
           </div>
         ),
       },
       {
-        header: "Credentials",
+        accessorKey: "permissions",
+        header: "Permissions",
         cell: ({ row }) => (
-          <div className="flex items-center gap-2 bg-green-500/30 rounded w-fit px-2">
-            <p className="capitalize text-black dark:text-white">ALLOWED</p>
+          <div className="flex items-center gap-2 bg-slate-100 dark:bg-neutral-800 rounded w-fit px-2">
+            <p className="uppercase text-black dark:text-white">
+              {row.getValue("permissions")}
+            </p>
           </div>
         ),
       },
       {
         accessorKey: "createdAt",
-        header: () => {
-          return <div className="">Created</div>;
-        },
+        header: "Created",
         cell: ({ row }) => (
           <div className="">
             <p className="text-black dark:text-white">
@@ -114,14 +119,17 @@ export const CorsOriginsSection = (props: Props) => {
     state: {
       columnVisibility: {
         id: false,
+        email: false,
+        photoUrl: false,
       },
     },
   });
+
   return (
     <div className="">
       <TitleSection
-        title="CORS origins"
-        subtitle="Hosts that can connect to the project API."
+        title="Tokens"
+        subtitle="Tokens are used to authenticate apps and scripts to access project data."
         classes={{
           root: "justify-between",
           left: { root: "lg:w-[50%]" },
@@ -133,7 +141,7 @@ export const CorsOriginsSection = (props: Props) => {
           onClick={() => setIsOpen(true)}
         >
           <Add />
-          Add CORS origin
+          Add API token
         </Button>
       </TitleSection>
 
@@ -193,11 +201,12 @@ export const CorsOriginsSection = (props: Props) => {
         </Table>
       </div>
 
-      <CorsOriginModel open={isOpen} onClose={() => setIsOpen(false)} />
+      <TokensModel open={isOpen} onClose={() => setIsOpen(false)} />
 
       <DeleteModel
-        open={!!corsId}
-        onClose={() => setCorsId(null)}
+        open={!!tokenId}
+        isToken
+        onClose={() => setTokenId(null)}
         onDeleteClick={() => {}}
       />
     </div>

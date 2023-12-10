@@ -8,19 +8,14 @@ import {
 } from "@/components/ui/dialog";
 
 type Props = {
-  cors: {
-    id: string;
-    url: string;
-    createdAt: string;
-  } | null;
   open: boolean;
   onClose: () => void;
-  isInvitation?: boolean;
+  isToken?: boolean;
 
   onDeleteClick: () => void;
 };
 export const DeleteModel = (props: Props) => {
-  const { open, onClose, cors, onDeleteClick } = props;
+  const { open, onClose, onDeleteClick, isToken } = props;
   return (
     <Dialog
       open={open}
@@ -30,12 +25,15 @@ export const DeleteModel = (props: Props) => {
     >
       <DialogContent className="max-w-[90%] md:max-w-[425px] p-0">
         <DialogHeader className="border-b-[1.5px] border-slate-100 dark:border-neutral-800 p-4">
-          <DialogTitle>Delete CORS origin</DialogTitle>
+          <DialogTitle>
+            Delete {isToken ? "API token" : "CORS origin"}{" "}
+          </DialogTitle>
         </DialogHeader>
 
         <div className="p-4">
           <p className="font-medium text-lg">
-            Do you really want to delete this CORS origin?
+            Do you really want to delete this{" "}
+            {isToken ? "API token" : "CORS origin"}?
           </p>
 
           <p className="text-sm text-gray-dark dark:text-gray-light pt-2">
