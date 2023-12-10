@@ -1,7 +1,15 @@
 "use client";
-
 import { TitleSection } from "@/app/(protected)/account/features/title-section";
-import { Trash } from "iconsax-react";
+import { RippleCard } from "@/components/ripple-card";
+import { Button } from "@/components/ui/button";
+import {
+  ColumnDef,
+  flexRender,
+  getCoreRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
+import { Add, Trash } from "iconsax-react";
+import { useMemo, useState } from "react";
 import {
   Table,
   TableBody,
@@ -10,53 +18,38 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  ColumnDef,
-  flexRender,
-  getCoreRowModel,
-  useReactTable,
-} from "@tanstack/react-table";
-import { Avatar, AvatarImage } from "@/components/ui/avatar";
-import { RippleCard } from "@/components/ripple-card";
-import { useMemo, useState } from "react";
-import { MemberDeleteModel } from "./member-delete-model";
+import { cn } from "@/lib/utils";
+import { CorsOriginModel } from "./cors-origin-model";
+import { DeleteModel } from "./delete-model";
 
-const data: Payment[] = [
+const data: CorsType[] = [
   {
     id: "m5gr84i9",
-    name: "Olamilekan Nunu",
-    role: "administrator",
-    joined: "4d",
-    email: "nunuolamilekan@gmail.com",
-    photoUrl:
-      "https://storage.googleapis.com/dashify-b6918.appspot.com/1695293516052-min_1_90.png",
+    url: "https://thepmtribe-testing.vercel.app",
+    createdAt: "1 week",
   },
   {
     id: "m5gr84i553",
-    name: "Olamilekan Nunu",
-    role: "administrator",
-    joined: "4d",
-    email: "nunuolamilekan@gmail.com",
-    photoUrl:
-      "https://storage.googleapis.com/dashify-b6918.appspot.com/1695293516052-min_1_90.png",
+    url: "https://www.thepmtribe.com",
+    createdAt: "1 week",
   },
 ];
 
-type Payment = {
+type CorsType = {
   id: string;
-  name: string;
-  role: "administrator" | "editor" | "viewer" | "developer";
-  joined: string;
-  email: string;
-  photoUrl: string;
+  url: string;
+  createdAt: string;
 };
 
-export const InvitationsSection = () => {
-  const [userId, setUserId] = useState<string | null>(null);
+type Props = {};
+export const CorsOriginsSection = (props: Props) => {
+  const [isOpen, setIsOpen] = useState(false);
 
-  const handleDeleteClick = (id: string) => setUserId(id);
+  const [corsId, setCorsId] = useState<string | null>(null);
 
-  const columns = useMemo<ColumnDef<Payment>[]>(
+  const handleDeleteClick = (id: string) => setCorsId(id);
+
+  const columns = useMemo<ColumnDef<CorsType>[]>(
     () => [
       {
         accessorKey: "id",
@@ -66,50 +59,32 @@ export const InvitationsSection = () => {
         ),
       },
       {
-        accessorKey: "email",
-        header: "Email",
+        accessorKey: "url",
+        header: "Origin",
         cell: ({ row }) => (
-          <p className="text-black dark:text-white">{row.getValue("email")}</p>
-        ),
-      },
-      {
-        accessorKey: "role",
-        header: () => {
-          return <div className="capitalize">Role</div>;
-        },
-        cell: ({ row }) => (
-          <div className="text-black dark:text-white capitalize">
-            {row.getValue("role")}
+          <div className="">
+            <p className="text-black dark:text-white">{row.getValue("url")}</p>
           </div>
         ),
       },
       {
-        id: "photoUrl",
-        accessorKey: "photoUrl",
-        header: "Invited",
+        header: "Credentials",
         cell: ({ row }) => (
-          <div className="flex items-center gap-2">
-            <Avatar
-              fallback={row.getValue("name")}
-              className="h-[30px] w-[30px]"
-            >
-              <AvatarImage src={row.getValue("photoUrl")} />
-            </Avatar>
-
+          <div className="flex items-center gap-2 bg-green-500/30 rounded w-fit px-2">
+            <p className="capitalize text-black dark:text-white">ALLOWED</p>
+          </div>
+        ),
+      },
+      {
+        accessorKey: "createdAt",
+        header: () => {
+          return <div className="">Created</div>;
+        },
+        cell: ({ row }) => (
+          <div className="">
             <p className="text-black dark:text-white">
-              {row.getValue("joined")}
+              {row.getValue("createdAt")}
             </p>
-          </div>
-        ),
-      },
-      {
-        accessorKey: "joined",
-        header: () => {
-          return <div className="capitalize">joined</div>;
-        },
-        cell: ({ row }) => (
-          <div className="lowercase text-black dark:text-white">
-            {row.getValue("joined")}
           </div>
         ),
       },
@@ -121,7 +96,7 @@ export const InvitationsSection = () => {
             <RippleCard
               Component="button"
               onClick={() => handleDeleteClick(row.getValue("id"))}
-              className="w-[35px] h-[35px] text-black dark:text-white bg-slate-100/0 dark:bg-slate-100/10 flex items-center justify-center transition-transform rounded-full"
+              className="w-[35px] h-[35px] text-black dark:text-white bg-slate-100/50 dark:bg-slate-100/10 flex items-center justify-center transition-transform rounded-full"
             >
               <Trash className="text-red-500" variant="Bold" size={20} />
             </RippleCard>
@@ -136,20 +111,33 @@ export const InvitationsSection = () => {
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
-    state: { columnVisibility: { id: false, joined: false } },
+    state: {
+      columnVisibility: {
+        id: false,
+        email: false,
+        photoUrl: false,
+      },
+    },
   });
-
   return (
-    <div>
+    <div className="">
       <TitleSection
-        title="Project invitations"
-        subtitle="Invitations that have been sent, but not accepted yet. Changed your mind? Pending invitation may be revoked."
+        title="CORS origins"
+        subtitle="Hosts that can connect to the project API."
         classes={{
           root: "justify-between",
           left: { root: "lg:w-[50%]" },
           right: "w-fit",
         }}
-      />
+      >
+        <Button
+          className="flex gap-2 rounded-md"
+          onClick={() => setIsOpen(true)}
+        >
+          <Add />
+          Add CORS origin
+        </Button>
+      </TitleSection>
 
       <div className="rounded-md border-[1.5px] border-slate-100 dark:border-neutral-800 mt-10">
         <Table>
@@ -177,7 +165,14 @@ export const InvitationsSection = () => {
               table.getRowModel().rows.map((row) => (
                 <TableRow key={row.id}>
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
+                    <TableCell
+                      key={cell.id}
+                      className={cn(
+                        cell.id === "actions"
+                          ? "text-right w-fit !bg-green-500"
+                          : ""
+                      )}
+                    >
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()
@@ -200,11 +195,12 @@ export const InvitationsSection = () => {
         </Table>
       </div>
 
-      <MemberDeleteModel
-        open={!!userId}
-        user={userId ? data.find((value) => value.id === userId)! : null}
-        isInvitation
-        onClose={() => setUserId(null)}
+      <CorsOriginModel open={isOpen} onClose={() => setIsOpen(false)} />
+
+      <DeleteModel
+        open={!!corsId}
+        cors={corsId ? data.find((value) => value.id === corsId)! : null}
+        onClose={() => setCorsId(null)}
         onDeleteClick={() => {}}
       />
     </div>

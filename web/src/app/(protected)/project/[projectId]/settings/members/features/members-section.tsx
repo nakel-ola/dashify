@@ -30,7 +30,7 @@ import { RippleCard } from "@/components/ripple-card";
 import { InvitationModel } from "./invitation-model";
 import { useMemo, useState } from "react";
 import { MemberDeleteModel } from "./member-delete-model";
-import { useProjectStore } from "@/app/(protected)/project/store/project-store";
+import { cn } from "@/lib/utils";
 
 const data: Payment[] = [
   {
@@ -67,8 +67,6 @@ export const MembersSection = (props: Props) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const [memberId, setMemberId] = useState<string | null>(null);
-
-  const { project } = useProjectStore();
 
   const handleDeleteClick = (id: string) => setMemberId(id);
 
@@ -244,7 +242,14 @@ export const MembersSection = (props: Props) => {
               table.getRowModel().rows.map((row) => (
                 <TableRow key={row.id}>
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
+                    <TableCell
+                      key={cell.id}
+                      className={cn(
+                        cell.id === "actions"
+                          ? "text-right w-fit !bg-green-500"
+                          : ""
+                      )}
+                    >
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()
@@ -273,6 +278,7 @@ export const MembersSection = (props: Props) => {
         open={!!memberId}
         user={memberId ? data.find((value) => value.id === memberId)! : null}
         onClose={() => setMemberId(null)}
+        onDeleteClick={() => {}}
       />
     </div>
   );

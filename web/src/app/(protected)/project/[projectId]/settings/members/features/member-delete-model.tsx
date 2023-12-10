@@ -19,9 +19,11 @@ type Props = {
   open: boolean;
   onClose: () => void;
   isInvitation?: boolean;
+
+  onDeleteClick: () => void;
 };
 export const MemberDeleteModel = (props: Props) => {
-  const { open, onClose, isInvitation = false, user } = props;
+  const { open, onClose, isInvitation = false, user, onDeleteClick } = props;
 
   const { project } = useProjectStore();
 
@@ -43,7 +45,7 @@ export const MemberDeleteModel = (props: Props) => {
               ? `Do you really want to revoke the invitation sent to ${user?.email}?`
               : `Do you really want to remove ${user?.name} from ${project?.name}?`}
           </p>
-          <p className="font-medium text-sm text-gray-dark dark:text-gray-light pt-2">
+          <p className="text-sm text-gray-dark dark:text-gray-light pt-2">
             {isInvitation
               ? `${user?.email} will no longer be able to join the project.`
               : `${user?.name} will lose access to the project and all the related rights and permissions.`}
@@ -64,17 +66,17 @@ export const MemberDeleteModel = (props: Props) => {
           <Button
             type="button"
             onClick={onClose}
-            className="w-full"
+            className="w-full text-black dark:text-white hover:bg-slate-100 dark:hover:bg-neutral-800"
             variant="ghost"
           >
             Cancel
           </Button>
           <Button
             type="button"
-            // disabled={!isPending ? disabled() : isPending}
-            className="w-full"
+            onClick={onDeleteClick}
+            className="w-full bg-red-500 hover:bg-red-500/90"
           >
-            Confirm
+            Delete
           </Button>
         </DialogFooter>
       </DialogContent>
