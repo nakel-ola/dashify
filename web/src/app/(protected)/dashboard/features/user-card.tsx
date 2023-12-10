@@ -61,7 +61,7 @@ export const UserCard = (props: Props) => {
             leaveFrom="transform opacity-100 scale-100"
             leaveTo="transform opacity-0 scale-95"
           >
-            <Menu.Items className="absolute right-2 top-14 mt-2 p-2 min-w-[244px] h-fit origin-top-right bg-white dark:bg-dark shadow-lg border-[1.5px] border-slate-200 dark:border-neutral-800 rounded-lg focus:outline-none space-y-1">
+            <Menu.Items className="absolute right-2 top-14 mt-2 p-2 min-w-[244px] h-fit origin-top-right bg-white dark:bg-dark shadow-lg border-[1.5px] border-slate-200 dark:border-neutral-800 rounded-lg focus:outline-none space-y-1 z-10">
               <Menu.Item
                 as={Link}
                 href="/dashboard"

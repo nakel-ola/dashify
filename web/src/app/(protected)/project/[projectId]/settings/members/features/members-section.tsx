@@ -28,7 +28,9 @@ import {
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { RippleCard } from "@/components/ripple-card";
 import { InvitationModel } from "./invitation-model";
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { MemberDeleteModel } from "./member-delete-model";
+import { useProjectStore } from "@/app/(protected)/project/store/project-store";
 
 const data: Payment[] = [
   {
@@ -60,81 +62,101 @@ type Payment = {
   photoUrl: string;
 };
 
-const columns: ColumnDef<Payment>[] = [
-  {
-    id: "photoUrl",
-    accessorKey: "photoUrl",
-    header: "",
-    cell: () => <div className=""></div>,
-  },
-  {
-    accessorKey: "name",
-    header: "Name",
-    cell: ({ row }) => (
-      <div className="flex items-center gap-2">
-        <Avatar fallback={row.getValue("name")} className="h-[35px] w-[35px]">
-          <AvatarImage src={row.getValue("photoUrl")} />
-        </Avatar>
-
-        <div className="">
-          <p className="capitalize text-black dark:text-white">
-            {row.getValue("name")}
-          </p>
-          <p className="text-gray-dark dark:text-gray-light">
-            {row.getValue("email")}
-          </p>
-        </div>
-      </div>
-    ),
-  },
-  {
-    accessorKey: "email",
-    header: () => {
-      return <div className="">Email</div>;
-    },
-    cell: () => <div className=""></div>,
-  },
-  {
-    accessorKey: "role",
-    header: () => {
-      return <div className="capitalize">Role</div>;
-    },
-    cell: ({ row }) => (
-      <div className="text-black dark:text-white capitalize">
-        {row.getValue("role")}
-      </div>
-    ),
-  },
-  {
-    accessorKey: "joined",
-    header: () => {
-      return <div className="capitalize">joined</div>;
-    },
-    cell: ({ row }) => (
-      <div className="lowercase text-black dark:text-white">
-        {row.getValue("joined")}
-      </div>
-    ),
-  },
-  {
-    id: "actions",
-    enableHiding: false,
-    cell: ({ row }) => {
-      return (
-        <RippleCard
-          Component="button"
-          className="w-[35px] h-[35px] text-black dark:text-white bg-slate-100/50 dark:bg-slate-100/10 flex items-center justify-center transition-transform rounded-full"
-        >
-          <Trash className="text-red-500" variant="Bold" size={20} />
-        </RippleCard>
-      );
-    },
-  },
-];
-
 type Props = {};
 export const MembersSection = (props: Props) => {
   const [isOpen, setIsOpen] = useState(false);
+
+  const [memberId, setMemberId] = useState<string | null>(null);
+
+  const { project } = useProjectStore();
+
+  const handleDeleteClick = (id: string) => setMemberId(id);
+
+  const columns = useMemo<ColumnDef<Payment>[]>(
+    () => [
+      {
+        accessorKey: "id",
+        header: "Id",
+        cell: ({ row }) => (
+          <p className="text-black dark:text-white">{row.getValue("id")}</p>
+        ),
+      },
+      {
+        id: "photoUrl",
+        accessorKey: "photoUrl",
+        header: "",
+        cell: () => <div className=""></div>,
+      },
+      {
+        accessorKey: "name",
+        header: "Name",
+        cell: ({ row }) => (
+          <div className="flex items-center gap-2">
+            <Avatar
+              fallback={row.getValue("name")}
+              className="h-[35px] w-[35px]"
+            >
+              <AvatarImage src={row.getValue("photoUrl")} />
+            </Avatar>
+
+            <div className="">
+              <p className="capitalize text-black dark:text-white">
+                {row.getValue("name")}
+              </p>
+              <p className="text-gray-dark dark:text-gray-light">
+                {row.getValue("email")}
+              </p>
+            </div>
+          </div>
+        ),
+      },
+      {
+        accessorKey: "email",
+        header: () => {
+          return <div className="">Email</div>;
+        },
+        cell: () => <div className=""></div>,
+      },
+      {
+        accessorKey: "role",
+        header: () => {
+          return <div className="capitalize">Role</div>;
+        },
+        cell: ({ row }) => (
+          <div className="text-black dark:text-white capitalize">
+            {row.getValue("role")}
+          </div>
+        ),
+      },
+      {
+        accessorKey: "joined",
+        header: () => {
+          return <div className="capitalize">joined</div>;
+        },
+        cell: ({ row }) => (
+          <div className="lowercase text-black dark:text-white">
+            {row.getValue("joined")}
+          </div>
+        ),
+      },
+      {
+        id: "actions",
+        enableHiding: false,
+        cell: ({ row }) => {
+          return (
+            <RippleCard
+              Component="button"
+              onClick={() => handleDeleteClick(row.getValue("id"))}
+              className="w-[35px] h-[35px] text-black dark:text-white bg-slate-100/50 dark:bg-slate-100/10 flex items-center justify-center transition-transform rounded-full"
+            >
+              <Trash className="text-red-500" variant="Bold" size={20} />
+            </RippleCard>
+          );
+        },
+      },
+    ],
+    []
+  );
 
   const table = useReactTable({
     data,
@@ -142,6 +164,7 @@ export const MembersSection = (props: Props) => {
     getCoreRowModel: getCoreRowModel(),
     state: {
       columnVisibility: {
+        id: false,
         email: false,
         photoUrl: false,
       },
@@ -183,7 +206,7 @@ export const MembersSection = (props: Props) => {
         />
 
         <Select>
-          <SelectTrigger className="w-[180px] !h-10">
+          <SelectTrigger className="w-[180px] !h-11">
             <SelectValue placeholder="Roles" />
           </SelectTrigger>
           <SelectContent position="item-aligned">
@@ -245,6 +268,12 @@ export const MembersSection = (props: Props) => {
       </div>
 
       <InvitationModel open={isOpen} onClose={() => setIsOpen(false)} />
+
+      <MemberDeleteModel
+        open={!!memberId}
+        user={memberId ? data.find((value) => value.id === memberId)! : null}
+        onClose={() => setMemberId(null)}
+      />
     </div>
   );
 };

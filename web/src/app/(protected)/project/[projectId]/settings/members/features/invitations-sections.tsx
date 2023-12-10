@@ -27,7 +27,8 @@ import {
 } from "@tanstack/react-table";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { RippleCard } from "@/components/ripple-card";
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { MemberDeleteModel } from "./member-delete-model";
 
 const data: Payment[] = [
   {
@@ -59,83 +60,92 @@ type Payment = {
   photoUrl: string;
 };
 
-const columns: ColumnDef<Payment>[] = [
-  {
-    accessorKey: "email",
-    header: "Email",
-    cell: ({ row }) => (
-      <p className="text-black dark:text-white">{row.getValue("email")}</p>
-    ),
-  },
+export const InvitationsSection = () => {
+  const [userId, setUserId] = useState<string | null>(null);
 
-  {
-    accessorKey: "role",
-    header: () => {
-      return <div className="capitalize">Role</div>;
-    },
-    cell: ({ row }) => (
-      <div className="text-black dark:text-white capitalize">
-        {row.getValue("role")}
-      </div>
-    ),
-  },
+  const handleDeleteClick = (id: string) => setUserId(id);
 
-  {
-    id: "photoUrl",
-    accessorKey: "photoUrl",
-    header: "Invited",
-    cell: ({ row }) => (
-      <div className="flex items-center gap-2">
-        <Avatar fallback={row.getValue("name")} className="h-[30px] w-[30px]">
-          <AvatarImage src={row.getValue("photoUrl")} />
-        </Avatar>
+  const columns = useMemo<ColumnDef<Payment>[]>(
+    () => [
+      {
+        accessorKey: "id",
+        header: "Id",
+        cell: ({ row }) => (
+          <p className="text-black dark:text-white">{row.getValue("id")}</p>
+        ),
+      },
+      {
+        accessorKey: "email",
+        header: "Email",
+        cell: ({ row }) => (
+          <p className="text-black dark:text-white">{row.getValue("email")}</p>
+        ),
+      },
+      {
+        accessorKey: "role",
+        header: () => {
+          return <div className="capitalize">Role</div>;
+        },
+        cell: ({ row }) => (
+          <div className="text-black dark:text-white capitalize">
+            {row.getValue("role")}
+          </div>
+        ),
+      },
+      {
+        id: "photoUrl",
+        accessorKey: "photoUrl",
+        header: "Invited",
+        cell: ({ row }) => (
+          <div className="flex items-center gap-2">
+            <Avatar
+              fallback={row.getValue("name")}
+              className="h-[30px] w-[30px]"
+            >
+              <AvatarImage src={row.getValue("photoUrl")} />
+            </Avatar>
 
-        <p className="text-black dark:text-white">{row.getValue("joined")}</p>
-      </div>
-    ),
-  },
-  {
-    accessorKey: "joined",
-    header: () => {
-      return <div className="capitalize">joined</div>;
-    },
-    cell: ({ row }) => (
-      <div className="lowercase text-black dark:text-white">
-        {row.getValue("joined")}
-      </div>
-    ),
-  },
-  {
-    id: "actions",
-    enableHiding: false,
-    cell: ({ row }) => {
-      return (
-        <RippleCard
-          Component="button"
-          className="w-[35px] h-[35px] text-black dark:text-white bg-slate-100/0 dark:bg-slate-100/10 flex items-center justify-center transition-transform rounded-full"
-        >
-          <Trash className="text-red-500" variant="Bold" size={20} />
-        </RippleCard>
-      );
-    },
-  },
-];
-
-type Props = {};
-export const InvitationsSection = (props: Props) => {
-  const [isOpen, setIsOpen] = useState(false);
+            <p className="text-black dark:text-white">
+              {row.getValue("joined")}
+            </p>
+          </div>
+        ),
+      },
+      {
+        accessorKey: "joined",
+        header: () => {
+          return <div className="capitalize">joined</div>;
+        },
+        cell: ({ row }) => (
+          <div className="lowercase text-black dark:text-white">
+            {row.getValue("joined")}
+          </div>
+        ),
+      },
+      {
+        id: "actions",
+        enableHiding: false,
+        cell: ({ row }) => {
+          return (
+            <RippleCard
+              Component="button"
+              onClick={() => handleDeleteClick(row.getValue("id"))}
+              className="w-[35px] h-[35px] text-black dark:text-white bg-slate-100/0 dark:bg-slate-100/10 flex items-center justify-center transition-transform rounded-full"
+            >
+              <Trash className="text-red-500" variant="Bold" size={20} />
+            </RippleCard>
+          );
+        },
+      },
+    ],
+    []
+  );
 
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
-    state: {
-      columnVisibility: {
-        // email: false,
-        // photoUrl: false,
-        joined: false,
-      },
-    },
+    state: { columnVisibility: { id: false, joined: false } },
   });
 
   return (
@@ -198,6 +208,13 @@ export const InvitationsSection = (props: Props) => {
           </TableBody>
         </Table>
       </div>
+
+      <MemberDeleteModel
+        open={!!userId}
+        user={userId ? data.find((value) => value.id === userId)! : null}
+        isInvitation
+        onClose={() => setUserId(null)}
+      />
     </div>
   );
 };

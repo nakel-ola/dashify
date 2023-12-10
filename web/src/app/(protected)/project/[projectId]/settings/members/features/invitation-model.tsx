@@ -17,6 +17,8 @@ import CustomInput from "@/components/custom-input";
 import { Add, Trash } from "iconsax-react";
 import { RippleCard } from "@/components/ripple-card";
 import { useState } from "react";
+import { useMutation } from "@tanstack/react-query";
+import axios from "@/lib/axios";
 
 type Item = {
   email: string;
@@ -37,7 +39,13 @@ const defaultItem = { email: "", role: "viewer" };
 export const InvitationModel = (props: Props) => {
   const { open, onClose } = props;
 
-  const [items, setItems] = useState<Item[]>([defaultItem]);
+  const [items, setItems] = useState<Item[]>([{ ...defaultItem }]);
+
+  const { isPending } = useMutation({
+    mutationFn: (newTodo) => {
+      return axios.post("/todos", newTodo);
+    },
+  });
 
   const handleChange = (index: number, value: string) => {
     const newItems = [...items];
@@ -45,6 +53,7 @@ export const InvitationModel = (props: Props) => {
     newItems[index].email = value;
     setItems(newItems);
   };
+
   const handleRoleChange = (index: number, value: string) => {
     const newItems = [...items];
 
@@ -89,6 +98,9 @@ export const InvitationModel = (props: Props) => {
               <CustomInput
                 placeholder="Email"
                 value={item.email}
+                type="email"
+                autoComplete="email"
+                required
                 onChange={(e) => handleChange(index, e.target.value)}
                 classes={{ root: "w-full" }}
               />
@@ -129,8 +141,8 @@ export const InvitationModel = (props: Props) => {
             {items.length < 10 ? (
               <Button
                 variant="ghost"
-                className="w-full hover:scale-100 rounded-lg border-[1.5px] border-slate-100 dark:border-neutral-800"
-                onClick={() => setItems([...items, defaultItem])}
+                className="w-full hover:scale-100 rounded-lg border-[1.5px] border-slate-100 dark:border-neutral-800 h-10"
+                onClick={() => setItems([...items, { ...defaultItem }])}
               >
                 <Add /> Add more
               </Button>
@@ -141,7 +153,11 @@ export const InvitationModel = (props: Props) => {
         </div>
 
         <DialogFooter className="border-t-[1.5px] border-slate-100 dark:border-neutral-800 p-4 py-2">
-          <Button type="submit" disabled className="w-full">
+          <Button
+            type="submit"
+            disabled={!isPending ? disabled() : isPending}
+            className="w-full"
+          >
             Send invites
           </Button>
         </DialogFooter>
