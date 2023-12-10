@@ -32,7 +32,7 @@ type Props = {
 
 export const mailformat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
-const roles = ["administrator", "editor", "viewer", "developer"];
+const roles = ["administrator", "editor", "viewer"];
 
 const defaultItem = { email: "", role: "viewer" };
 

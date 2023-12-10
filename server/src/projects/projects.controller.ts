@@ -64,10 +64,15 @@ export class ProjectsController {
   @ApiParam({ name: 'projectId', example: 'finance-tracker-78493' })
   @Patch(':projectId')
   update(
+    @Request() req,
     @Param('projectId') projectId: string,
     @Body() updateProjectDto: UpdateProjectDto,
   ) {
-    return this.projectsService.update(projectId, updateProjectDto);
+    return this.projectsService.update(
+      projectId,
+      req.user.uid,
+      updateProjectDto,
+    );
   }
 
   @ApiOperation({ summary: 'Delete project by projectId' })
@@ -111,4 +116,16 @@ export class ProjectsController {
       limit,
     );
   }
+
+  // TODO: Invite project members
+
+  // TODO: Delete member from project
+
+  // TODO: Add cors origin
+
+  // TODO: Delete cors origin
+
+  // TODO: Add api token
+
+  // TODO: Delete api token
 }

@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -15,6 +19,7 @@ import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { Project } from './entities';
 import { Collection } from './types/collection.type';
+import { ProjectType } from './types/project.type';
 
 @Injectable()
 export class ProjectsService {
@@ -42,7 +47,7 @@ export class ProjectsService {
       name,
       database,
       logo,
-      users: [{ uid: user.uid, role: 'owner' as const }],
+      members: [{ uid: user.uid, role: 'administrator' as const }],
       projectId,
       databaseConfig: {
         name: cryptr.encrypt(databaseConfig.name),
@@ -63,7 +68,7 @@ export class ProjectsService {
   }
 
   async findAll(uid: string, offset: number, limit: number) {
-    const where = { users: { $elemMatch: { uid } } } as any;
+    const where = { members: { $elemMatch: { uid } } } as any;
     const projects = await this.projectRepository.find({
       where,
       skip: offset,
@@ -87,26 +92,47 @@ export class ProjectsService {
 
   async findOne(projectId: string, uid: string) {
     const project = await this.projectRepository.findOne({
-      where: { users: { $elemMatch: { uid } } as any, projectId },
+      where: { members: { $elemMatch: { uid } } as any, projectId },
     });
+
+    if (!project)
+      throw new NotFoundException(`Project with id ${projectId} not found`);
 
     const newProject = await this.formatProject(project);
     return newProject;
   }
 
-  update(id: string, updateProjectDto: UpdateProjectDto) {
-    console.log(updateProjectDto);
-    return `This action updates a #${id} project`;
+  async update(
+    projectId: string,
+    uid: string,
+    updateProjectDto: UpdateProjectDto,
+  ) {
+    const project = await this.findOne(projectId, uid);
+
+    const members = project.members;
+
+    const isAdministrator = !!members.find(
+      (member) => member.uid === uid && member.role === 'administrator',
+    );
+
+    if (!isAdministrator) throw new UnauthorizedException('Permission denied');
+
+    await this.projectRepository.update({ projectId }, clean(updateProjectDto));
+
+    return { message: 'Project updated successfully' };
   }
 
   async remove(projectId: string, uid: string) {
-    await this.projectRepository.delete({ projectId, users: { uid } });
+    await this.projectRepository.delete({
+      projectId,
+      members: { $elemMatch: { uid, role: 'administrator' } } as any,
+    });
     return { message: 'Project deleted successfully' };
   }
 
   async getDatabaseCredentials(projectId: string, uid: string) {
     const project = await this.projectRepository.findOne({
-      where: { users: { uid }, projectId },
+      where: { members: { uid }, projectId },
       select: ['databaseConfig'],
     });
 
@@ -137,10 +163,15 @@ export class ProjectsService {
     return {};
   }
 
-  private async formatProject(project: Project) {
-    const userIds = project.users.map((user) => user.uid);
-    const users = await this.usersService.getUserByBatch(userIds ?? []);
-    return clean({ ...project, users, databaseConfig: null, userIds: null });
+  private async formatProject(project: Project): Promise<ProjectType> {
+    const memberIds = project.members.map((member) => member.uid);
+    const users = await this.usersService.getUserByBatch(memberIds ?? []);
+
+    const members = users.map((user) => ({
+      ...user,
+      role: project.members.find((member) => member.uid === user.uid)!.role,
+    }));
+    return clean({ ...project, members, databaseConfig: null, userIds: null });
   }
 
   private decryptDatabaseConfig(databaseConfig: any) {
