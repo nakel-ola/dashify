@@ -20,7 +20,12 @@ import {
 } from '@nestjs/swagger';
 import { SkipThrottle } from '@nestjs/throttler';
 import { AuthGuard } from '../auth/guard/auth.guard';
-import { CreateProjectDto, UpdateProjectDto } from './dto';
+import {
+  AddCorsOriginDto,
+  AddTokenDto,
+  CreateProjectDto,
+  UpdateProjectDto,
+} from './dto';
 import { ProjectsService } from './projects.service';
 
 @SkipThrottle()
@@ -117,15 +122,67 @@ export class ProjectsController {
     );
   }
 
+  @ApiOperation({ summary: 'Add a origin to the project' })
+  @Post(':projectId/add-cors-origin')
+  @ApiParam({ name: 'projectId', example: 'finance-tracker-78493' })
+  addCorsOrigin(
+    @Request() req,
+    @Param('projectId') projectId: string,
+    @Body() addCorsOriginDto: AddCorsOriginDto,
+  ) {
+    return this.projectsService.addCorsOrigin(
+      projectId,
+      req.user.uid,
+      addCorsOriginDto,
+    );
+  }
+
+  @ApiOperation({ summary: 'Remove a origin from the project' })
+  @Delete(':projectId/remove-cors-origin/:corsOriginId')
+  @ApiParam({ name: 'projectId', example: 'finance-tracker-78493' })
+  @ApiParam({
+    name: 'cors origin id',
+    example: 'd40e80a1-aae5-59d7-9841-2f58794ea805',
+  })
+  removeCorsOrigin(
+    @Request() req,
+    @Param('projectId') projectId: string,
+    @Param('corsOriginId') corsOriginId: string,
+  ) {
+    return this.projectsService.removeCorsOrigin(
+      projectId,
+      req.user.uid,
+      corsOriginId,
+    );
+  }
+
+  @ApiOperation({ summary: 'Add a token to the project' })
+  @Post(':projectId/add-token')
+  @ApiParam({ name: 'projectId', example: 'finance-tracker-78493' })
+  addToken(
+    @Request() req,
+    @Param('projectId') projectId: string,
+    @Body() addTokenDto: AddTokenDto,
+  ) {
+    return this.projectsService.addToken(projectId, req.user.uid, addTokenDto);
+  }
+
+  @ApiOperation({ summary: 'Remove a token from the project' })
+  @Delete(':projectId/remove-token/:tokenId')
+  @ApiParam({ name: 'projectId', example: 'finance-tracker-78493' })
+  @ApiParam({
+    name: 'token id',
+    example: 'd40e80a1-aae5-59d7-9841-2f58794ea805',
+  })
+  removeToken(
+    @Request() req,
+    @Param('projectId') projectId: string,
+    @Param('tokenId') tokenId: string,
+  ) {
+    return this.projectsService.removeToken(projectId, req.user.uid, tokenId);
+  }
+
   // TODO: Invite project members
 
   // TODO: Delete member from project
-
-  // TODO: Add cors origin
-
-  // TODO: Delete cors origin
-
-  // TODO: Add api token
-
-  // TODO: Delete api token
 }

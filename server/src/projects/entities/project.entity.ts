@@ -69,6 +69,45 @@ class Collection {
 }
 
 @Entity()
+class CorsOrigin {
+  @ObjectIdColumn()
+  id!: ObjectId;
+
+  @Column({ nullable: false })
+  origin: string;
+
+  @Column({ nullable: false })
+  creatorId: string;
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
+}
+
+@Entity()
+class Token {
+  @ObjectIdColumn()
+  id!: ObjectId;
+
+  @Column({ nullable: false })
+  name: string;
+
+  @Column({ nullable: false })
+  token: string;
+
+  @Column({ nullable: false })
+  creatorId: string;
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
+}
+
+@Entity()
 class Member {
   @Column({ unique: true })
   uid: string;
@@ -94,6 +133,9 @@ export class Project {
   @Column({ nullable: false })
   members: Member[];
 
+  @Column({ nullable: false })
+  corsOrigins: CorsOrigin[];
+
   @Column({ type: 'enum', enum: DatabaseType, nullable: false })
   database: 'mongodb' | 'postgres' | 'mysql' | 'cockroachdb';
 
@@ -102,6 +144,9 @@ export class Project {
 
   @Column({ nullable: false })
   collections: Collection[];
+
+  @Column({ nullable: false })
+  tokens: Token[];
 
   @CreateDateColumn()
   createdAt: Date;

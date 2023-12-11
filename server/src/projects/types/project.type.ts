@@ -26,15 +26,34 @@ export type DatabaseConfig = {
   password: string;
 };
 
+export type CorsOrigin = {
+  id: string;
+  origin: string;
+  creatorId: string;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+export type Tokens = {
+  name: string;
+  permission: 'editor' | 'viewer';
+  token: string;
+  creatorId: string;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
 export type ProjectType = {
   id: string;
   projectId: string;
   logo: string;
   name: string;
+  corsOrigins: CorsOrigin[];
   members: Member[];
   database: 'mongodb' | 'postgres' | 'mysql' | 'cockroachdb';
   databaseConfig: DatabaseConfig;
   collections: Collection[];
+  tokens: Tokens[];
   createdAt: Date;
   updatedAt: Date;
 };

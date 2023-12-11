@@ -4,7 +4,7 @@ type Projects = {
   logo: string | null;
   projectId: string;
   database: string;
-  users: UserType[];
+  members: UserType[];
   collections: Collection[];
   createdAt: Date;
   updatedAt: Date;

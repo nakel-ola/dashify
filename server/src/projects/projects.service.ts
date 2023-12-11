@@ -19,7 +19,11 @@ import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { Project } from './entities';
 import { Collection } from './types/collection.type';
-import { ProjectType } from './types/project.type';
+import { Member, ProjectType } from './types/project.type';
+import { AddCorsOriginDto, AddTokenDto } from './dto';
+import { v4 } from 'uuid';
+import { nanoid } from '../common/nanoid';
+// import { nanoid } from 'nanoid';
 
 @Injectable()
 export class ProjectsService {
@@ -58,6 +62,8 @@ export class ProjectsService {
         password: cryptr.encrypt(databaseConfig.password),
       },
       collections,
+      corsOrigins: [],
+      tokens: [],
     };
 
     const project = await this.projectRepository.save({ ...data });
@@ -109,11 +115,7 @@ export class ProjectsService {
   ) {
     const project = await this.findOne(projectId, uid);
 
-    const members = project.members;
-
-    const isAdministrator = !!members.find(
-      (member) => member.uid === uid && member.role === 'administrator',
-    );
+    const isAdministrator = this.isMemberAdministrator(project.members, uid);
 
     if (!isAdministrator) throw new UnauthorizedException('Permission denied');
 
@@ -161,6 +163,101 @@ export class ProjectsService {
       return await getMysqlTable(args);
     }
     return {};
+  }
+
+  async addCorsOrigin(
+    projectId: string,
+    uid: string,
+    addCorsOriginDto: AddCorsOriginDto,
+  ) {
+    const project = await this.findOne(projectId, uid);
+
+    const isAdministrator = this.isMemberAdministrator(project.members, uid);
+
+    if (!isAdministrator) throw new UnauthorizedException('Permission denied');
+
+    const date = new Date();
+
+    await this.projectRepository.update(
+      { projectId },
+      {
+        corsOrigins: [
+          ...project.corsOrigins,
+          {
+            id: v4(),
+            ...addCorsOriginDto,
+            creatorId: uid,
+            createdAt: date,
+            updatedAt: date,
+          },
+        ],
+      },
+    );
+    return { message: 'Cors Origin Added Successfully' };
+  }
+
+  async removeCorsOrigin(projectId: string, uid: string, corsOriginId: string) {
+    const project = await this.findOne(projectId, uid);
+
+    const isAdministrator = this.isMemberAdministrator(project.members, uid);
+
+    if (!isAdministrator) throw new UnauthorizedException('Permission denied');
+
+    const corsOrigins = project.corsOrigins.filter(
+      (corsOrigin) => corsOrigin.id !== corsOriginId,
+    );
+
+    await this.projectRepository.update({ projectId }, { corsOrigins });
+    return { message: 'Cors Origin Removed Successfully' };
+  }
+
+  async addToken(projectId: string, uid: string, addTokenDto: AddTokenDto) {
+    const project = await this.findOne(projectId, uid);
+    const isAdministrator = this.isMemberAdministrator(project.members, uid);
+
+    if (!isAdministrator) throw new UnauthorizedException('Permission denied');
+
+    const token = nanoid(184);
+    const date = new Date();
+
+    await this.projectRepository.update(
+      { projectId },
+      {
+        tokens: [
+          ...project.tokens,
+          {
+            id: v4(),
+            ...addTokenDto,
+            token,
+            creatorId: uid,
+            createdAt: date,
+            updatedAt: date,
+          },
+        ],
+      },
+    );
+    return { token, message: 'Token Added Successfully' };
+  }
+
+  async removeToken(projectId: string, uid: string, tokenId: string) {
+    const project = await this.findOne(projectId, uid);
+
+    const isAdministrator = this.isMemberAdministrator(project.members, uid);
+
+    if (!isAdministrator) throw new UnauthorizedException('Permission denied');
+
+    const tokens = project.corsOrigins.filter((token) => token.id !== tokenId);
+
+    await this.projectRepository.update({ projectId }, { tokens });
+    return { message: 'Token Removed Successfully' };
+  }
+
+  private isMemberAdministrator(members: Member[], uid: string) {
+    const isAdministrator = !!members.find(
+      (member) => member.uid === uid && member.role === 'administrator',
+    );
+
+    return isAdministrator;
   }
 
   private async formatProject(project: Project): Promise<ProjectType> {

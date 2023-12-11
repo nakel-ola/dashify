@@ -8,7 +8,7 @@ import React from "react";
 
 type Props = Projects & {};
 export const ProjectCard = (props: Props) => {
-  const { id, database, name, users, projectId, logo } = props;
+  const { id, database, name, members, projectId, logo } = props;
 
   const router = useRouter();
 
@@ -44,13 +44,13 @@ export const ProjectCard = (props: Props) => {
         />
 
         <div className="flex items-center -space-x-5">
-          {users.map((user, index) => (
+          {members.map((member, index) => (
             <Avatar
               key={index}
-              fallback={user.lastName.charAt(0) + user.firstName.charAt(0)}
+              fallback={member.lastName.charAt(0) + member.firstName.charAt(0)}
               className="h-[40px] w-[40px] border-2 border-slate-200 dark:border-neutral-800"
             >
-              <AvatarImage src={user.photoUrl ?? ""} />
+              <AvatarImage src={member.photoUrl ?? ""} />
             </Avatar>
           ))}
         </div>
