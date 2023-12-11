@@ -114,6 +114,12 @@ class Member {
 
   @Column({ type: 'enum', enum: MemberRole })
   role: 'administrator' | 'editor' | 'viewer';
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
 }
 
 @Entity('projects')

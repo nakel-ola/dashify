@@ -47,11 +47,20 @@ export class ProjectsService {
       ...dbCollections,
     ];
 
+    const date = new Date();
+
     const data = {
       name,
       database,
       logo,
-      members: [{ uid: user.uid, role: 'administrator' as const }],
+      members: [
+        {
+          uid: user.uid,
+          role: 'administrator' as const,
+          createdAt: date,
+          updatedAt: date,
+        },
+      ],
       projectId,
       databaseConfig: {
         name: cryptr.encrypt(databaseConfig.name),
@@ -264,10 +273,15 @@ export class ProjectsService {
     const memberIds = project.members.map((member) => member.uid);
     const users = await this.usersService.getUserByBatch(memberIds ?? []);
 
-    const members = users.map((user) => ({
-      ...user,
-      role: project.members.find((member) => member.uid === user.uid)!.role,
-    }));
+    const members = users.map((user) => {
+      const member = project.members.find((member) => member.uid === user.uid)!;
+      return {
+        ...user,
+        role: member.role,
+        createdAt: member.createdAt,
+        updatedAt: member.updatedAt,
+      };
+    });
     return clean({ ...project, members, databaseConfig: null, userIds: null });
   }
 
