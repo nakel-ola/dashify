@@ -4,12 +4,17 @@ import { TitleSection } from "@/app/(protected)/account/features/title-section";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { useProjectStore } from "../../../store/project-store";
-import { useEffectOnce } from "usehooks-ts";
+import { useCopyToClipboard } from "usehooks-ts";
 import { UserImage } from "@/app/(protected)/account/features";
 import CustomInput from "@/components/custom-input";
 import { Button } from "@/components/ui/button";
 import { MoonLoader } from "react-spinners";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { clean } from "@/utils/clean";
+import { updateProject } from "../services/update-project";
+import { useToast } from "@/components/ui/use-toast";
+import { Copy } from "iconsax-react";
+import { CheckIcon } from "lucide-react";
 
 const Schema = Yup.object().shape({
   name: Yup.string().min(3).max(50).required("First Name is required"),
@@ -30,7 +35,14 @@ type FormType = Yup.InferType<typeof Schema>;
 
 type Props = {};
 export const InfoSection = (props: Props) => {
-  const { project } = useProjectStore();
+  const { project, setProject } = useProjectStore();
+
+  const { toast } = useToast();
+
+  const [copyValue, setCopyValue] = useCopyToClipboard();
+
+  const [copied, setCopied] = useState(false);
+
   const {
     handleSubmit,
     handleChange,
@@ -49,7 +61,26 @@ export const InfoSection = (props: Props) => {
     validateOnChange: true,
     validateOnBlur: true,
     validateOnMount: true,
-    onSubmit: async (values) => {},
+    onSubmit: async (values) => {
+      if (!project) return;
+
+      const args = clean({
+        name: values.name !== project?.name ? values.name : null,
+        logo: values.image !== project?.logo ? values.image : null,
+      });
+
+      await updateProject({ ...args, projectId: project?.projectId })
+        .then(async (result) => {
+          setProject({ ...project, ...args });
+          toast({
+            variant: "default",
+            title: "Details updated successfully",
+          });
+        })
+        .catch((err) => {
+          toast({ variant: "destructive", title: err.message });
+        });
+    },
   });
 
   useEffect(() => {
@@ -68,20 +99,30 @@ export const InfoSection = (props: Props) => {
     return true;
   };
 
+  const handleCopy = () => {
+    if (!project) return;
+
+    setCopyValue(project?.projectId).then(() => {
+      setCopied(true);
+
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
+
   return (
     <TitleSection
       title="Information"
       subtitle="This information will be displayed to you or members of the project"
       classes={{ left: { root: "lg:w-[50%]" } }}
     >
-      <form onSubmit={handleSubmit} className="space-y-6 w-full lg:w-[80%]">
+      <form onSubmit={handleSubmit} className="space-y-6 w-full lg:w-[100%]">
         <UserImage
           value={project?.logo}
           onChange={(file) => setFieldValue("image", file)}
         />
 
         <CustomInput
-          label="Name"
+          label="Project name"
           name="name"
           type="text"
           autoComplete="name"
@@ -91,7 +132,29 @@ export const InfoSection = (props: Props) => {
           onChange={handleChange}
           onBlur={handleBlur}
           error={
-            errors.name && values.name.length > 0 ? errors.name : undefined
+            errors.name &&
+            values.name !== project?.name &&
+            values.name.length > 0
+              ? errors.name
+              : undefined
+          }
+        />
+
+        <CustomInput
+          label="Reference ID"
+          readOnly
+          value={project?.projectId}
+          disabled
+          classes={{ inputIcon: "pr-1" }}
+          endIcon={
+            <button
+              type="button"
+              onClick={() => handleCopy()}
+              className="flex items-center bg-slate-100 dark:bg-neutral-800 px-2 py-1 rounded-md gap-1"
+            >
+              {copied ? <CheckIcon size={20} /> : <Copy size={20} />}
+              {copied ? "Copied" : "Copy"}
+            </button>
           }
         />
 

@@ -15,7 +15,7 @@ export const TitleCard = (props: Props) => {
   return (
     <div
       className={cn(
-        "h-[200px] bg-slate-100/40 dark:bg-neutral-800/30 w-full flex flex-col px-10 ",
+        "h-[200px] bg-slate-100/60 dark:bg-neutral-800/30 w-full flex flex-col px-10 ",
         classes?.root
       )}
     >

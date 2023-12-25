@@ -9,33 +9,93 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useState } from "react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { addOriginToProject } from "../../services/add-origin-to-project";
+import { useProjectStore } from "@/app/(protected)/project/store/project-store";
+import { useToast } from "@/components/ui/use-toast";
+import { MoonLoader } from "react-spinners";
+import { useQueryClient } from "@tanstack/react-query";
+import { isValidUrl } from "@/utils/is-valid-url";
 
 type Props = {
   open: boolean;
   onClose: () => void;
 };
 
-function isValidUrl(str: string) {
-  try {
-    new URL(str);
-    return true;
-  } catch (err) {
-    return false;
-  }
-}
+const permissions = ["allow", "block"] as const;
 
 export const CorsOriginModel = (props: Props) => {
   const { open, onClose } = props;
 
-  const [input, setInput] = useState("");
+  const project = useProjectStore((state) => state.project!);
 
-  const disabled = isValidUrl(input);
+  const { toast } = useToast();
+
+  const queryClient = useQueryClient();
+
+  const [input, setInput] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [permission, setPermission] = useState<
+    (typeof permissions)[number] | undefined
+  >(undefined);
+
+  const disabled = () => {
+    if (
+      isValidUrl(input) &&
+      (permission === "allow" || permission === "block")
+    ) {
+      return false;
+    }
+
+    if (isLoading) return true;
+
+    return true;
+  };
+
+  const handleClose = () => {
+    setInput("");
+    setPermission(undefined);
+    onClose();
+  };
+
+  const handleSubmit = async () => {
+    setIsLoading(true);
+
+    if (!project) return;
+
+    addOriginToProject({
+      origin: input,
+      permission: permission!,
+      projectId: project?.projectId,
+    })
+      .then(async (result) => {
+        toast({
+          variant: "default",
+          title: "Added origin successfully",
+        });
+
+        await queryClient.invalidateQueries({
+          queryKey: ["project", project?.projectId],
+        });
+        handleClose();
+      })
+      .catch((err) => {
+        toast({ variant: "destructive", title: err.message });
+      })
+      .finally(() => setIsLoading(false));
+  };
 
   return (
     <Dialog
       open={open}
       onOpenChange={(value) => {
-        if (value === false) onClose();
+        if (value === false) handleClose();
       }}
     >
       <DialogContent className="sm:max-w-[525px] p-0">
@@ -48,29 +108,62 @@ export const CorsOriginModel = (props: Props) => {
             A URL in the format of protocol://hostname[:port]
           </p>
 
-          <CustomInput
-            placeholder="https://"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-          />
+          <div className="py-4 flex items-center gap-5">
+            <CustomInput
+              placeholder="https://"
+              value={input}
+              required
+              classes={{ root: "w-full" }}
+              onChange={(e) => setInput(e.target.value)}
+            />
+
+            <Select
+              value={permission}
+              onValueChange={setPermission as any}
+              required
+            >
+              <SelectTrigger className="w-[180px] !h-11 capitalize">
+                <SelectValue
+                  defaultValue="viewer"
+                  placeholder="Permissions"
+                  className="capitalize"
+                />
+              </SelectTrigger>
+              <SelectContent position="item-aligned">
+                {permissions.map((role) => (
+                  <SelectItem key={role} value={role} className="capitalize">
+                    {role}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
 
         <DialogFooter className="border-t-[1.5px] border-slate-100 dark:border-neutral-800 p-4 py-2 gap-5">
           <Button
             type="button"
-            onClick={onClose}
+            onClick={handleClose}
             className="w-full"
             variant="ghost"
           >
             Cancel
           </Button>
+
           <Button
             type="button"
             // disabled={!isPending ? disabled() : isPending}
-            disabled={!disabled}
+            disabled={disabled()}
+            onClick={handleSubmit}
             className="w-full"
           >
             Save
+            <MoonLoader
+              size={20}
+              color="white"
+              className="ml-2 text-white"
+              loading={isLoading}
+            />
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -255,7 +255,7 @@ export class ProjectsService {
 
     if (!isAdministrator) throw new UnauthorizedException('Permission denied');
 
-    const tokens = project.corsOrigins.filter((token) => token.id !== tokenId);
+    const tokens = project.tokens.filter((token) => token.id !== tokenId);
 
     await this.projectRepository.update({ projectId }, { tokens });
     return { message: 'Token Removed Successfully' };
@@ -273,6 +273,20 @@ export class ProjectsService {
     const memberIds = project.members.map((member) => member.uid);
     const users = await this.usersService.getUserByBatch(memberIds ?? []);
 
+    const key = this.configService.get('PROJECT_DATABASE_SECRET');
+    const cryptr = new Cryptr(key);
+
+    const dbConfig = project.databaseConfig;
+
+    const databaseConfig = {
+      name: cryptr.decrypt(dbConfig.name),
+      host: cryptr.decrypt(dbConfig.host),
+      dbType: dbConfig.dbType,
+      port: Number(cryptr.decrypt(dbConfig.port)),
+      username: cryptr.decrypt(dbConfig.username),
+      password: cryptr.decrypt(dbConfig.password),
+    };
+
     const members = users.map((user) => {
       const member = project.members.find((member) => member.uid === user.uid)!;
       return {
@@ -282,7 +296,7 @@ export class ProjectsService {
         updatedAt: member.updatedAt,
       };
     });
-    return clean({ ...project, members, databaseConfig: null, userIds: null });
+    return clean({ ...project, members, databaseConfig, userIds: null });
   }
 
   private decryptDatabaseConfig(databaseConfig: any) {

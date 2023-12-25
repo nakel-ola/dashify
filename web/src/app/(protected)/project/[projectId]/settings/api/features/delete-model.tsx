@@ -6,21 +6,22 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { MoonLoader } from "react-spinners";
 
 type Props = {
   open: boolean;
   onClose: () => void;
   isToken?: boolean;
-
+  isLoading: boolean;
   onDeleteClick: () => void;
 };
 export const DeleteModel = (props: Props) => {
-  const { open, onClose, onDeleteClick, isToken } = props;
+  const { open, onClose, onDeleteClick, isToken, isLoading } = props;
   return (
     <Dialog
       open={open}
       onOpenChange={(value) => {
-        if (value === false) onClose();
+        if (value === false && !isLoading) onClose();
       }}
     >
       <DialogContent className="max-w-[90%] md:max-w-[425px] p-0">
@@ -47,6 +48,7 @@ export const DeleteModel = (props: Props) => {
             onClick={onClose}
             className="w-full text-black dark:text-white hover:bg-slate-100 dark:hover:bg-neutral-800"
             variant="ghost"
+            disabled={isLoading}
           >
             Cancel
           </Button>
@@ -54,8 +56,15 @@ export const DeleteModel = (props: Props) => {
             type="button"
             className="w-full bg-red-500 hover:bg-red-500/90"
             onClick={onDeleteClick}
+            disabled={isLoading}
           >
             Delete
+            <MoonLoader
+              size={20}
+              color="white"
+              className="ml-2 text-white"
+              loading={isLoading}
+            />
           </Button>
         </DialogFooter>
       </DialogContent>

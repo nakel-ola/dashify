@@ -8,4 +8,11 @@ export class AddCorsOriginDto {
   })
   @IsString()
   origin: string;
+
+  @ApiProperty({
+    description: 'Permission either allow or block',
+    type: String,
+  })
+  @IsString()
+  permission: string;
 }

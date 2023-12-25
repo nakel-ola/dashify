@@ -1,13 +1,18 @@
-import { queryClient } from "@/lib/tanstack-query";
+import { getQueryClient } from "@/lib/tanstack-query";
 import React, { Fragment } from "react";
 import { AddCard, PaginateCard, ProjectCard } from "./features";
-import { fetchProjects } from "./services/fetch-projects";
+import axios from "@/lib/axios";
 
 type Props = {
   searchParams: {
     page?: string;
   };
 };
+type ProjectsResponse = {
+  results: Projects[];
+  totalItems: number;
+};
+
 const limit = 10;
 
 export default async function Dashboard(props: Props) {
@@ -15,11 +20,20 @@ export default async function Dashboard(props: Props) {
     searchParams: { page = "1" },
   } = props;
 
+  const queryClient = getQueryClient();
+
   const offset = limit * (Number(page) - 1);
 
   const data = await queryClient.fetchQuery({
     queryKey: ["projects"],
-    queryFn: () => fetchProjects(offset, limit),
+    queryFn: async () => {
+      "use server";
+      const url = `/projects?offset=${offset}&limit=${limit}`;
+
+      const { data } = await axios.get<ProjectsResponse>(url);
+
+      return data
+    },
   });
 
   const pageCount = Math.ceil((data?.totalItems ?? 0) / limit);

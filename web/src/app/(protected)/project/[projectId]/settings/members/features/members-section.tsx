@@ -19,155 +19,86 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  ColumnDef,
-  flexRender,
-  getCoreRowModel,
-  useReactTable,
-} from "@tanstack/react-table";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { RippleCard } from "@/components/ripple-card";
 import { InvitationModel } from "./invitation-model";
 import { useMemo, useState } from "react";
 import { MemberDeleteModel } from "./member-delete-model";
-import { cn } from "@/lib/utils";
-
-const data: Payment[] = [
-  {
-    id: "m5gr84i9",
-    name: "Olamilekan Nunu",
-    role: "administrator",
-    joined: "4d",
-    email: "nunuolamilekan@gmail.com",
-    photoUrl:
-      "https://storage.googleapis.com/dashify-b6918.appspot.com/1695293516052-min_1_90.png",
-  },
-  {
-    id: "m5gr84i553",
-    name: "Olamilekan Nunu",
-    role: "administrator",
-    joined: "4d",
-    email: "nunuolamilekan@gmail.com",
-    photoUrl:
-      "https://storage.googleapis.com/dashify-b6918.appspot.com/1695293516052-min_1_90.png",
-  },
-];
-
-type Payment = {
-  id: string;
-  name: string;
-  role: "administrator" | "editor" | "viewer" | "developer";
-  joined: string;
-  email: string;
-  photoUrl: string;
-};
+import { useProjectStore } from "@/app/(protected)/project/store/project-store";
+import { formatDistance } from "date-fns";
+import { TableCard } from "./table-card";
 
 type Props = {};
 export const MembersSection = (props: Props) => {
   const [isOpen, setIsOpen] = useState(false);
 
+  const { project } = useProjectStore();
+
+  const members = useMemo(() => project?.members ?? [], [project?.members]);
+
   const [memberId, setMemberId] = useState<string | null>(null);
 
   const handleDeleteClick = (id: string) => setMemberId(id);
 
-  const columns = useMemo<ColumnDef<Payment>[]>(
-    () => [
+  const data = members.map((member) => ({
+    id: member.id,
+    role: member.role,
+    joined: formatDistance(new Date(member.createdAt), new Date(), {
+      addSuffix: true,
+    }),
+    email: member.email,
+    photoUrl: member.photoUrl,
+    name: member.lastName + " " + member.firstName,
+  }));
+
+  const items = [
+    ...data.map(({ id, name, photoUrl, email, role, joined }) => [
       {
-        accessorKey: "id",
-        header: "Id",
-        cell: ({ row }) => (
-          <p className="text-black dark:text-white">{row.getValue("id")}</p>
-        ),
-      },
-      {
-        id: "photoUrl",
-        accessorKey: "photoUrl",
-        header: "",
-        cell: () => <div className=""></div>,
-      },
-      {
-        accessorKey: "name",
-        header: "Name",
-        cell: ({ row }) => (
+        children: (
           <div className="flex items-center gap-2">
-            <Avatar
-              fallback={row.getValue("name")}
-              className="h-[35px] w-[35px]"
-            >
-              <AvatarImage src={row.getValue("photoUrl")} />
+            <Avatar fallback={name} className="h-[35px] w-[35px]">
+              <AvatarImage src={photoUrl} />
             </Avatar>
 
             <div className="">
-              <p className="capitalize text-black dark:text-white">
-                {row.getValue("name")}
-              </p>
-              <p className="text-gray-dark dark:text-gray-light">
-                {row.getValue("email")}
-              </p>
+              <p className="capitalize text-black dark:text-white">{name}</p>
+              <p className="text-gray-dark dark:text-gray-light">{email}</p>
             </div>
           </div>
         ),
+        name: "Name",
+        type: "head" as const,
       },
       {
-        accessorKey: "email",
-        header: () => {
-          return <div className="">Email</div>;
-        },
-        cell: () => <div className=""></div>,
-      },
-      {
-        accessorKey: "role",
-        header: () => {
-          return <div className="capitalize">Role</div>;
-        },
-        cell: ({ row }) => (
-          <div className="text-black dark:text-white capitalize">
-            {row.getValue("role")}
-          </div>
+        children: (
+          <p className="text-black dark:text-white capitalize">{role}</p>
         ),
+        name: "Role",
+        type: "content" as const,
       },
       {
-        accessorKey: "joined",
-        header: () => {
-          return <div className="capitalize">joined</div>;
-        },
-        cell: ({ row }) => (
-          <div className="lowercase text-black dark:text-white">
-            {row.getValue("joined")}
-          </div>
+        children: (
+          <p className="text-black dark:text-white lowercase">{joined}</p>
         ),
+        name: "Joined",
+        type: "content" as const,
       },
       {
-        id: "actions",
-        enableHiding: false,
-        cell: ({ row }) => {
-          return (
-            <RippleCard
-              Component="button"
-              onClick={() => handleDeleteClick(row.getValue("id"))}
-              className="w-[35px] h-[35px] text-black dark:text-white bg-slate-100/50 dark:bg-slate-100/10 flex items-center justify-center transition-transform rounded-full"
-            >
-              <Trash className="text-red-500" variant="Bold" size={20} />
-            </RippleCard>
-          );
-        },
+        children: (
+          <RippleCard
+            Component="button"
+            onClick={() => handleDeleteClick(id)}
+            className="w-[35px] h-[35px] text-black dark:text-white bg-slate-100/50 dark:bg-slate-100/10 flex items-center justify-center transition-transform rounded-full"
+          >
+            <Trash className="text-red-500" variant="Bold" size={20} />
+          </RippleCard>
+        ),
+        className: "text-right !w-[80px]",
+        type: "content" as const,
       },
-    ],
-    []
-  );
+    ]),
+  ];
 
-  const table = useReactTable({
-    data,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-    state: {
-      columnVisibility: {
-        id: false,
-        email: false,
-        photoUrl: false,
-      },
-    },
-  });
   return (
     <div>
       <TitleSection
@@ -180,17 +111,18 @@ export const MembersSection = (props: Props) => {
         }}
       >
         <div className="flex flex-col lg:items-end">
-          <Button className="flex gap-2" onClick={() => setIsOpen(true)}>
+          <Button
+            className="flex gap-2 rounded-md"
+            onClick={() => setIsOpen(true)}
+          >
             <Add />
             Invite project members
           </Button>
 
           <p className="lg:text-end mt-5  text-lg">
             {" "}
-            <strong>2</strong> of 20
+            <strong>{members.length}</strong> members
           </p>
-
-          <p className="">members included in project quota</p>
         </div>
       </TitleSection>
 
@@ -216,61 +148,24 @@ export const MembersSection = (props: Props) => {
         </Select>
       </div>
 
-      <div className="rounded-md border-[1.5px] border-slate-100 dark:border-neutral-800 mt-10">
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                    </TableHead>
-                  );
-                })}
-              </TableRow>
-            ))}
-          </TableHeader>
-
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id}>
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell
-                      key={cell.id}
-                      className={cn(
-                        cell.id === "actions"
-                          ? "text-right w-fit !bg-green-500"
-                          : ""
-                      )}
-                    >
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
-                  No results.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </div>
+      <TableCard
+        head={[
+          {
+            name: "Name",
+          },
+          {
+            name: "Role",
+          },
+          {
+            name: "Joined",
+          },
+          {
+            name: "",
+            className: "text-right !w-[80px]",
+          },
+        ]}
+        data={items}
+      />
 
       <InvitationModel open={isOpen} onClose={() => setIsOpen(false)} />
 

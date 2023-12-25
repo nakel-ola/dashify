@@ -1,7 +1,4 @@
-import { formatQueries } from "@/lib/format-queries";
 import React, { Fragment } from "react";
-import { Navbar, Sidebar } from "../../features";
-import { fetchProject } from "../../services/fetch-project";
 
 type Props = {
   params: {

@@ -22,7 +22,14 @@ export const TitleSection = (props: PropsWithChildren<Props>) => {
       className={cn("flex flex-col lg:flex-row gap-10 w-full", classes?.root)}
     >
       <div className={cn("lg:w-[40%]", classes?.left?.root)}>
-        <p className={cn("text-4xl", classes?.left?.title)}>{title}</p>
+        <p
+          className={cn(
+            "text-4xl text-black dark:text-white",
+            classes?.left?.title
+          )}
+        >
+          {title}
+        </p>
         <p
           className={cn(
             "text-gray-dark dark:text-gray-light",

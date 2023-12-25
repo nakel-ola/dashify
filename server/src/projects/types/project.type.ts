@@ -35,6 +35,7 @@ export type CorsOrigin = {
 };
 
 export type Tokens = {
+  id: string;
   name: string;
   permission: 'editor' | 'viewer';
   token: string;

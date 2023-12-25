@@ -77,6 +77,9 @@ class CorsOrigin {
   origin: string;
 
   @Column({ nullable: false })
+  permission: string;
+
+  @Column({ nullable: false })
   creatorId: string;
 
   @CreateDateColumn()

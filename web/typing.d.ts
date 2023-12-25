@@ -4,8 +4,33 @@ type Projects = {
   logo: string | null;
   projectId: string;
   database: string;
-  members: UserType[];
+  members: Omit<
+    UserType & { role: "administrator" | "editor" | "viewer" | "developer" },
+    "accessToken" | "refreshToken"
+  >[];
   collections: Collection[];
+  corsOrigins: CorsOrigin[];
+  databaseConfig: DatabaseConfig;
+  tokens: Tokens[];
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+type CorsOrigin = {
+  id: string;
+  origin: string;
+  permission: "allow" | "block";
+  creatorId: string;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+type Tokens = {
+  id: string;
+  name: string;
+  permission: "editor" | "viewer";
+  token: string;
+  creatorId: string;
   createdAt: Date;
   updatedAt: Date;
 };
@@ -13,6 +38,7 @@ type Projects = {
 type DatabaseConfig = {
   host: string;
   name: string;
+  dbType: string;
   password: string;
   port: number;
   username: string;

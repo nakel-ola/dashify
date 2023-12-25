@@ -11,20 +11,20 @@ export const TabsCard = (props: Props) => {
   const [{ projectId }] = useQueries();
 
   return (
-    <div className="flex items-center gap-5 mb-2 ">
+    <div className="flex items-center gap-5 ">
       {items.map(({ href, name }, index) => (
         <div
           key={index}
           className={cn(
             "border-b-[1.5px] ",
             pathname === `/project/${projectId}${href}`
-              ? "border-slate-200 dark:border-slate-100"
+              ? "group border-slate-200 dark:border-slate-100 "
               : "border-transparent"
           )}
         >
           <button
             onClick={() => router.push(`/project/${projectId}${href}`)}
-            className="p-2 px-4 mb-2 text-black dark:text-white hover:bg-slate-100 hover:dark:bg-neutral-800 rounded-lg"
+            className="p-2 px-4 mb-2 text-black dark:text-white hover:bg-slate-200/60 hover:dark:bg-neutral-800 rounded-lg group "
           >
             {name}
           </button>

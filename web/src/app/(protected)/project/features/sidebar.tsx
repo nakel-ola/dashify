@@ -12,24 +12,21 @@ import { useOnClickOutside, useWindowSize } from "usehooks-ts";
 import { LogoCard } from "./logo-card";
 import { RippleCard } from "@/components/ripple-card";
 import { X } from "lucide-react";
+import { useProjectStore } from "../store/project-store";
 
-type Props = {
-  name: string;
-  logo: string | null;
-  items: { name: string; icon: IconNames }[];
-};
+type Props = {};
 export const Sidebar = (props: Props) => {
   return (
     <Fragment>
-      <MobileWrapper {...props} />
+      <MobileWrapper />
       <div className="col-span-2 border-r-[1.5px] border-slate-100 dark:border-neutral-800 h-full overflow-y-scroll hidden lg:block">
-        <Content {...props} />
+        <Content />
       </div>
     </Fragment>
   );
 };
 
-const MobileWrapper = (props: Props) => {
+const MobileWrapper = () => {
   const ref = useRef<HTMLDivElement>(null);
 
   const { setIsOpen, isOpen } = useSidebarStore();
@@ -65,7 +62,7 @@ const MobileWrapper = (props: Props) => {
             animate={{ marginLeft: "0%" }}
             exit={{ marginLeft: "-70%" }}
           >
-            <Content {...props} />
+            <Content />
           </motion.div>
         </motion.div>
       ) : null}
@@ -73,19 +70,24 @@ const MobileWrapper = (props: Props) => {
   );
 };
 
-const Content = (props: Props) => {
-  const { items, logo, name } = props;
-
+const Content = () => {
   const [{ projectId }] = useQueries();
 
   const { setIsOpen } = useSidebarStore();
+
+  const project = useProjectStore((store) => store.project!);
+
+  const items = project.collections.map((co) => ({
+    icon: co.icon as IconNames,
+    name: co.name,
+  }));
 
   return (
     <div className="flex flex-col bg-white dark:bg-dark h-full">
       <div className="lg:hidden m-2 p-2 flex items-center justify-between">
         <LogoCard
-          logo={logo}
-          name={name}
+          logo={project.logo}
+          name={project.name}
           projectId={projectId}
           showMenuIcon={false}
         />
