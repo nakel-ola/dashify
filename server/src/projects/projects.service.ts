@@ -1,4 +1,5 @@
 import {
+  ConflictException,
   Injectable,
   NotFoundException,
   UnauthorizedException,
@@ -19,11 +20,18 @@ import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { Project } from './entities';
 import { Collection } from './types/collection.type';
-import { Member, ProjectType } from './types/project.type';
-import { AddCorsOriginDto, AddTokenDto } from './dto';
+import { InvitationType, Member, ProjectType } from './types/project.type';
+import {
+  AcceptMemberInviteDto,
+  AddCorsOriginDto,
+  AddTokenDto,
+  InviteMemberDto,
+} from './dto';
 import { v4 } from 'uuid';
-import { nanoid } from '../common/nanoid';
+import { customAlphabet, nanoid } from '../common/nanoid';
+import { MailerService } from '@nestjs-modules/mailer';
 // import { nanoid } from 'nanoid';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class ProjectsService {
@@ -31,6 +39,7 @@ export class ProjectsService {
     @InjectRepository(Project) private projectRepository: Repository<Project>,
     private configService: ConfigService,
     private usersService: UsersService,
+    private readonly mailerService: MailerService,
   ) {}
 
   async create(createProjectDto: CreateProjectDto, user: User) {
@@ -261,6 +270,165 @@ export class ProjectsService {
     return { message: 'Token Removed Successfully' };
   }
 
+  async inviteMember(
+    projectId: string,
+    user: User,
+    inviteMemberDto: InviteMemberDto[],
+  ) {
+    const project = await this.findOne(projectId, user.uid);
+
+    const isAdministrator = this.isMemberAdministrator(
+      project.members,
+      user.uid,
+    );
+
+    if (!isAdministrator) throw new UnauthorizedException('Permission denied');
+
+    const filteredUsers = await this.filteredMemberInvite(
+      project.invitations,
+      inviteMemberDto,
+    );
+
+    const returnMsg = { message: 'Invitation sent Successfully' };
+
+    if (filteredUsers.length === 0) return returnMsg;
+
+    const name = user.lastName + ' ' + user.firstName;
+
+    for (let i = 0; i < filteredUsers.length; i++) {
+      const filteredUser = filteredUsers[i];
+
+      await this.mailerService.sendMail({
+        to: filteredUser.email,
+        subject: `${name} has invited you to ${project.name} on Dashify`,
+        template: 'project-member-invite',
+        context: {
+          name,
+          projectName: project.name,
+          link:
+            this.getClientURL()[0] +
+            `/project/${projectId}/invite/${filteredUser.code}`,
+        },
+      });
+    }
+
+    await this.projectRepository.update(
+      { projectId },
+      {
+        invitations: [
+          ...project.invitations,
+          ...filteredUsers.map((filteredUser) =>
+            clean({ ...filteredUser, code: null }),
+          ),
+        ],
+      },
+    );
+    return returnMsg;
+  }
+
+  async acceptMemberInvite(
+    projectId: string,
+    user: User,
+    data: AcceptMemberInviteDto,
+  ) {
+    const { token } = data;
+
+    const project = await this.projectRepository.findOne({
+      where: { projectId },
+    });
+
+    if (!project)
+      throw new NotFoundException(`Project with id ${projectId} not found`);
+
+    const savedToken = project.invitations.find(
+      (invitation) => invitation.email === user.email,
+    );
+
+    if (!savedToken) throw new NotFoundException('TOKEN_NOT_FOUND');
+
+    const isTokenAMatch = await bcrypt.compare(token, savedToken.token);
+
+    if (!isTokenAMatch) throw new ConflictException("Can't validate token");
+
+    const invitations = project.invitations.filter(
+      (invitation) => invitation.id !== savedToken.id,
+    );
+
+    const members: Member[] = [
+      ...project.members,
+      { uid: user.uid, role: savedToken.role },
+    ];
+
+    await this.projectRepository.update(
+      { projectId },
+      {
+        invitations,
+        members,
+      },
+    );
+
+    return { message: 'Invitation accepted successfull' };
+  }
+
+  async invitedMembers(projectId: string, uid: string) {
+    const project = await this.findOne(projectId, uid);
+
+    return project.invitations;
+  }
+
+  async removeInviteMember(projectId: string, uid: string, inviteId: string) {
+    const project = await this.findOne(projectId, uid);
+
+    const isAdministrator = this.isMemberAdministrator(project.members, uid);
+
+    if (!isAdministrator) throw new UnauthorizedException('Permission denied');
+
+    const invitations = project.invitations.filter(
+      (invitation) => invitation.id !== inviteId,
+    );
+
+    await this.projectRepository.update({ projectId }, { invitations });
+    return { message: 'User Removed Successfully' };
+  }
+
+  private async filteredMemberInvite(
+    prev: InvitationType[],
+    next: InviteMemberDto[],
+  ) {
+    const arr: (InvitationType & { code: string })[] = [];
+
+    const date = new Date();
+
+    for (const user of next) {
+      // Check if the user is already in the 'prev' array
+      const userExists = prev.some((prevUser) => prevUser.email === user.email);
+
+      // If the user does not exist in the 'prev' array, add it
+      if (!userExists) {
+        const nanoid = customAlphabet(
+          '1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz',
+          40,
+        );
+
+        const code = nanoid();
+
+        const salt = await bcrypt.genSalt();
+
+        const token = await bcrypt.hash(code, salt);
+        arr.push({
+          id: v4(),
+          ...user,
+          token,
+          code,
+          createdAt: date,
+          updatedAt: date,
+        });
+      }
+    }
+
+    return arr;
+  }
+
   private isMemberAdministrator(members: Member[], uid: string) {
     const isAdministrator = !!members.find(
       (member) => member.uid === uid && member.role === 'administrator',
@@ -311,5 +479,13 @@ export class ProjectsService {
       username: cryptr.decrypt(databaseConfig.username),
       password: cryptr.decrypt(databaseConfig.password),
     };
+  }
+
+  private getClientURL() {
+    const origins = this.configService.get('ALLOWED_ORIGINS');
+
+    const arr = JSON.parse(origins);
+
+    return arr[0];
   }
 }

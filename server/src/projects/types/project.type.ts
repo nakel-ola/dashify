@@ -44,6 +44,15 @@ export type Tokens = {
   updatedAt: Date;
 };
 
+export type InvitationType = {
+  id: string;
+  email: string;
+  role: 'administrator' | 'editor' | 'viewer';
+  token: string;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
 export type ProjectType = {
   id: string;
   projectId: string;
@@ -55,6 +64,7 @@ export type ProjectType = {
   databaseConfig: DatabaseConfig;
   collections: Collection[];
   tokens: Tokens[];
+  invitations: InvitationType[];
   createdAt: Date;
   updatedAt: Date;
 };

@@ -21,9 +21,11 @@ import {
 import { SkipThrottle } from '@nestjs/throttler';
 import { AuthGuard } from '../auth/guard/auth.guard';
 import {
+  AcceptMemberInviteDto,
   AddCorsOriginDto,
   AddTokenDto,
   CreateProjectDto,
+  InviteMemberDto,
   UpdateProjectDto,
 } from './dto';
 import { ProjectsService } from './projects.service';
@@ -182,7 +184,62 @@ export class ProjectsController {
     return this.projectsService.removeToken(projectId, req.user.uid, tokenId);
   }
 
-  // TODO: Invite project members
+  @ApiOperation({ summary: 'Invite user' })
+  @Post(':projectId/invite-member')
+  @ApiParam({ name: 'projectId', example: 'finance-tracker-78493' })
+  inviteMember(
+    @Request() req,
+    @Param('projectId') projectId: string,
+    @Body() inviteMemberDto: InviteMemberDto[],
+  ) {
+    return this.projectsService.inviteMember(
+      projectId,
+      req.user,
+      inviteMemberDto,
+    );
+  }
+
+  @ApiOperation({ summary: 'Accept invite' })
+  @Post(':projectId/accept-member-invite')
+  @ApiParam({ name: 'projectId', example: 'finance-tracker-78493' })
+  acceptMemberInvite(
+    @Request() req,
+    @Param('projectId') projectId: string,
+    @Body() acceptMemberInviteDto: AcceptMemberInviteDto,
+  ) {
+    return this.projectsService.acceptMemberInvite(
+      projectId,
+      req.user,
+      acceptMemberInviteDto,
+    );
+  }
+
+  @ApiOperation({ summary: 'Get all invited members' })
+  @Get(':projectId/invited-members')
+  @ApiParam({ name: 'projectId', example: 'finance-tracker-78493' })
+  invitedMembers(@Request() req, @Param('projectId') projectId: string) {
+    return this.projectsService.invitedMembers(projectId, req.user.uid);
+  }
 
   // TODO: Delete member from project
+  @ApiOperation({
+    summary: 'Remove an invited member from the project invitation',
+  })
+  @Delete(':projectId/remove-invite-member/:inviteId')
+  @ApiParam({ name: 'projectId', example: 'finance-tracker-78493' })
+  @ApiParam({
+    name: 'invite id',
+    example: 'd40e80a1-aae5-59d7-9841-2f58794ea805',
+  })
+  removeMember(
+    @Request() req,
+    @Param('projectId') projectId: string,
+    @Param('inviteId') inviteId: string,
+  ) {
+    return this.projectsService.removeInviteMember(
+      projectId,
+      req.user.uid,
+      inviteId,
+    );
+  }
 }

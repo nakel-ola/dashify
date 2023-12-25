@@ -159,7 +159,7 @@ export class AuthService {
       template: 'welcome',
       context: {
         firstName: user.firstName,
-        link: this.configService.get('ALLOWED_ORIGINS')[0] + `/verify/${code}`,
+        link: this.getClientURL()[0] + `/verify/${code}`,
       },
     });
 

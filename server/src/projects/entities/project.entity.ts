@@ -125,6 +125,27 @@ class Member {
   updatedAt: Date;
 }
 
+@Entity()
+class Invitation {
+  @ObjectIdColumn()
+  id!: ObjectId;
+
+  @Column({ unique: true })
+  email: string;
+
+  @Column({ nullable: false })
+  token: string;
+
+  @Column({ type: 'enum', enum: MemberRole })
+  role: 'administrator' | 'editor' | 'viewer';
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
+}
+
 @Entity('projects')
 export class Project {
   @ObjectIdColumn()
@@ -141,6 +162,9 @@ export class Project {
 
   @Column({ nullable: false })
   members: Member[];
+
+  @Column({ nullable: false })
+  invitations: Invitation[];
 
   @Column({ nullable: false })
   corsOrigins: CorsOrigin[];
