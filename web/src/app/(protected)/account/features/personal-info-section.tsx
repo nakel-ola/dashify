@@ -122,7 +122,9 @@ export const PersonalInfoSection = (props: Props) => {
             onChange={handleChange}
             onBlur={handleBlur}
             error={
-              errors.firstName && values.firstName.length > 0
+              errors.firstName &&
+              values.firstName.length > 0 &&
+              user?.firstName !== values.firstName
                 ? errors.firstName
                 : undefined
             }
@@ -138,7 +140,9 @@ export const PersonalInfoSection = (props: Props) => {
             onChange={handleChange}
             onBlur={handleBlur}
             error={
-              errors.lastName && values.lastName.length > 0
+              errors.lastName &&
+              values.lastName.length > 0 &&
+              user?.lastName !== values.lastName
                 ? errors.lastName
                 : undefined
             }
