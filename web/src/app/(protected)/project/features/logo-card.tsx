@@ -28,6 +28,7 @@ export const LogoCard = (props: Props) => {
           <HambergerMenu className="text-project-text-color dark:text-project-text-color-dark" />
         </RippleCard>
       ) : null}
+
       <Link
         href={`/project/${projectId}/overview`}
         className="flex items-center cursor-pointer"

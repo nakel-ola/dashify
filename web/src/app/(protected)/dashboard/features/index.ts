@@ -3,3 +3,4 @@ export * from "./header";
 export * from "./paginate-card";
 export * from "./project-card";
 export * from "./theme-button";
+export * from "./projects-list";

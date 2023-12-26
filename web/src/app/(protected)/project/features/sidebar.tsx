@@ -9,13 +9,13 @@ import { capitalizeFirstLetter } from "@/lib/capitalize-first-letter";
 import { Fragment, useEffect, useRef } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useOnClickOutside, useWindowSize } from "usehooks-ts";
-import { LogoCard } from "./logo-card";
 import { RippleCard } from "@/components/ripple-card";
 import { X } from "lucide-react";
 import { useProjectStore } from "../store/project-store";
+import Link from "next/link";
+import Image from "next/image";
 
-type Props = {};
-export const Sidebar = (props: Props) => {
+export const Sidebar = () => {
   return (
     <Fragment>
       <MobileWrapper />
@@ -85,12 +85,24 @@ const Content = () => {
   return (
     <div className="flex flex-col bg-white dark:bg-dark h-full">
       <div className="lg:hidden m-2 p-2 flex items-center justify-between">
-        <LogoCard
-          logo={project.logo}
-          name={project.name}
-          projectId={projectId}
-          showMenuIcon={false}
-        />
+        <Link
+          href={`/project/${projectId}/overview`}
+          className="flex items-center cursor-pointer"
+        >
+          {project.logo ? (
+            <Image
+              src={project.logo}
+              width={32}
+              height={32}
+              alt="Dashify logo"
+              className="h-8 w-auto"
+            />
+          ) : null}
+
+          <p className="text-xl ml-2 font-black text-black dark:text-white">
+            {capitalizeFirstLetter(project.name)}
+          </p>
+        </Link>
 
         <RippleCard
           onClick={() => setIsOpen(false)}
