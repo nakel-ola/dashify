@@ -1,5 +1,6 @@
 "use client";
-import { signOut, useSession } from "next-auth/react";
+
+import { useSession } from "next-auth/react";
 import { TitleSection } from "./title-section";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -9,6 +10,7 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Warning2 } from "iconsax-react";
 import { deleteAccount } from "../services/delete-account";
 import { useToast } from "@/components/ui/use-toast";
+import { useSignOut } from "@/hooks/use-sign-out";
 
 type Props = {};
 export const DeleteAccountSection = (props: Props) => {
@@ -18,6 +20,8 @@ export const DeleteAccountSection = (props: Props) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const { toast } = useToast();
+
+  const signOut = useSignOut();
 
   const user = data?.user;
 

@@ -26,7 +26,16 @@ const LoginSchema = Yup.object().shape({
     .required("Password is required"),
 });
 
-export default function Login() {
+type Props = {
+  params: {};
+  searchParams: { callbackUrl: string };
+};
+
+export default function Login(props: Props) {
+  const {
+    searchParams: { callbackUrl },
+  } = props;
+
   const [isVisible, setIsVisible] = useState(false);
 
   const { toast } = useToast();
@@ -54,7 +63,8 @@ export default function Login() {
         ({ ok, error }: any) => {
           if (ok) {
             toast({ variant: "default", title: "Successfully logged in" });
-            router.replace("/dashboard");
+
+            router.replace(callbackUrl ?? "/dashboard");
           } else {
             toast({
               variant: "destructive",
@@ -102,7 +112,11 @@ export default function Login() {
             labelRight={
               <div className="text-sm">
                 <Link
-                  href="/auth/reset-password"
+                  href={
+                    callbackUrl
+                      ? `/auth/reset-password?callbackUrl=${callbackUrl}`
+                      : "/auth/reset-password"
+                  }
                   className="font-semibold text-indigo-600 hover:text-apple-400"
                 >
                   Forgot password?

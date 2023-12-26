@@ -2,142 +2,103 @@
 
 import { TitleSection } from "@/app/(protected)/account/features/title-section";
 import { Trash } from "iconsax-react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  ColumnDef,
-  flexRender,
-  getCoreRowModel,
-  useReactTable,
-} from "@tanstack/react-table";
-import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { RippleCard } from "@/components/ripple-card";
 import { useMemo, useState } from "react";
 import { MemberDeleteModel } from "./member-delete-model";
-
-const data: Payment[] = [
-  {
-    id: "m5gr84i9",
-    name: "Olamilekan Nunu",
-    role: "administrator",
-    joined: "4d",
-    email: "nunuolamilekan@gmail.com",
-    photoUrl:
-      "https://storage.googleapis.com/dashify-b6918.appspot.com/1695293516052-min_1_90.png",
-  },
-  {
-    id: "m5gr84i553",
-    name: "Olamilekan Nunu",
-    role: "administrator",
-    joined: "4d",
-    email: "nunuolamilekan@gmail.com",
-    photoUrl:
-      "https://storage.googleapis.com/dashify-b6918.appspot.com/1695293516052-min_1_90.png",
-  },
-];
-
-type Payment = {
-  id: string;
-  name: string;
-  role: "administrator" | "editor" | "viewer" | "developer";
-  joined: string;
-  email: string;
-  photoUrl: string;
-};
+import { useProjectStore } from "@/app/(protected)/project/store/project-store";
+import { formatDistance } from "date-fns";
+import { TableCard } from "./table-card";
+import { useQueryClient } from "@tanstack/react-query";
+import { deleteInviteMember } from "../../services/delete-invite-member";
+import { useToast } from "@/components/ui/use-toast";
 
 export const InvitationsSection = () => {
-  const [userId, setUserId] = useState<string | null>(null);
+  const project = useProjectStore((state) => state.project!);
 
-  const handleDeleteClick = (id: string) => setUserId(id);
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
 
-  const columns = useMemo<ColumnDef<Payment>[]>(
-    () => [
-      {
-        accessorKey: "id",
-        header: "Id",
-        cell: ({ row }) => (
-          <p className="text-black dark:text-white">{row.getValue("id")}</p>
-        ),
-      },
-      {
-        accessorKey: "email",
-        header: "Email",
-        cell: ({ row }) => (
-          <p className="text-black dark:text-white">{row.getValue("email")}</p>
-        ),
-      },
-      {
-        accessorKey: "role",
-        header: () => {
-          return <div className="capitalize">Role</div>;
-        },
-        cell: ({ row }) => (
-          <div className="text-black dark:text-white capitalize">
-            {row.getValue("role")}
-          </div>
-        ),
-      },
-      {
-        id: "photoUrl",
-        accessorKey: "photoUrl",
-        header: "Invited",
-        cell: ({ row }) => (
-          <div className="flex items-center gap-2">
-            <Avatar
-              fallback={row.getValue("name")}
-              className="h-[30px] w-[30px]"
-            >
-              <AvatarImage src={row.getValue("photoUrl")} />
-            </Avatar>
+  const [inviteId, setInviteId] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
-            <p className="text-black dark:text-white">
-              {row.getValue("joined")}
-            </p>
-          </div>
-        ),
-      },
-      {
-        accessorKey: "joined",
-        header: () => {
-          return <div className="capitalize">joined</div>;
-        },
-        cell: ({ row }) => (
-          <div className="lowercase text-black dark:text-white">
-            {row.getValue("joined")}
-          </div>
-        ),
-      },
-      {
-        id: "actions",
-        enableHiding: false,
-        cell: ({ row }) => {
-          return (
-            <RippleCard
-              Component="button"
-              onClick={() => handleDeleteClick(row.getValue("id"))}
-              className="w-[35px] h-[35px] text-black dark:text-white bg-slate-100/0 dark:bg-slate-100/10 flex items-center justify-center transition-transform rounded-full"
-            >
-              <Trash className="text-red-500" variant="Bold" size={20} />
-            </RippleCard>
-          );
-        },
-      },
-    ],
-    []
+  const handleDeleteClick = (id: string) => setInviteId(id);
+
+  const invitations = useMemo(
+    () => project?.invitations ?? [],
+    [project?.invitations]
   );
 
-  const table = useReactTable({
-    data,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-    state: { columnVisibility: { id: false, joined: false } },
-  });
+  const data = invitations.map((invitation) => ({
+    id: invitation.id,
+    role: invitation.role,
+    invitedDate: formatDistance(new Date(invitation.createdAt), new Date(), {
+      addSuffix: true,
+    }),
+    email: invitation.email,
+  }));
+
+  const items = [
+    ...data.map(({ email, id, invitedDate, role }) => [
+      {
+        children: <p className="text-black dark:text-white">{email}</p>,
+        name: "Email",
+        type: "head" as const,
+      },
+      {
+        children: (
+          <p className="text-black dark:text-white capitalize">{role}</p>
+        ),
+        name: "Role",
+        type: "content" as const,
+      },
+      {
+        children: (
+          <p className="text-black dark:text-white lowercase">{invitedDate}</p>
+        ),
+        name: "Invited",
+        type: "content" as const,
+      },
+      {
+        children: (
+          <RippleCard
+            Component="button"
+            onClick={() => handleDeleteClick(id)}
+            className="w-[35px] h-[35px] text-black dark:text-white bg-slate-100/50 dark:bg-slate-100/10 flex items-center justify-center transition-transform rounded-full"
+          >
+            <Trash className="text-red-500" variant="Bold" size={20} />
+          </RippleCard>
+        ),
+        className: "text-right !w-[80px]",
+        type: "content" as const,
+      },
+    ]),
+  ];
+
+  const onDeleteClick = async () => {
+    if (!project?.projectId || !inviteId) return;
+
+    setIsLoading(true);
+
+    deleteInviteMember({
+      inviteId,
+      projectId: project.projectId,
+    })
+      .then(async () => {
+        await queryClient.invalidateQueries({
+          queryKey: ["project", project?.projectId],
+        });
+        setInviteId(null);
+
+        toast({
+          variant: "default",
+          title: "Revoke invite successfully",
+        });
+      })
+      .catch((err) => {
+        toast({ variant: "destructive", title: err.message });
+      })
+      .finally(() => setIsLoading(false));
+  };
 
   return (
     <div>
@@ -151,61 +112,32 @@ export const InvitationsSection = () => {
         }}
       />
 
-      <div className="rounded-md border-[1.5px] border-slate-100 dark:border-neutral-800 mt-10">
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                    </TableHead>
-                  );
-                })}
-              </TableRow>
-            ))}
-          </TableHeader>
-
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id}>
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
-                  No results.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </div>
+      <TableCard
+        head={[
+          {
+            name: "Email",
+          },
+          {
+            name: "Role",
+          },
+          {
+            name: "Invited",
+          },
+          {
+            name: "",
+            className: "text-right !w-[80px]",
+          },
+        ]}
+        data={items}
+      />
 
       <MemberDeleteModel
-        open={!!userId}
-        user={userId ? data.find((value) => value.id === userId)! : null}
+        open={!!inviteId}
+        user={inviteId ? data.find((value) => value.id === inviteId)! : null}
         isInvitation
-        onClose={() => setUserId(null)}
-        onDeleteClick={() => {}}
+        onClose={() => setInviteId(null)}
+        onDeleteClick={onDeleteClick}
+        isLoading={isLoading}
       />
     </div>
   );

@@ -73,9 +73,15 @@ export const TableCard = (props: Props) => {
       </div>
 
       <div className="block md:hidden space-y-5">
-        {data.map((value, index) => (
-          <CollapsibleCard key={index} items={value} />
-        ))}
+        {data.length ? (
+          data.map((value, index) => (
+            <CollapsibleCard key={index} items={value} />
+          ))
+        ) : (
+          <div className="h-10 text-center">
+            <p className="">No results.</p>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -91,6 +91,8 @@ export const TokensModel = (props: Props) => {
   };
 
   const handleClose = () => {
+    if (isLoading) return;
+
     setName("");
     setToken(null);
     setPermission(undefined);
@@ -126,11 +128,16 @@ export const TokensModel = (props: Props) => {
               placeholder='"Employee import", "Website preview" or "PDF generator".'
               value={name}
               required
+              disabled={isLoading}
               classes={{ root: "w-full" }}
               onChange={(e) => setName(e.target.value)}
             />
 
-            <Select value={permission} onValueChange={setPermission as any}>
+            <Select
+              value={permission}
+              onValueChange={setPermission as any}
+              disabled={isLoading}
+            >
               <SelectTrigger className="w-[180px] !h-11 capitalize mt-8">
                 <SelectValue
                   defaultValue="viewer"
@@ -173,6 +180,7 @@ export const TokensModel = (props: Props) => {
               <Button
                 type="button"
                 onClick={handleClose}
+                disabled={isLoading}
                 className="w-full"
                 variant="ghost"
               >

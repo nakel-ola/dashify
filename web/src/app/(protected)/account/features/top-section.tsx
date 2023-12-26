@@ -1,11 +1,13 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { signOut, useSession } from "next-auth/react";
+import { useSignOut } from "@/hooks/use-sign-out";
+import { useSession } from "next-auth/react";
 
 type Props = {};
 export const TopSection = (props: Props) => {
   const { data } = useSession();
+  const signOut = useSignOut();
   const user = data?.user;
   return (
     <div className="bg-black h-[222px] -mt-[72px] pt-[50px] lg:pt-[72px] bg-[size:_75px_75px] bg-[image:_linear-gradient(to_right,_#262626_1px,_transparent_1px),_linear-gradient(to_bottom,_#262626_1px,_transparent_1px)]">

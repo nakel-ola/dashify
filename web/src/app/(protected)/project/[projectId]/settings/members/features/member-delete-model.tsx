@@ -8,22 +8,36 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { MoonLoader } from "react-spinners";
 
-type Props = {
+type IsNotInvite = BaseProps & {
+  isInvitation: false;
   user: {
     email: string;
     name: string;
     photoUrl: string;
     role: string;
   } | null;
-  open: boolean;
-  onClose: () => void;
-  isInvitation?: boolean;
+};
+type IsInvite = BaseProps & {
+  isInvitation: true;
+  user: {
+    email: string;
+    role: string;
+  } | null;
+};
 
+type BaseProps = {
+  open: boolean;
+  isLoading: boolean;
+  onClose: () => void;
   onDeleteClick: () => void;
 };
+
+type Props = IsNotInvite | IsInvite;
+
 export const MemberDeleteModel = (props: Props) => {
-  const { open, onClose, isInvitation = false, user, onDeleteClick } = props;
+  const { open, onClose, isInvitation, user, onDeleteClick, isLoading } = props;
 
   const { project } = useProjectStore();
 
@@ -31,7 +45,7 @@ export const MemberDeleteModel = (props: Props) => {
     <Dialog
       open={open}
       onOpenChange={(value) => {
-        if (value === false) onClose();
+        if (value === false && !isLoading) onClose();
       }}
     >
       <DialogContent className="sm:max-w-[425px] p-0">
@@ -68,15 +82,23 @@ export const MemberDeleteModel = (props: Props) => {
             onClick={onClose}
             className="w-full text-black dark:text-white hover:bg-slate-100 dark:hover:bg-neutral-800"
             variant="ghost"
+            disabled={isLoading}
           >
             Cancel
           </Button>
           <Button
             type="button"
             onClick={onDeleteClick}
+            disabled={isLoading}
             className="w-full bg-red-500 hover:bg-red-500/90"
           >
             Delete
+            <MoonLoader
+              size={20}
+              color="white"
+              className="ml-2 text-white"
+              loading={isLoading}
+            />
           </Button>
         </DialogFooter>
       </DialogContent>

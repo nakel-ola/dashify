@@ -1,3 +1,4 @@
+"use client";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -17,8 +18,11 @@ import CustomInput from "@/components/custom-input";
 import { Add, Trash } from "iconsax-react";
 import { RippleCard } from "@/components/ripple-card";
 import { useState } from "react";
-import { useMutation } from "@tanstack/react-query";
-import axios from "@/lib/axios";
+import { useQueryClient } from "@tanstack/react-query";
+import { useProjectStore } from "@/app/(protected)/project/store/project-store";
+import { useToast } from "@/components/ui/use-toast";
+import { inviteUser } from "../../services/invite-user";
+import { MoonLoader } from "react-spinners";
 
 type Item = {
   email: string;
@@ -40,12 +44,13 @@ export const InvitationModel = (props: Props) => {
   const { open, onClose } = props;
 
   const [items, setItems] = useState<Item[]>([{ ...defaultItem }]);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const { isPending } = useMutation({
-    mutationFn: (newTodo) => {
-      return axios.post("/todos", newTodo);
-    },
-  });
+  const project = useProjectStore((state) => state.project!);
+
+  const { toast } = useToast();
+
+  const queryClient = useQueryClient();
 
   const handleChange = (index: number, value: string) => {
     const newItems = [...items];
@@ -62,6 +67,8 @@ export const InvitationModel = (props: Props) => {
   };
 
   const handleRemove = (index: number) => {
+    if (isLoading) return;
+
     const newItems = [...items];
 
     if (items.length === 1) return;
@@ -77,14 +84,47 @@ export const InvitationModel = (props: Props) => {
 
     if (values.length > 0) return true;
 
+    if (isLoading) return true;
+
     return false;
+  };
+
+  const handleClose = () => {
+    setItems([{ ...defaultItem }]);
+    onClose();
+  };
+
+  const handleSubmit = async () => {
+    setIsLoading(true);
+
+    if (!project) return;
+
+    inviteUser({
+      projectId: project.projectId,
+      users: items,
+    })
+      .then(async (result) => {
+        toast({
+          variant: "default",
+          title: "Invitations sent successfully",
+        });
+
+        await queryClient.invalidateQueries({
+          queryKey: ["project", project?.projectId],
+        });
+        handleClose();
+      })
+      .catch((err) => {
+        toast({ variant: "destructive", title: err.message });
+      })
+      .finally(() => setIsLoading(false));
   };
 
   return (
     <Dialog
       open={open}
       onOpenChange={(value) => {
-        if (value === false) onClose();
+        if (value === false && !isLoading) handleClose();
       }}
     >
       <DialogContent className="sm:max-w-[525px] p-0">
@@ -100,6 +140,7 @@ export const InvitationModel = (props: Props) => {
                 value={item.email}
                 type="email"
                 autoComplete="email"
+                disabled={isLoading}
                 required
                 onChange={(e) => handleChange(index, e.target.value)}
                 classes={{ root: "w-full" }}
@@ -108,6 +149,7 @@ export const InvitationModel = (props: Props) => {
               <Select
                 value={item.role}
                 onValueChange={(value) => handleRoleChange(index, value)}
+                disabled={isLoading}
               >
                 <SelectTrigger className="w-[180px] !h-11 capitalize">
                   <SelectValue
@@ -142,7 +184,9 @@ export const InvitationModel = (props: Props) => {
               <Button
                 variant="ghost"
                 className="w-full hover:scale-100 rounded-lg border-[1.5px] border-slate-100 dark:border-neutral-800 h-10"
-                onClick={() => setItems([...items, { ...defaultItem }])}
+                onClick={() =>
+                  !isLoading && setItems([...items, { ...defaultItem }])
+                }
               >
                 <Add /> Add more
               </Button>
@@ -154,11 +198,18 @@ export const InvitationModel = (props: Props) => {
 
         <DialogFooter className="border-t-[1.5px] border-slate-100 dark:border-neutral-800 p-4 py-2">
           <Button
-            type="submit"
-            disabled={!isPending ? disabled() : isPending}
+            type="button"
+            disabled={disabled()}
             className="w-full"
+            onClick={handleSubmit}
           >
             Send invites
+            <MoonLoader
+              size={20}
+              color="white"
+              className="ml-2 text-white"
+              loading={isLoading}
+            />
           </Button>
         </DialogFooter>
       </DialogContent>

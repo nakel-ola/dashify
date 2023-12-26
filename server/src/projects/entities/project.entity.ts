@@ -139,6 +139,9 @@ class Invitation {
   @Column({ type: 'enum', enum: MemberRole })
   role: 'administrator' | 'editor' | 'viewer';
 
+  @Column({ nullable: false })
+  creatorId: string;
+
   @CreateDateColumn()
   createdAt: Date;
 

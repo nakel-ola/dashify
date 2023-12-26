@@ -12,6 +12,16 @@ type Projects = {
   corsOrigins: CorsOrigin[];
   databaseConfig: DatabaseConfig;
   tokens: Tokens[];
+  invitations: InvitationType[];
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+type InvitationType = {
+  id: string;
+  email: string;
+  role: "administrator" | "editor" | "viewer";
+  token: string;
   createdAt: Date;
   updatedAt: Date;
 };

@@ -59,6 +59,8 @@ export const CorsOriginModel = (props: Props) => {
   };
 
   const handleClose = () => {
+    if (isLoading) return;
+
     setInput("");
     setPermission(undefined);
     onClose();
@@ -112,6 +114,7 @@ export const CorsOriginModel = (props: Props) => {
             <CustomInput
               placeholder="https://"
               value={input}
+              disabled={isLoading}
               required
               classes={{ root: "w-full" }}
               onChange={(e) => setInput(e.target.value)}
@@ -121,6 +124,7 @@ export const CorsOriginModel = (props: Props) => {
               value={permission}
               onValueChange={setPermission as any}
               required
+              disabled={isLoading}
             >
               <SelectTrigger className="w-[180px] !h-11 capitalize">
                 <SelectValue
@@ -144,6 +148,7 @@ export const CorsOriginModel = (props: Props) => {
           <Button
             type="button"
             onClick={handleClose}
+            disabled={isLoading}
             className="w-full"
             variant="ghost"
           >
@@ -152,7 +157,6 @@ export const CorsOriginModel = (props: Props) => {
 
           <Button
             type="button"
-            // disabled={!isPending ? disabled() : isPending}
             disabled={disabled()}
             onClick={handleSubmit}
             className="w-full"

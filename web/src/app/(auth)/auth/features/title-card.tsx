@@ -1,11 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import React, { Fragment } from "react";
 
 export const TitleCard = () => {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
 
   const item = items.find((item) => pathname.startsWith(item.id));
 
@@ -23,7 +24,13 @@ export const TitleCard = () => {
         {subtitle}{" "}
         {subtitleLink ? (
           <Link
-            href={subtitleLink.href}
+            href={
+              searchParams.has("callbackUrl")
+                ? `${subtitleLink.href}?callbackUrl=${searchParams.get(
+                    "callbackUrl"
+                  )}`
+                : subtitleLink.href
+            }
             className="font-semibold leading-6 text-indigo-600 hover:text-apple-400"
           >
             {subtitleLink.text}

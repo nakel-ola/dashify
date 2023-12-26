@@ -15,7 +15,9 @@ export const withAuthorization: MiddlewareFactory = (next) => {
     if (!token || !token.accessToken) {
       // redirect if user is not authenticated and is in a protected route
       if (auth.protectedRoutes.some((path) => pathname.startsWith(path))) {
-        return NextResponse.redirect(new URL("/", request.url));
+        return NextResponse.redirect(
+          new URL(`/auth/login?callbackUrl=${request.url}`, request.url)
+        );
       }
     }
 

@@ -29,7 +29,15 @@ const ResetPasswordSchema = Yup.object().shape({
 
 const mailformat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
-export default function ResetPassword() {
+type Props = {
+  params: {};
+  searchParams: { callbackUrl: string };
+};
+export default function ResetPassword(props: Props) {
+  const {
+    searchParams: { callbackUrl },
+  } = props;
+
   const [isVisible, setIsVisible] = useState(false);
   const [isCodeLoading, setIsCodeLoading] = useState(false);
   const [codeSent, setCodeSent] = useState(false);
@@ -64,7 +72,11 @@ export default function ResetPassword() {
             variant: "default",
             title: "Password change successfully, redirecting...",
           });
-          router.push("/auth/login");
+          router.push(
+            callbackUrl
+              ? `/auth/login?callbackUrl=${callbackUrl}`
+              : "/auth/login"
+          );
         })
         .catch((err) => {
           toast({ variant: "destructive", title: err.message });

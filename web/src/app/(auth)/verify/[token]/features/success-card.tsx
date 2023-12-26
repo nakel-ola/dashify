@@ -24,7 +24,7 @@ export const SuccessCard = () => {
       </Button>
 
       <Link
-        href="/dashboard"
+        href={`/dashboard`}
         className="mt-5 text-indigo-600 text-center text-[15.977px] not-italic font-[250] leading-[128%] underline"
       >
         Go to dashboard

@@ -1,6 +1,13 @@
-import React from "react";
-import { PageLoader } from "../features/page-loader";
+import { Fragment } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { BodyBottomLoading } from "../features/body-loading";
 
 export default function Loading() {
-  return <PageLoader />;
+  return (
+    <Fragment>
+      <Skeleton className="h-[200px] rounded-none bg-slate-100 dark:bg-neutral-800" />
+
+      <BodyBottomLoading />
+    </Fragment>
+  );
 }

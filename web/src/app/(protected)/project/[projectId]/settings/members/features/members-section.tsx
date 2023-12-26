@@ -1,24 +1,8 @@
 "use client";
 
 import { TitleSection } from "@/app/(protected)/account/features/title-section";
-import CustomInput from "@/components/custom-input";
 import { Button } from "@/components/ui/button";
-import { Add, SearchNormal1, Trash } from "iconsax-react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Add, Trash } from "iconsax-react";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { RippleCard } from "@/components/ripple-card";
 import { InvitationModel } from "./invitation-model";
@@ -27,6 +11,9 @@ import { MemberDeleteModel } from "./member-delete-model";
 import { useProjectStore } from "@/app/(protected)/project/store/project-store";
 import { formatDistance } from "date-fns";
 import { TableCard } from "./table-card";
+import { useQueryClient } from "@tanstack/react-query";
+import { useToast } from "@/components/ui/use-toast";
+import { deleteMember } from "../../services/delete-member";
 
 type Props = {};
 export const MembersSection = (props: Props) => {
@@ -34,14 +21,18 @@ export const MembersSection = (props: Props) => {
 
   const { project } = useProjectStore();
 
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+
   const members = useMemo(() => project?.members ?? [], [project?.members]);
 
   const [memberId, setMemberId] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleDeleteClick = (id: string) => setMemberId(id);
 
   const data = members.map((member) => ({
-    id: member.id,
+    uid: member.uid,
     role: member.role,
     joined: formatDistance(new Date(member.createdAt), new Date(), {
       addSuffix: true,
@@ -52,7 +43,7 @@ export const MembersSection = (props: Props) => {
   }));
 
   const items = [
-    ...data.map(({ id, name, photoUrl, email, role, joined }) => [
+    ...data.map(({ uid, name, photoUrl, email, role, joined }) => [
       {
         children: (
           <div className="flex items-center gap-2">
@@ -87,7 +78,7 @@ export const MembersSection = (props: Props) => {
         children: (
           <RippleCard
             Component="button"
-            onClick={() => handleDeleteClick(id)}
+            onClick={() => handleDeleteClick(uid)}
             className="w-[35px] h-[35px] text-black dark:text-white bg-slate-100/50 dark:bg-slate-100/10 flex items-center justify-center transition-transform rounded-full"
           >
             <Trash className="text-red-500" variant="Bold" size={20} />
@@ -98,6 +89,32 @@ export const MembersSection = (props: Props) => {
       },
     ]),
   ];
+
+  const onDeleteClick = async () => {
+    if (!project?.projectId || !memberId) return;
+
+    setIsLoading(true);
+
+    deleteMember({
+      memberId,
+      projectId: project.projectId,
+    })
+      .then(async () => {
+        await queryClient.invalidateQueries({
+          queryKey: ["project", project?.projectId],
+        });
+        setMemberId(null);
+
+        toast({
+          variant: "default",
+          title: "Revoke invite successfully",
+        });
+      })
+      .catch((err) => {
+        toast({ variant: "destructive", title: err.message });
+      })
+      .finally(() => setIsLoading(false));
+  };
 
   return (
     <div>
@@ -126,28 +143,6 @@ export const MembersSection = (props: Props) => {
         </div>
       </TitleSection>
 
-      <div className="flex items-center mt-10 gap-5">
-        <CustomInput
-          startIcon={
-            <SearchNormal1 size={20} className="text-black dark:text-white" />
-          }
-          placeholder="Filter by name or email"
-          classes={{ root: "w-full" }}
-        />
-
-        <Select>
-          <SelectTrigger className="w-[180px] !h-11">
-            <SelectValue placeholder="Roles" />
-          </SelectTrigger>
-          <SelectContent position="item-aligned">
-            <SelectItem value="administrator">Administrator</SelectItem>
-            <SelectItem value="editor">Editor</SelectItem>
-            <SelectItem value="viewer">Viewer</SelectItem>
-            <SelectItem value="developer">Developer</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-
       <TableCard
         head={[
           {
@@ -171,9 +166,11 @@ export const MembersSection = (props: Props) => {
 
       <MemberDeleteModel
         open={!!memberId}
-        user={memberId ? data.find((value) => value.id === memberId)! : null}
+        user={memberId ? data.find((value) => value.uid === memberId)! : null}
         onClose={() => setMemberId(null)}
-        onDeleteClick={() => {}}
+        onDeleteClick={onDeleteClick}
+        isInvitation={false}
+        isLoading={isLoading}
       />
     </div>
   );

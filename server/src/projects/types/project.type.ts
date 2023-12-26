@@ -49,6 +49,7 @@ export type InvitationType = {
   email: string;
   role: 'administrator' | 'editor' | 'viewer';
   token: string;
+  creatorId: string;
   createdAt: Date;
   updatedAt: Date;
 };

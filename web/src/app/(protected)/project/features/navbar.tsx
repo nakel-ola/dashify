@@ -5,13 +5,7 @@ import { useProjectStore } from "../store/project-store";
 
 import { LogoCard } from "./logo-card";
 
-type Props = {
-  // name: string;
-  // logo: string | null;
-  // projectId: string;
-};
-
-export const Navbar = (props: Props) => {
+export const Navbar = () => {
   const project = useProjectStore((store) => store.project!);
   return (
     <div className="flex items-center justify-between px-5 border-b-[1.5px] border-slate-100 dark:border-neutral-800 py-2">

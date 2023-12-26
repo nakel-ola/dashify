@@ -126,6 +126,24 @@ export class ProjectsService {
     return newProject;
   }
 
+  async findOneByInvitation(projectId: string, user: User) {
+    const project = await this.projectRepository.findOne({
+      where: {
+        projectId,
+        $or: [
+          { invitations: { $elemMatch: { email: user.email } } },
+          { members: { $elemMatch: { uid: user.uid } } },
+        ],
+      } as any,
+    });
+
+    if (!project)
+      throw new NotFoundException(`Project with id ${projectId} not found`);
+
+    const newProject = await this.formatProject(project);
+    return newProject;
+  }
+
   async update(
     projectId: string,
     uid: string,
@@ -287,6 +305,7 @@ export class ProjectsService {
     const filteredUsers = await this.filteredMemberInvite(
       project.invitations,
       inviteMemberDto,
+      user.uid,
     );
 
     const returnMsg = { message: 'Invitation sent Successfully' };
@@ -306,8 +325,8 @@ export class ProjectsService {
           name,
           projectName: project.name,
           link:
-            this.getClientURL()[0] +
-            `/project/${projectId}/invite/${filteredUser.code}`,
+            this.getClientURL() +
+            `/project/invite/${projectId}/${filteredUser.code}`,
         },
       });
     }
@@ -354,9 +373,16 @@ export class ProjectsService {
       (invitation) => invitation.id !== savedToken.id,
     );
 
+    const date = new Date();
+
     const members: Member[] = [
       ...project.members,
-      { uid: user.uid, role: savedToken.role },
+      {
+        uid: user.uid,
+        role: savedToken.role,
+        createdAt: date,
+        updatedAt: date,
+      },
     ];
 
     await this.projectRepository.update(
@@ -390,10 +416,23 @@ export class ProjectsService {
     await this.projectRepository.update({ projectId }, { invitations });
     return { message: 'User Removed Successfully' };
   }
+  async removeMember(projectId: string, uid: string, memberId: string) {
+    const project = await this.findOne(projectId, uid);
+
+    const isAdministrator = this.isMemberAdministrator(project.members, uid);
+
+    if (!isAdministrator) throw new UnauthorizedException('Permission denied');
+
+    const members = project.members.filter((member) => member.uid !== memberId);
+
+    await this.projectRepository.update({ projectId }, { members });
+    return { message: 'User Removed Successfully' };
+  }
 
   private async filteredMemberInvite(
     prev: InvitationType[],
     next: InviteMemberDto[],
+    uid: string,
   ) {
     const arr: (InvitationType & { code: string })[] = [];
 
@@ -420,6 +459,7 @@ export class ProjectsService {
           ...user,
           token,
           code,
+          creatorId: uid,
           createdAt: date,
           updatedAt: date,
         });

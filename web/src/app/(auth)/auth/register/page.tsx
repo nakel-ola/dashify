@@ -4,7 +4,6 @@ import CustomInput from "@/components/custom-input";
 import { PasswordEye } from "@/components/password-eye";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
-import { isObjectValueEmpty } from "@/lib/is-object-value-empty";
 import { useFormik } from "formik";
 import Head from "next/head";
 import { useRouter } from "next/navigation";
@@ -27,7 +26,16 @@ const SignUpSchema = Yup.object().shape({
     .required("Password is required"),
 });
 
-export default function Register() {
+type Props = {
+  params: {};
+  searchParams: { callbackUrl: string };
+};
+
+export default function Register(props: Props) {
+  const {
+    searchParams: { callbackUrl },
+  } = props;
+
   const [isVisible, setIsVisible] = useState(false);
 
   const { toast } = useToast();
@@ -56,7 +64,7 @@ export default function Register() {
       await createAccount(values)
         .then((results) => {
           toast({ variant: "default", title: results.message });
-          router.push("/auth/login");
+          router.push(`/auth/login?callbackUrl=${callbackUrl}`);
         })
         .catch((err) => {
           toast({

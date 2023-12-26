@@ -67,6 +67,13 @@ export class ProjectsController {
     return this.projectsService.findOne(projectId, req.user.uid);
   }
 
+  @ApiOperation({ summary: 'Get project by projectId' })
+  @ApiParam({ name: 'projectId', example: 'finance-tracker-78493' })
+  @Get(':projectId/by-invitation')
+  findOneByInvitation(@Request() req, @Param('projectId') projectId: string) {
+    return this.projectsService.findOneByInvitation(projectId, req.user);
+  }
+
   @ApiOperation({ summary: 'Update project by projectId' })
   @ApiParam({ name: 'projectId', example: 'finance-tracker-78493' })
   @Patch(':projectId')
@@ -221,7 +228,6 @@ export class ProjectsController {
     return this.projectsService.invitedMembers(projectId, req.user.uid);
   }
 
-  // TODO: Delete member from project
   @ApiOperation({
     summary: 'Remove an invited member from the project invitation',
   })
@@ -231,7 +237,7 @@ export class ProjectsController {
     name: 'invite id',
     example: 'd40e80a1-aae5-59d7-9841-2f58794ea805',
   })
-  removeMember(
+  removeInviteMember(
     @Request() req,
     @Param('projectId') projectId: string,
     @Param('inviteId') inviteId: string,
@@ -241,5 +247,22 @@ export class ProjectsController {
       req.user.uid,
       inviteId,
     );
+  }
+
+  @ApiOperation({
+    summary: 'Remove a member from the project',
+  })
+  @Delete(':projectId/remove-member/:memberId')
+  @ApiParam({ name: 'projectId', example: 'finance-tracker-78493' })
+  @ApiParam({
+    name: 'invite id',
+    example: 'd40e80a1-aae5-59d7-9841-2f58794ea805',
+  })
+  removeMember(
+    @Request() req,
+    @Param('projectId') projectId: string,
+    @Param('memberId') memberId: string,
+  ) {
+    return this.projectsService.removeMember(projectId, req.user.uid, memberId);
   }
 }

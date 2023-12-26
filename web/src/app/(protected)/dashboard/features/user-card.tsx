@@ -2,11 +2,12 @@
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Menu, Transition } from "@headlessui/react";
 import { Add, ArrowDown2, Logout, User, Grid2 } from "iconsax-react";
-import { signOut, useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { Fragment } from "react";
 import { useModelStore } from "../../store/ModelStore";
 import { cn } from "@/lib/utils";
+import { useSignOut } from "@/hooks/use-sign-out";
 
 type Props = {
   isScrollUp: boolean;
@@ -16,6 +17,8 @@ export const UserCard = (props: Props) => {
   const { data } = useSession();
 
   const { setIsOpen } = useModelStore();
+
+  const signOut = useSignOut();
 
   const user = data?.user;
 
@@ -71,7 +74,6 @@ export const UserCard = (props: Props) => {
                 <p>Dashboard</p>
               </Menu.Item>
 
-
               <Menu.Item
                 as={Link}
                 href="/account"
@@ -93,7 +95,7 @@ export const UserCard = (props: Props) => {
               <Menu.Item
                 as="div"
                 onClick={() => {
-                  signOut({ redirect: true, callbackUrl: "/" });
+                  signOut({ redirect: false });
                 }}
                 className="flex items-center gap-2 p-3 hover:bg-slate-100 dark:hover:bg-neutral-800 rounded-lg cursor-pointer"
               >
