@@ -22,7 +22,6 @@ export default async function ProjectLayout(props: PropsWithChildren<Props>) {
   await queryClient.prefetchQuery({
     queryKey: ["project", projectId],
     queryFn: () => fetchProject(projectId),
-    
   });
 
   return (
@@ -33,7 +32,10 @@ export default async function ProjectLayout(props: PropsWithChildren<Props>) {
 
           <div className="grid grid-cols-10 h-[calc(100vh-57.4px)]">
             <Sidebar />
-            <div className="col-span-10 lg:col-span-8 h-full overflow-y-scroll">
+            <div
+              id="project-body"
+              className="col-span-10 lg:col-span-8 h-full overflow-y-auto"
+            >
               {children}
             </div>
           </div>

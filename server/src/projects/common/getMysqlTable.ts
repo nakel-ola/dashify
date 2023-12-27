@@ -32,15 +32,16 @@ export const getMysqlTable = async (args: Args) => {
   });
 
   try {
-    const query = `SELECT * FROM ${mysql.escapeId(
-      collectionName,
-    )} LIMIT ? OFFSET ?`;
+    const tableName = mysql.escapeId(collectionName);
+    const query = `SELECT * FROM ${tableName} LIMIT ? OFFSET ?`;
+    const countQuery = `SELECT COUNT(*) AS totalCount FROM ${tableName};`;
 
     const [rows] = await connection.execute(query, [limit, offset]);
+    const data = await connection.query(countQuery);
 
-    console.log('Selected rows:', rows);
+    console.log('Selected rows:', data);
 
-    return rows;
+    return { results: rows, totalItems: (data[0] as any).totalCount };
   } catch (e: any) {
     console.error('Error:', e);
   } finally {

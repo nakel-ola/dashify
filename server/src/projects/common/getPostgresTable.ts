@@ -35,13 +35,15 @@ export const getPostgresTable = async (args: Args) => {
   try {
     await client.connect();
 
-    const schemaQuery = `SELECT * FROM ${client.escapeIdentifier(
-      collectionName,
-    )} LIMIT $1 OFFSET $2`;
+    const tableName = client.escapeIdentifier(collectionName);
+
+    const schemaQuery = `SELECT * FROM ${tableName} LIMIT $1 OFFSET $2`;
+    const countQuery = `SELECT COUNT(*) FROM ${tableName};`;
 
     const schemaResult = await client.query(schemaQuery, [limit, offset]);
+    const totalItems = await client.query(countQuery);
 
-    return schemaResult.rows;
+    return { results: schemaResult.rows, totalItems: totalItems.rows[0].count };
   } catch (e: any) {
     console.log('Error:', e);
   }

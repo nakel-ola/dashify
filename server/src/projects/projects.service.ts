@@ -170,7 +170,7 @@ export class ProjectsService {
 
   async getDatabaseCredentials(projectId: string, uid: string) {
     const project = await this.projectRepository.findOne({
-      where: { members: { uid }, projectId },
+      where: { members: { $elemMatch: { uid } } as any, projectId },
       select: ['databaseConfig'],
     });
 
@@ -416,6 +416,7 @@ export class ProjectsService {
     await this.projectRepository.update({ projectId }, { invitations });
     return { message: 'User Removed Successfully' };
   }
+
   async removeMember(projectId: string, uid: string, memberId: string) {
     const project = await this.findOne(projectId, uid);
 
@@ -514,7 +515,6 @@ export class ProjectsService {
     return {
       name: cryptr.decrypt(databaseConfig.name),
       host: cryptr.decrypt(databaseConfig.host),
-
       port: Number(cryptr.decrypt(`${databaseConfig.port}`)),
       username: cryptr.decrypt(databaseConfig.username),
       password: cryptr.decrypt(databaseConfig.password),

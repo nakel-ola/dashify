@@ -33,10 +33,14 @@ export const getMongodbCollection = async (args: Args) => {
           skip: offset,
         },
       )
-      .project({ __v: 0 })
+      .project({})
       .toArray();
 
-    return sampleDocument;
+    const totalItems = await database
+      .collection(collectionName)
+      .countDocuments();
+
+    return { results: sampleDocument, totalItems };
   } catch (error: any) {
     console.error('Error:', error);
   } finally {
