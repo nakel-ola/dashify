@@ -2,53 +2,50 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer base {
-  * {
-    @apply p-0 m-0;
-    scrollbar-width: thin;
-    scrollbar-color: transparent transparent;
-    transition: all 300ms ease;
-  }
+* {
+  @apply p-0 m-0;
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+}
 
-  *::-webkit-scrollbar {
-    @apply w-[5px] h-[5px];
-  }
+*::-webkit-scrollbar {
+  @apply w-[5px] h-[5px];
+}
 
-  *::-webkit-scrollbar-thumb {
-    @apply rounded-[30px] bg-indigo-600;
-  }
+*::-webkit-scrollbar-thumb {
+  @apply rounded-[30px] bg-indigo-600;
+}
 
-  *::-webkit-scrollbar-track {
-    @apply bg-transparent relative top-0 right-0;
-  }
+*::-webkit-scrollbar-track {
+  @apply bg-transparent relative top-0 right-0;
+}
 
-  *::-webkit-scrollbar-track-piece {
-    @apply bg-transparent;
-  }
+*::-webkit-scrollbar-track-piece {
+  @apply bg-transparent;
+}
 
-  *::-ms-scrollbar {
-    @apply w-[5px] h-[5px];
-  }
+*::-ms-scrollbar {
+  @apply w-[5px] h-[5px];
+}
 
-  body {
-    @apply bg-white dark:bg-dark;
-  }
+body {
+  @apply p-0 m-0 bg-white dark:bg-dark;
+}
 
-  .highlighted-keys .active rect:first-child {
-    fill-opacity: 0.4;
-  }
+.highlighted-keys .active rect:first-child {
+  fill-opacity: 0.4;
+}
 
-  .highlighted-keys .active rect:not(:first-child) {
-    stroke-opacity: 1;
-  }
+.highlighted-keys .active rect:not(:first-child) {
+  stroke-opacity: 1;
+}
 
-  .highlighted-keys .active path {
-    fill-opacity: 1;
-  }
+.highlighted-keys .active path {
+  fill-opacity: 1;
+}
 
-  .page-max-width {
-    @apply mx-auto w-full max-w-7xl;
-  }
+.page-max-width {
+  @apply mx-auto w-full max-w-7xl;
 }
 
 @layer utilities {

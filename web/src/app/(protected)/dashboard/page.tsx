@@ -29,7 +29,7 @@ export default async function Dashboard(props: Props) {
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <ProjectsList page={Number(page)} offset={offset} limit={limit} />;
+      <ProjectsList page={Number(page)} offset={offset} limit={limit} />
     </HydrationBoundary>
   );
 }

@@ -8,8 +8,9 @@ export const AddCard = () => {
 
   return (
     <RippleCard
+      Component="button"
       onClick={() => setIsOpen(true)}
-      className="border-[1.5px] rounded-lg h-[50px] md:h-[180px] flex items-center justify-center bg-white dark:bg-dark border-slate-200 dark:border-neutral-800 text-indigo-600 flex-row md:flex-col cursor-pointer hover:scale-[1.02] active:scale-[0.99]"
+      className="border-[1.5px] rounded-lg h-[50px] md:h-[180px] flex items-center justify-center bg-white dark:bg-dark border-slate-200 dark:border-neutral-800 text-indigo-600 flex-row md:flex-col cursor-pointer hover:scale-[1.02] active:scale-[0.99] transition-transform duration-300"
     >
       <Add size={30} className="" />
 

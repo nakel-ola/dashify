@@ -1,16 +1,19 @@
 "use client";
 import { ArrowLeft2, ArrowRight2 } from "iconsax-react";
 import { FormEvent, useState } from "react";
+import { LimitCard } from "./limit-card";
 
 type Props = {
   pageCount: number;
   page: number;
   onPageChange: (value: "next" | "previous" | number) => void;
-  limit: number;
+  onLimitChange: (value: "100" | "500" | "1000") => void;
+  limit: "100" | "500" | "1000";
   totalItems: number;
 };
 export const PaginationCard = (props: Props) => {
-  const { pageCount, page, limit, totalItems, onPageChange } = props;
+  const { pageCount, page, limit, totalItems, onPageChange, onLimitChange } =
+    props;
 
   const [input, setInput] = useState(page);
 
@@ -21,7 +24,7 @@ export const PaginationCard = (props: Props) => {
   };
 
   return (
-    <div className="w-full scrollbar-hide gap-5 px-5 py-2 flex items-center">
+    <div className=" w-full scrollbar-hide gap-5 px-5 py-2 flex items-center">
       <button
         type="button"
         className="w-[50px] h-[30px] border-[1.5px] border-slate-100 dark:border-neutral-800 hover:bg-slate-100 hover:dark:bg-neutral-800 rounded-md flex items-center justify-center hover:scale-105 active:scale-95 "
@@ -62,9 +65,11 @@ export const PaginationCard = (props: Props) => {
         <ArrowRight2 className="h-5 w-5 text-black dark:text-white" />
       </button>
 
-      <div className="min-w-[50px] h-[30px] border-[1.5px] border-slate-100 dark:border-neutral-800 rounded-md flex items-center justify-center px-2">
+      {/* <div className="min-w-[50px] h-[30px] border-[1.5px] border-slate-100 dark:border-neutral-800 rounded-md flex items-center justify-center px-2">
         <p className="">{limit} rows</p>
-      </div>
+      </div> */}
+
+      <LimitCard limit={limit} onLimitChange={onLimitChange} />
 
       <p className="text-sm text-gray-dark dark:text-gray-light">
         {totalItems} records

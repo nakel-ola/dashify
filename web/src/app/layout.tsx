@@ -6,7 +6,6 @@ import { cn } from "@/lib/utils";
 import type { Metadata, Viewport } from "next";
 import { getServerSession } from "next-auth";
 import { Signika_Negative } from "next/font/google";
-import NextTopLoader from "nextjs-toploader";
 import "./globals.css";
 import TanstackProvider from "@/providers/tanstack-provider";
 import { AuthStateChanged } from "@/components/auth-state-changed";
@@ -102,7 +101,6 @@ export default async function RootLayout({
         cz-shortcut-listen="true"
         className={cn(font.className, "flex flex-col justify-center")}
       >
-        <NextTopLoader color="#4f46e5" shadow={false} />
         <ThemeProvider
           attribute="class"
           defaultTheme="system"

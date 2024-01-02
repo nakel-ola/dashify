@@ -1,9 +1,11 @@
+"use client";
+
 import CustomInput from "@/components/custom-input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toBase64 } from "@/lib/to-base64";
 import { FormikErrors } from "formik";
 import Image from "next/image";
-import React, { ChangeEvent, Fragment, useState } from "react";
+import React, { ChangeEvent, Fragment, useEffect, useState } from "react";
 import { DatabaseCard } from "./database-card";
 import { CreateProjectForm } from "./type";
 
@@ -28,19 +30,11 @@ type Props = {
     value: any,
     shouldValidate?: boolean | undefined
   ) => Promise<void> | Promise<FormikErrors<CreateProjectForm>>;
-  projectId: string;
 };
 
 export const FormStepOne = (props: Props) => {
-  const {
-    handleBlur,
-    handleChange,
-    isLoading,
-    projectId,
-    errors,
-    values,
-    setFieldValue,
-  } = props;
+  const { handleBlur, handleChange, isLoading, errors, values, setFieldValue } =
+    props;
 
   const [url, setUrl] = useState<string | ArrayBuffer>("");
 
@@ -48,10 +42,21 @@ export const FormStepOne = (props: Props) => {
     if (e.target.files && e.target.files.length > 0) {
       const fileList = e.target.files;
       setFieldValue("image", fileList[0]);
-      const newUrl = await toBase64(fileList[0]);
-      setUrl(newUrl);
+
+      handleConvert(fileList[0]);
     }
   };
+
+  const handleConvert = async (file: File | Blob) => {
+    const newUrl = await toBase64(file);
+    setUrl(newUrl);
+  };
+
+  useEffect(() => {
+    if (values.image) {
+      handleConvert(values.image);
+    }
+  }, [values.image]);
   return (
     <Fragment>
       <div className="">
@@ -88,7 +93,7 @@ export const FormStepOne = (props: Props) => {
 
           <label
             htmlFor="image"
-            className="bg-slate-100 dark:bg-neutral-800 rounded-lg px-2 py-2 hover:scale-[1.02] active:scale-[0.99] cursor-pointer"
+            className="bg-slate-100 dark:bg-neutral-800 rounded-lg px-2 py-2 hover:scale-[1.02] active:scale-[0.99] cursor-pointer transition-transform duration-300"
           >
             {" "}
             Change image
@@ -107,12 +112,6 @@ export const FormStepOne = (props: Props) => {
         error={errors.name && values.name.length > 0 ? errors.name : undefined}
         showErrorMessage={false}
       />
-
-      {values.name.length > 0 ? (
-        <div className="my-2 p-1.5 cursor-pointer px-3 rounded-full bg-slate-100 dark:bg-neutral-800 w-fit">
-          <p>{projectId}</p>
-        </div>
-      ) : null}
 
       <div>
         <label

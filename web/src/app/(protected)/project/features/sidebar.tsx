@@ -14,6 +14,7 @@ import { X } from "lucide-react";
 import { useProjectStore } from "../store/project-store";
 import Link from "next/link";
 import Image from "next/image";
+import { Add, Refresh } from "iconsax-react";
 
 export const Sidebar = () => {
   return (
@@ -112,6 +113,20 @@ const Content = () => {
         </RippleCard>
       </div>
 
+      <div className="flex items-center justify-between gap-2 m-2 mb-3 mt-5">
+        <div className="py-1.5 px-2 bg-slate-100 dark:bg-neutral-800 rounded-lg cursor-pointer flex items-center w-full ">
+          <Add size={20} className="text-black dark:text-white" />
+          <p className="pl-2 text-black dark:text-white">New Table</p>
+        </div>
+
+        <button
+          type="button"
+          // onClick={() => removeItem()}
+          className="w-8 h-8 rounded-md flex items-center justify-center hover:bg-slate-100 dark:hover:bg-neutral-800 shrink-0"
+        >
+          <Refresh size={20} />
+        </button>
+      </div>
       <div className="pt-5">
         {items.map(({ icon, name }, index) => (
           <Card key={index} iconName={icon} name={name} />
@@ -131,14 +146,14 @@ const Card = (props: CardProps) => {
   const { iconName, name } = props;
   const pathname = usePathname();
   const router = useRouter();
-  const [{ pageName, projectId }] = useQueries();
+  const [{ projectId }] = useQueries();
 
   const isActive = pathname.startsWith(`/project/${projectId}/${name}`);
 
   return (
     <div
       className={cn(
-        "flex items-center m-2 mb-3 p-2 hover:bg-slate-100 hover:dark:bg-neutral-800 rounded-lg cursor-pointer mt-auto",
+        "flex items-center m-2 mb-3 py-1.5 px-2 hover:bg-slate-100 hover:dark:bg-neutral-800 rounded-lg cursor-pointer mt-auto",
         isActive ? "bg-slate-100 dark:bg-neutral-800" : ""
       )}
       onClick={() => router.push(`/project/${projectId}/${name}`)}
@@ -147,6 +162,7 @@ const Card = (props: CardProps) => {
         <Icons
           iconName={iconName}
           variant={isActive ? "Bold" : "Outline"}
+          size={20}
           className={cn(
             isActive
               ? "text-black dark:text-white"

@@ -8,10 +8,12 @@ import { Checkbox } from "@/components/ui/checkbox";
 type Props = {
   pageName: string;
   items: any[];
+  isSelected: (value: number) => boolean;
+  updateSelected: (value: number) => void;
 };
 
 export const CollectionsCard = (props: Props) => {
-  const { pageName, items } = props;
+  const { pageName, items, isSelected, updateSelected } = props;
 
   const collection = useProjectStore((store) => store.getCollection(pageName));
 
@@ -27,20 +29,18 @@ export const CollectionsCard = (props: Props) => {
       className="flex items-center divide-x-[1.5px] divide-slate-100 dark:divide-neutral-800 w-full"
     >
       <div className="min-w-[100px] h-[42.67px] p-2 py-2.5 shrink-0 border-b-[1.5px] border-slate-100 dark:border-neutral-800 flex items-center justify-start px-5">
-        <Checkbox className="w-[20px] h-[20px] rounded-md" />
+        <Checkbox
+          checked={isSelected(index)}
+          onCheckedChange={(checked) => updateSelected(index)}
+          className="w-[20px] h-[20px] rounded-md"
+        />
       </div>
       {convertObjectToArray(item).map((value, inx) => (
         <div
           key={inx}
           className="w-[250px] h-[42.67px] px-3 py-2 border-b-[1.5px] border-slate-100 dark:border-neutral-800 whitespace-nowrap break-normal overflow-hidden shrink-0"
         >
-          <p className="">
-            {Array.isArray(value)
-              ? `[ ] ${value.length} elements`
-              : typeof value === "object"
-              ? `{ } ${Object.keys(value).length} fields`
-              : value.toString()}
-          </p>
+          <p className="">{formatValue(value)}</p>
         </div>
       ))}
 
@@ -49,6 +49,15 @@ export const CollectionsCard = (props: Props) => {
   ));
 };
 
-const getArrayValue = (value: any[]) => {
-  return `[] ${value.length} elements`;
+const formatValue = (value: any) => {
+  if (value === null) return "null";
+
+  if (value === "") return `""`;
+
+  if (Array.isArray(value)) return `[ ] ${value.length} elements`;
+
+  if (typeof value === "object")
+    return `{ } ${Object.keys(value).length} fields`;
+
+  return value?.toString();
 };

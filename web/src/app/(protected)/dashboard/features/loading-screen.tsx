@@ -6,7 +6,7 @@ export default function LoadingScreen() {
       {[0, 1, 2, 3, 4].map((_, i) => (
         <div
           key={i}
-          className="cursor-pointer border-[1.5px] rounded-lg h-[180px] bg-white dark:bg-dark border-slate-200 dark:border-neutral-800 py-3 px-3 flex flex-col hover:scale-[1.02] active:scale-[0.99]"
+          className="cursor-pointer border-[1.5px] rounded-lg h-[180px] bg-white dark:bg-dark border-slate-200 dark:border-neutral-800 py-3 px-3 flex flex-col hover:scale-[1.02] active:scale-[0.99] transition-transform duration-300"
         >
           <div className="flex items-center">
             <Skeleton className="h-10 w-10 rounded-full" />

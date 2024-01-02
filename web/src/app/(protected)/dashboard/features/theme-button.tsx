@@ -17,7 +17,7 @@ export const ThemeButton = (props: Props) => {
       Component="button"
       onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
       className={cn(
-        "w-[45px] text-white hover:bg-slate-100/10 flex items-center justify-center transition-transform py-1.5 rounded-full"
+        "w-[45px] text-white hover:bg-slate-100/10 flex items-center justify-center transition-transform duration-300 py-1.5 rounded-full"
       )}
     >
       <Sun1

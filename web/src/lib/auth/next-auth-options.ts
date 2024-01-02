@@ -13,7 +13,11 @@ export const nextAuthOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, user, trigger, session }: any) {
       if (trigger === "update") return { ...token, ...session.user };
-      if (!token.accessToken) return { ...token, ...user };
+      if (!token.accessToken && token.refreshToken) {
+        const accessToken = await refreshToken(token?.refreshToken as any);
+
+        return { ...token, ...user, accessToken };
+      }
 
       if (!isExpired((token as any).accessToken)) {
         return { ...token, ...user };
