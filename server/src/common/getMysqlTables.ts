@@ -29,8 +29,6 @@ export const getMysqlTables = async (args: Args): Promise<Collection[]> => {
       [name],
     );
 
-    connection.end();
-
     const tableSchemas: Collection[] = [];
     rows.forEach((row: any) => {
       const existingSchema = tableSchemas.find(

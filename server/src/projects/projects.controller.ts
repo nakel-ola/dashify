@@ -24,6 +24,7 @@ import {
   AcceptMemberInviteDto,
   AddCorsOriginDto,
   AddTokenDto,
+  CreateNewCollectionDto,
   CreateProjectDto,
   InviteMemberDto,
   UpdateProjectDto,
@@ -98,7 +99,7 @@ export class ProjectsController {
 
   @ApiOperation({ summary: 'Get project database credentials by projectId' })
   @ApiParam({ name: 'projectId', example: 'finance-tracker-78493' })
-  @Get('/database-credentials/:projectId')
+  @Get(':projectId/database-credentials')
   getDatabaseCredentials(
     @Request() req,
     @Param('projectId') projectId: string,
@@ -112,7 +113,7 @@ export class ProjectsController {
   @ApiQuery({ name: 'collectionName', example: 'users' })
   @ApiQuery({ name: 'offset', example: 0 })
   @ApiQuery({ name: 'limit', example: 10 })
-  @Get('/collection/:projectId')
+  @Get(':projectId/collection/')
   getCollectionData(
     @Request() req,
     @Param('projectId') projectId: string,
@@ -265,4 +266,49 @@ export class ProjectsController {
   ) {
     return this.projectsService.removeMember(projectId, req.user.uid, memberId);
   }
+
+  // TODO: Create new collection
+  @ApiOperation({ summary: 'Create new collection or table' })
+  @Post(':projectId/create-new-collection')
+  @ApiParam({ name: 'projectId', example: 'finance-tracker-78493' })
+  createNewCollection(
+    @Request() req,
+    @Param('projectId') projectId: string,
+    @Body() createNewCollectionDto: CreateNewCollectionDto,
+  ) {
+    return this.projectsService.createNewCollection(
+      projectId,
+      req.user,
+      createNewCollectionDto,
+    );
+  }
+
+  // TODO: Delete collection
+  @ApiOperation({ summary: 'Delete collection or table' })
+  @Delete(':projectId/delete-collection/:collectionName')
+  @ApiParam({ name: 'projectId', example: 'finance-tracker-78493' })
+  @ApiParam({ name: 'collectionName', example: 'users' })
+  deleteCollection(
+    @Request() req,
+    @Param('projectId') projectId: string,
+    @Param('collectionName') collectionName: string,
+  ) {
+    return this.projectsService.deleteCollection(
+      projectId,
+      req.user.uid,
+      collectionName,
+    );
+  }
+
+  // TODO: Refetch collection from database
+  @ApiOperation({ summary: 'Refetch collections or tables' })
+  @Delete(':projectId/refetch-collection/')
+  @ApiParam({ name: 'projectId', example: 'finance-tracker-78493' })
+  refetchCollection(@Request() req, @Param('projectId') projectId: string) {
+    return this.projectsService.refetchCollection(projectId, req.user.uid);
+  }
+
+  // TODO: Edit collection
+  // TODO: Export collection data to csv, json
+  // TODO: Duplicate collection
 }

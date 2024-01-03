@@ -5,3 +5,4 @@ export * from './add-token.dto';
 export * from './invite-member.dto';
 export * from './validate-member-invite.dto';
 export * from './accept-member-invite.dto';
+export * from './create-new-collection.dto';

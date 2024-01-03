@@ -12,10 +12,6 @@ import Cryptr from '../common/cryptr';
 import { getDatabaseCollections } from '../common/getDatabaseCollections';
 import { User } from '../users/entities/user.entity';
 import { UsersService } from './../users/users.service';
-import { getCockroachdbTable } from './common/getCockroachdbTable';
-import { getMongodbCollection } from './common/getMongodbCollection';
-import { getMysqlTable } from './common/getMysqlTable';
-import { getPostgresTable } from './common/getPostgresTable';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { Project } from './entities';
@@ -25,13 +21,17 @@ import {
   AcceptMemberInviteDto,
   AddCorsOriginDto,
   AddTokenDto,
+  CreateNewCollectionDto,
   InviteMemberDto,
 } from './dto';
 import { v4 } from 'uuid';
 import { customAlphabet, nanoid } from '../common/nanoid';
 import { MailerService } from '@nestjs-modules/mailer';
-// import { nanoid } from 'nanoid';
 import * as bcrypt from 'bcrypt';
+import { MongoDatabase } from './common/mogodb';
+import { CockroachDatabase } from './common/cockroachdb';
+import { PostgresDatabase } from './common/postgres';
+import { MySQLDatabase } from './common/mysql';
 
 @Injectable()
 export class ProjectsService {
@@ -46,15 +46,13 @@ export class ProjectsService {
     const { database, projectId, name, logo, databaseConfig } =
       createProjectDto;
 
-    const dbCollections = await getDatabaseCollections(createProjectDto);
+    const collections: Collection[] = await getDatabaseCollections({
+      database,
+      ...databaseConfig,
+    });
 
     const key = this.configService.get('PROJECT_DATABASE_SECRET');
     const cryptr = new Cryptr(key);
-
-    const collections: Collection[] = [
-      { name: 'overview', icon: 'Category', fields: [] },
-      ...dbCollections,
-    ];
 
     const date = new Date();
 
@@ -187,18 +185,184 @@ export class ProjectsService {
   ) {
     const dbConfig = await this.getDatabaseCredentials(projectId, uid);
 
-    const args = { ...dbConfig, collectionName, offset, limit };
+    const collectionArgs = { tableName: collectionName, offset, limit };
 
     if (database === 'mongodb') {
-      return await getMongodbCollection(args);
-    } else if (database === 'cockroachdb') {
-      return await getCockroachdbTable(args);
-    } else if (database === 'postgres') {
-      return await getPostgresTable(args);
-    } else if (database === 'sqlite') {
-      return await getMysqlTable(args);
+      const mongodb = new MongoDatabase(dbConfig);
+
+      const results = await mongodb.getCollection({
+        ...collectionArgs,
+        collectionName: collectionArgs.tableName,
+      });
+
+      mongodb.close();
+      return results;
     }
-    return {};
+
+    if (database === 'cockroachdb') {
+      const cockroachdb = new CockroachDatabase(dbConfig);
+
+      const results = await cockroachdb.getTable(collectionArgs);
+
+      cockroachdb.close();
+      return results;
+    }
+    if (database === 'postgres') {
+      const postgres = new PostgresDatabase(dbConfig);
+
+      const results = await postgres.getTable(collectionArgs);
+
+      postgres.close();
+      return results;
+    }
+
+    if (database === 'mysql') {
+      const mysql = new MySQLDatabase(dbConfig);
+
+      const results = await mysql.getTable(collectionArgs);
+
+      mysql.close();
+      return results;
+    }
+    return { message: 'Database not supported' };
+  }
+
+  async createNewCollection(
+    projectId: string,
+    user: User,
+    createNewCollectionDto: CreateNewCollectionDto,
+  ) {
+    const { collectionName } = createNewCollectionDto;
+
+    const uid = user.uid;
+    const project = await this.findOne(projectId, uid);
+
+    const isViewer = this.isMemberViewer(project.members, uid);
+
+    if (isViewer) throw new UnauthorizedException('Permission denied');
+
+    const dbConfig = await this.getDatabaseCredentials(projectId, uid);
+
+    const database = project.database;
+
+    if (database === 'mongodb') {
+      const mongodb = new MongoDatabase(dbConfig);
+
+      const results = await mongodb.createCollection(collectionName);
+
+      mongodb.close();
+      return results;
+    }
+
+    if (database === 'cockroachdb') {
+      const cockroachdb = new CockroachDatabase(dbConfig);
+
+      const results = await cockroachdb.createTable(collectionName, []);
+
+      cockroachdb.close();
+      return results;
+    }
+
+    if (database === 'postgres') {
+      const postgres = new PostgresDatabase(dbConfig);
+
+      const results = await postgres.createTable(collectionName, []);
+
+      postgres.close();
+      return results;
+    }
+
+    if (database === 'mysql') {
+      const mysql = new MySQLDatabase(dbConfig);
+
+      const results = await mysql.createTable(collectionName, []);
+
+      mysql.close();
+      return results;
+    }
+
+    const collections: Collection[] = await getDatabaseCollections({
+      database,
+      ...dbConfig,
+    });
+
+    await this.projectRepository.update({ projectId }, { collections });
+
+    return { message: 'Database not supported' };
+  }
+
+  async deleteCollection(
+    projectId: string,
+    uid: string,
+    collectionName: string,
+  ) {
+    const project = await this.findOne(projectId, uid);
+
+    const isViewer = this.isMemberViewer(project.members, uid);
+
+    if (isViewer) throw new UnauthorizedException('Permission denied');
+
+    const dbConfig = await this.getDatabaseCredentials(projectId, uid);
+
+    const database = project.database;
+
+    if (database === 'mongodb') {
+      const mongodb = new MongoDatabase(dbConfig);
+
+      const results = await mongodb.deleteCollection(collectionName);
+
+      mongodb.close();
+      return results;
+    }
+
+    if (database === 'cockroachdb') {
+      const cockroachdb = new CockroachDatabase(dbConfig);
+
+      const results = await cockroachdb.deleteTable(collectionName);
+
+      cockroachdb.close();
+      return results;
+    }
+
+    if (database === 'postgres') {
+      const postgres = new PostgresDatabase(dbConfig);
+
+      const results = await postgres.deleteTable(collectionName);
+
+      postgres.close();
+      return results;
+    }
+
+    if (database === 'mysql') {
+      const mysql = new MySQLDatabase(dbConfig);
+
+      const results = await mysql.deleteTable(collectionName);
+
+      mysql.close();
+      return results;
+    }
+
+    const collections: Collection[] = await getDatabaseCollections({
+      database,
+      ...dbConfig,
+    });
+
+    await this.projectRepository.update({ projectId }, { collections });
+
+    return { message: 'Database not supported' };
+  }
+
+  async refetchCollection(projectId: string, uid: string) {
+    const project = await this.findOne(projectId, uid);
+
+    const dbConfig = await this.getDatabaseCredentials(projectId, uid);
+
+    const collections: Collection[] = await getDatabaseCollections({
+      database: project.database,
+      ...dbConfig,
+    });
+
+    await this.projectRepository.update({ projectId }, { collections });
   }
 
   async addCorsOrigin(
@@ -478,6 +642,22 @@ export class ProjectsService {
     return isAdministrator;
   }
 
+  private isMemberEditor(members: Member[], uid: string) {
+    const isEditor = !!members.find(
+      (member) => member.uid === uid && member.role === 'editor',
+    );
+
+    return isEditor;
+  }
+
+  private isMemberViewer(members: Member[], uid: string) {
+    const isViewer = !!members.find(
+      (member) => member.uid === uid && member.role === 'viewer',
+    );
+
+    return isViewer;
+  }
+
   private async formatProject(project: Project): Promise<ProjectType> {
     const memberIds = project.members.map((member) => member.uid);
     const users = await this.usersService.getUserByBatch(memberIds ?? []);
@@ -513,11 +693,11 @@ export class ProjectsService {
     const cryptr = new Cryptr(key);
 
     return {
-      name: cryptr.decrypt(databaseConfig.name),
-      host: cryptr.decrypt(databaseConfig.host),
+      name: cryptr.decrypt(databaseConfig.name) as string,
+      host: cryptr.decrypt(databaseConfig.host) as string,
       port: Number(cryptr.decrypt(`${databaseConfig.port}`)),
-      username: cryptr.decrypt(databaseConfig.username),
-      password: cryptr.decrypt(databaseConfig.password),
+      username: cryptr.decrypt(databaseConfig.username) as string,
+      password: cryptr.decrypt(databaseConfig.password) as string,
     };
   }
 
