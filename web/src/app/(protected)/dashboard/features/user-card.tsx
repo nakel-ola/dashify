@@ -1,10 +1,7 @@
 "use client";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
-import { Menu, Transition } from "@headlessui/react";
 import { Add, ArrowDown2, Logout, User, Grid2 } from "iconsax-react";
 import { useSession } from "next-auth/react";
-import Link from "next/link";
-import { Fragment } from "react";
 import { useModelStore } from "../../store/ModelStore";
 import { cn } from "@/lib/utils";
 import { useSignOut } from "@/hooks/use-sign-out";

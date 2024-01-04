@@ -18,7 +18,7 @@ export const ProjectCard = (props: Props) => {
 
   return (
     <RippleCard
-      onClick={() => router.push(`/project/${projectId}/overview`)}
+      onClick={() => router.push(`/project/${projectId}`)}
       className="cursor-pointer border-[1.5px] rounded-lg h-[180px] bg-white dark:bg-dark border-slate-200 dark:border-neutral-800 py-2 px-3 flex flex-col hover:scale-[1.02] active:scale-[0.99] transition-transform duration-300"
     >
       <div className="flex items-center">

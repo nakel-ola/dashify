@@ -23,6 +23,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { MoonLoader } from "react-spinners";
 import { uploadImage } from "../services/upload-image";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 type Props = {};
 
@@ -47,6 +48,8 @@ export const CreateCard = (props: Props) => {
 
   const queryClient = useQueryClient();
 
+  const router = useRouter();
+
   const {
     handleSubmit,
     handleChange,
@@ -56,7 +59,6 @@ export const CreateCard = (props: Props) => {
     setFieldValue,
     resetForm,
     isValid,
-    submitForm,
     isSubmitting,
   } = useFormik<CreateProjectForm>({
     initialValues: {
@@ -100,6 +102,8 @@ export const CreateCard = (props: Props) => {
           await queryClient.invalidateQueries({
             queryKey: ["projects"],
           });
+
+          router.push(`/project/${projectId}`);
           handleClose();
         })
         .catch((err) => {

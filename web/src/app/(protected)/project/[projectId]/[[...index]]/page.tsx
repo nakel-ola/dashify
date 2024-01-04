@@ -16,7 +16,7 @@ type Props = {
   searchParams: {};
 };
 
-export default function Project(props: Props) {
+export default function ProjectCollection(props: Props) {
   const {
     params: { index },
   } = props;
