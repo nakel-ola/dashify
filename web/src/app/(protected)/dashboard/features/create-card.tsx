@@ -91,13 +91,9 @@ export const CreateCard = (props: Props) => {
       if (values.image)
         url = await uploadImage(values.image, data?.user.accessToken!);
 
-      const formData = new FormData();
-
-      formData.append("file", values.image!, values.image!.name);
-
       await createProject({ ...values, image: url, projectId })
         .then(async (results) => {
-          toast({ variant: "default", title: results.message });
+          toast({ variant: "default", title: "Dash created successfully" });
 
           await queryClient.invalidateQueries({
             queryKey: ["projects"],
