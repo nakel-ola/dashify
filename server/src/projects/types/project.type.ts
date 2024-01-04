@@ -20,7 +20,7 @@ export type Widgets = any;
 export type DatabaseConfig = {
   name: string;
   host: string;
-  port: string;
+  port: number;
   dbType: 'mongodb' | 'postgres' | 'mysql' | 'cockroachdb';
   username: string;
   password: string;

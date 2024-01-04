@@ -1,4 +1,4 @@
-import { MongoClient, Db, Collection as MongodbCollection } from 'mongodb';
+import { MongoClient, Collection as MongodbCollection } from 'mongodb';
 import { getMongodbArrayType, getMongodbObjectFieldType } from './utils';
 import { Collection } from '../types/collection.type';
 
@@ -28,7 +28,6 @@ type DuplicateCollectionArgs = {
 
 export class MongoDatabase {
   private client: MongoClient;
-  private db: Db;
 
   constructor(connectionOption: ConnectionOption) {
     const { host, name, username, password } = connectionOption;
@@ -41,7 +40,6 @@ export class MongoDatabase {
     try {
       this.client = new MongoClient(connectionString);
       await this.client.connect();
-      this.db = this.client.db();
     } catch (error) {
       console.error('Error connecting to MongoDB:', error);
       throw error;
@@ -52,7 +50,9 @@ export class MongoDatabase {
     collectionName: string,
   ): Promise<{ message: string }> {
     try {
-      await this.db.createCollection(collectionName);
+      const db = this.client.db();
+      await db.createCollection(collectionName);
+
       return { message: 'Collection created successfull' };
     } catch (error) {
       console.error(`Error creating collection '${collectionName}':`, error);
@@ -62,19 +62,26 @@ export class MongoDatabase {
 
   public async getCollections(): Promise<Collection[]> {
     try {
-      const collections = await this.db.listCollections().toArray();
+      const db = this.client.db();
+
+      const collections = await db.listCollections().toArray();
 
       const results: Collection[] = [];
 
       for (const collection of collections) {
         const collectionName = collection.name;
-        const sampleDocument = await this.db
-          .collection(collectionName)
-          .findOne();
+        const sampleDocument = await db.collection(collectionName).findOne();
 
         const schema = [];
 
-        if (!sampleDocument) continue;
+        if (!sampleDocument) {
+          results.push({
+            name: collectionName,
+            icon: 'Settings',
+            fields: schema,
+          });
+          continue;
+        }
 
         for (const key in sampleDocument) {
           const value = sampleDocument[key];
@@ -116,7 +123,9 @@ export class MongoDatabase {
   public async getCollection(args: GetCollectionArgs) {
     const { collectionName, limit, offset } = args;
     try {
-      const results = await this.db
+      const db = this.client.db();
+
+      const results = await db
         .collection(collectionName)
         .find(
           {},
@@ -128,9 +137,7 @@ export class MongoDatabase {
         .project({})
         .toArray();
 
-      const totalItems = await this.db
-        .collection(collectionName)
-        .countDocuments();
+      const totalItems = await db.collection(collectionName).countDocuments();
 
       return { results, totalItems };
     } catch (error) {
@@ -142,7 +149,9 @@ export class MongoDatabase {
   public async changeCollectionName(args: ChangeCollectionNameArgs) {
     const { collectionName, newCollectionName } = args;
     try {
-      const results = await this.db
+      const db = this.client.db();
+
+      const results = await db
         .collection(collectionName)
         .rename(newCollectionName);
 
@@ -163,9 +172,10 @@ export class MongoDatabase {
   ): Promise<MongodbCollection> {
     const { collectionName, duplicateName, withData = true } = args;
     try {
-      const sourceCollection = this.db.collection(collectionName);
-      const destinationCollection =
-        await this.db.createCollection(duplicateName);
+      const db = this.client.db();
+
+      const sourceCollection = db.collection(collectionName);
+      const destinationCollection = await db.createCollection(duplicateName);
 
       // Copy documents from source to destination collection
 
@@ -187,7 +197,9 @@ export class MongoDatabase {
 
   public async deleteCollection(collectionName: string) {
     try {
-      const results = await this.db.dropCollection(collectionName);
+      const db = this.client.db();
+
+      const results = await db.dropCollection(collectionName);
 
       if (results) return { message: 'Collection deleted successfully' };
 

@@ -7,6 +7,7 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Put,
   Query,
   Request,
   UseGuards,
@@ -26,6 +27,7 @@ import {
   AddTokenDto,
   CreateNewCollectionDto,
   CreateProjectDto,
+  EditCollectionDto,
   InviteMemberDto,
   UpdateProjectDto,
 } from './dto';
@@ -278,7 +280,7 @@ export class ProjectsController {
   ) {
     return this.projectsService.createNewCollection(
       projectId,
-      req.user,
+      req.user.uid,
       createNewCollectionDto,
     );
   }
@@ -302,13 +304,25 @@ export class ProjectsController {
 
   // TODO: Refetch collection from database
   @ApiOperation({ summary: 'Refetch collections or tables' })
-  @Delete(':projectId/refetch-collection/')
+  @Post(':projectId/refetch-collection/')
   @ApiParam({ name: 'projectId', example: 'finance-tracker-78493' })
   refetchCollection(@Request() req, @Param('projectId') projectId: string) {
     return this.projectsService.refetchCollection(projectId, req.user.uid);
   }
 
   // TODO: Edit collection
-  // TODO: Export collection data to csv, json
-  // TODO: Duplicate collection
+  @ApiOperation({ summary: 'Edit collections or tables' })
+  @Put(':projectId/edit-collection/')
+  @ApiParam({ name: 'projectId', example: 'finance-tracker-78493' })
+  editCollection(
+    @Request() req,
+    @Param('projectId') projectId: string,
+    @Body() editCollectionDto: EditCollectionDto,
+  ) {
+    return this.projectsService.editCollection(
+      projectId,
+      req.user.uid,
+      editCollectionDto,
+    );
+  }
 }

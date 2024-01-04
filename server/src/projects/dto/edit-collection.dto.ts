@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString, IsOptional } from 'class-validator';
 
-export class CreateNewCollectionDto {
+export class EditCollectionDto {
   @ApiProperty({
     description: 'Name of collection',
     type: String,
@@ -10,10 +10,10 @@ export class CreateNewCollectionDto {
   collectionName: string;
 
   @ApiProperty({
-    description: 'If the database is not mongodb required',
-    type: [String],
+    description: 'Name to change to',
+    type: String,
   })
   @IsString()
   @IsOptional()
-  column?: string[];
+  newCollectionName: string;
 }

@@ -1,5 +1,5 @@
 import { CockroachDatabase } from '../projects/common/cockroachdb';
-import { MongoDatabase } from '../projects/common/mogodb';
+import { MongoDatabase } from '../projects/common/mongodb';
 import { MySQLDatabase } from '../projects/common/mysql';
 import { PostgresDatabase } from '../projects/common/postgres';
 
