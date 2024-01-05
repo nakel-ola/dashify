@@ -58,8 +58,10 @@ export class CockroachDatabase {
     columns: string[],
   ): Promise<QueryResult> {
     try {
+      const newColumns =
+        columns.length > 0 ? columns : ['id SERIAL PRIMARY KEY'];
       const escapeTableName = this.client.escapeIdentifier(tableName);
-      const query = `CREATE TABLE IF NOT EXISTS ${escapeTableName} (${columns.join(
+      const query = `CREATE TABLE IF NOT EXISTS ${escapeTableName} (${newColumns.join(
         ', ',
       )});`;
       const result = await this.client.query(query);

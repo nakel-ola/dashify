@@ -11,7 +11,7 @@ type DatabaseCardProps = {
 export const DatabaseCard = (props: DatabaseCardProps) => {
   const { active, onChange } = props;
   return (
-    <div className="flex items-center overflow-x-scroll mt-2 space-x-3 scrollbar-hidden !max-w-[370px] !w-[90%] lg:!w-[370px] ">
+    <div className="flex items-center overflow-x-scroll mt-2 space-x-3 scrollbar-hidden !max-w-[calc(450px-50px)] !w-[90%] lg:!w-[100%] ">
       {databases.map(({ name, url }, index) => (
         <RippleCard
           key={index}

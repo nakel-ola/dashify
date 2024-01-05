@@ -143,7 +143,7 @@ export const CreateCard = (props: Props) => {
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClick}>
-      <DialogContent className="!max-w-[425px] !w-[90%] lg:!w-[425px] max-h-[98%] overflow-y-scroll">
+      <DialogContent className="!max-w-[450px] !w-[100%] lg:!w-[450px] max-h-[90%] overflow-y-scroll overflow-x-hidden">
         <DialogHeader>
           <DialogTitle>Create a new dash</DialogTitle>
           <DialogDescription>

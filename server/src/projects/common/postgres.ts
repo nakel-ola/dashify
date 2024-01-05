@@ -63,9 +63,11 @@ export class PostgresDatabase {
   // TODO: Colums still need to be worked on;
   public async createTable(tableName: string, columns: string[]) {
     try {
+      const newColumns =
+        columns.length > 0 ? columns : ['id SERIAL PRIMARY KEY'];
       const escapeTableName = this.client.escapeIdentifier(tableName);
 
-      const query = `CREATE TABLE IF NOT EXISTS ${escapeTableName} (${columns.join(
+      const query = `CREATE TABLE IF NOT EXISTS ${escapeTableName} (${newColumns.join(
         ', ',
       )});`;
       const result = await this.client.query(query);
@@ -81,10 +83,11 @@ export class PostgresDatabase {
       const results: Collection[] = [];
 
       const tableQuery = `
-          SELECT table_schema AS schema, table_name
-          FROM information_schema.tables
-          WHERE table_type = 'BASE TABLE' AND table_schema NOT IN ('pg_catalog', 'information_schema')
-        `;
+        SELECT table_schema AS schema, table_name
+        FROM information_schema.tables
+        WHERE table_type = 'BASE TABLE' 
+        AND table_schema = 'public';
+      `;
 
       const tableResult = await this.client.query<TableInfo>(tableQuery);
 

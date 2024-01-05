@@ -269,7 +269,6 @@ export class ProjectsController {
     return this.projectsService.removeMember(projectId, req.user.uid, memberId);
   }
 
-  // TODO: Create new collection
   @ApiOperation({ summary: 'Create new collection or table' })
   @Post(':projectId/create-new-collection')
   @ApiParam({ name: 'projectId', example: 'finance-tracker-78493' })
@@ -285,7 +284,6 @@ export class ProjectsController {
     );
   }
 
-  // TODO: Delete collection
   @ApiOperation({ summary: 'Delete collection or table' })
   @Delete(':projectId/delete-collection/:collectionName')
   @ApiParam({ name: 'projectId', example: 'finance-tracker-78493' })
@@ -302,7 +300,6 @@ export class ProjectsController {
     );
   }
 
-  // TODO: Refetch collection from database
   @ApiOperation({ summary: 'Refetch collections or tables' })
   @Post(':projectId/refetch-collection/')
   @ApiParam({ name: 'projectId', example: 'finance-tracker-78493' })
@@ -310,7 +307,6 @@ export class ProjectsController {
     return this.projectsService.refetchCollection(projectId, req.user.uid);
   }
 
-  // TODO: Edit collection
   @ApiOperation({ summary: 'Edit collections or tables' })
   @Put(':projectId/edit-collection/')
   @ApiParam({ name: 'projectId', example: 'finance-tracker-78493' })

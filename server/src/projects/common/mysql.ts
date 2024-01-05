@@ -30,12 +30,10 @@ type EditTableArgs = {
 export class MySQLDatabase {
   private connection: mysql.Connection;
 
-  constructor(connectionOption: ConnectionOption) {
-    this.connect(connectionOption);
-  }
+  constructor() {}
 
-  private async connect(config: ConnectionOption) {
-    const { host, name, username, port, password } = config;
+  async connect(connectionOption: ConnectionOption) {
+    const { host, name, username, port, password } = connectionOption;
     try {
       this.connection = await mysql.createConnection({
         host,
@@ -47,7 +45,6 @@ export class MySQLDatabase {
       await this.connection.connect();
     } catch (error) {
       console.error('Error connecting to MySQL database:', error);
-
       throw error;
     }
   }
@@ -57,8 +54,9 @@ export class MySQLDatabase {
     columns: string[],
   ): Promise<void> {
     try {
+      const newColumns = columns.length > 0 ? columns : ['id INT PRIMARY KEY'];
       const escapeTableName = mysql.escapeId(tableName);
-      const createTableQuery = `CREATE TABLE IF NOT EXISTS ${escapeTableName} (${columns.join(
+      const createTableQuery = `CREATE TABLE IF NOT EXISTS ${escapeTableName} (${newColumns.join(
         ', ',
       )})`;
       await this.connection.execute(createTableQuery);
@@ -71,7 +69,7 @@ export class MySQLDatabase {
   public async getTables(name: string) {
     try {
       const [rows]: any[] = await this.connection.query(
-        `SELECT TABLE_NAME, COLUMN_NAME, DATA_TYPE, COLUMN_TYPE 
+        `SELECT TABLE_NAME, COLUMN_NAME, DATA_TYPE, COLUMN_TYPE
                FROM INFORMATION_SCHEMA.COLUMNS
                WHERE TABLE_SCHEMA = ?`,
         [name],
@@ -100,7 +98,6 @@ export class MySQLDatabase {
           });
         }
       });
-
       return tableSchemas;
     } catch (error) {
       console.error(`Error getting tables:`, error);
@@ -113,15 +110,11 @@ export class MySQLDatabase {
 
     try {
       const escapeTableName = mysql.escapeId(tableName);
-
       const query = `SELECT * FROM ${escapeTableName} LIMIT ? OFFSET ?`;
       const countQuery = `SELECT COUNT(*) AS totalCount FROM ${escapeTableName};`;
-
       const [rows] = await this.connection.execute(query, [limit, offset]);
       const data = await this.connection.query(countQuery);
-
       console.log('Selected rows:', data);
-
       return { results: rows, totalItems: (data[0] as any).totalCount };
     } catch (error) {
       console.error(`Error getting table '${tableName}':`, error);

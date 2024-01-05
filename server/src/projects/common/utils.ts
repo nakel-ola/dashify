@@ -76,6 +76,7 @@ export function getDataTypeGroup(dataType: string): string | null {
     'polygon',
     'circle',
   ];
+  const timestampTypes = ['timestamp with time zone'];
 
   if (arrayTypes.includes(dataType.toLowerCase())) {
     return 'array';
@@ -85,6 +86,8 @@ export function getDataTypeGroup(dataType: string): string | null {
     return 'number';
   } else if (objectTypes.includes(dataType.toLowerCase())) {
     return 'object';
+  } else if (timestampTypes.includes(dataType.toLowerCase())) {
+    return 'timestampz';
   } else {
     return dataType;
   }
@@ -97,6 +100,7 @@ export function categorizeMySQLDataType(dataType: string, columnType: string) {
   const arrayTypes = ['json', 'array'];
   const objTypes = ['json'];
   const datetimeTypes = ['datetime'];
+  const timestampTypes = ['timestamp with time zone'];
 
   if (stringTypes.some((type) => dataType.startsWith(type))) {
     return { type: 'string' };
@@ -119,6 +123,8 @@ export function categorizeMySQLDataType(dataType: string, columnType: string) {
     return { type: 'object' };
   } else if (datetimeTypes.some((type) => dataType.startsWith(type))) {
     return { type: 'datetime' };
+  } else if (timestampTypes.some((type) => dataType.startsWith(type))) {
+    return { type: 'timestampz' };
   } else {
     return { type: dataType };
   }

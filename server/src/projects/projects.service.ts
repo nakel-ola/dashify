@@ -223,7 +223,9 @@ export class ProjectsService {
     }
 
     if (database === 'mysql') {
-      const mysql = new MySQLDatabase(dbConfig);
+      const mysql = new MySQLDatabase();
+
+      await mysql.connect(dbConfig);
 
       const results = await mysql.getTable(collectionArgs);
 
@@ -275,7 +277,9 @@ export class ProjectsService {
     }
 
     if (database === 'mysql') {
-      const mysql = new MySQLDatabase(dbConfig);
+      const mysql = new MySQLDatabase();
+
+      await mysql.connect(dbConfig);
 
       await mysql.createTable(collectionName, []);
 
@@ -326,7 +330,9 @@ export class ProjectsService {
     }
 
     if (database === 'mysql') {
-      const mysql = new MySQLDatabase(dbConfig);
+      const mysql = new MySQLDatabase();
+
+      await mysql.connect(dbConfig);
 
       await mysql.deleteTable(collectionName);
 
@@ -391,7 +397,9 @@ export class ProjectsService {
     }
 
     if (database === 'mysql') {
-      const mysql = new MySQLDatabase(dbConfig);
+      const mysql = new MySQLDatabase();
+
+      await mysql.connect(dbConfig);
 
       await mysql.editTable(args);
 

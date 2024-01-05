@@ -47,7 +47,9 @@ export const getDatabaseCollections = async (args: Args) => {
   }
 
   if (database === 'mysql') {
-    const mysql = new MySQLDatabase(databaseConfig);
+    const mysql = new MySQLDatabase();
+
+    await mysql.connect(databaseConfig);
 
     const results = await mysql.getTables(databaseConfig.name);
 
