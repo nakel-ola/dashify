@@ -14,8 +14,14 @@ import { X } from "lucide-react";
 import { useProjectStore } from "../store/project-store";
 import Link from "next/link";
 import Image from "next/image";
-import { Add, Refresh } from "iconsax-react";
+import { Add, More, Refresh, Edit, Trash } from "iconsax-react";
 import { useCollectionModalStore } from "../store/collection-modal-store";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export const Sidebar = () => {
   return (
@@ -79,7 +85,6 @@ const Content = () => {
 
   const project = useProjectStore((store) => store.project!);
   const { setIsOpen: setIsCollectionOpen } = useCollectionModalStore();
-  
 
   const items = project.collections.map((co) => ({
     icon: co.icon as IconNames,
@@ -117,9 +122,14 @@ const Content = () => {
       </div>
 
       <div className="flex items-center justify-between gap-2 m-2 mb-3 mt-5">
-        <div className="py-1.5 px-2 bg-slate-100 dark:bg-neutral-800 rounded-lg cursor-pointer flex items-center w-full " onClick={() => setIsCollectionOpen(true)}>
+        <div
+          className="py-1.5 px-2 bg-slate-100 dark:bg-neutral-800 rounded-lg cursor-pointer flex items-center w-full "
+          onClick={() => setIsCollectionOpen(true)}
+        >
           <Add size={20} className="text-black dark:text-white" />
-          <p className="pl-2 text-black dark:text-white">New {project?.database === "mongodb" ? "Collection" : "Table"}</p>
+          <p className="pl-2 text-black dark:text-white">
+            New {project?.database === "mongodb" ? "Collection" : "Table"}
+          </p>
         </div>
 
         <button
@@ -136,7 +146,7 @@ const Content = () => {
         ))}
       </div>
 
-      <Card iconName="Setting" name="settings" />
+      <Card iconName="Setting" name="settings" showMoreIcon={false} />
     </div>
   );
 };
@@ -144,24 +154,26 @@ const Content = () => {
 type CardProps = {
   iconName: IconNames;
   name: string;
+  showMoreIcon?: boolean;
 };
 const Card = (props: CardProps) => {
-  const { iconName, name } = props;
+  const { iconName, name, showMoreIcon = true } = props;
   const pathname = usePathname();
   const router = useRouter();
   const [{ projectId }] = useQueries();
+  const project = useProjectStore((store) => store.project);
 
   const isActive = pathname.startsWith(`/project/${projectId}/${name}`);
 
   return (
     <div
       className={cn(
-        "flex items-center m-2 mb-3 py-1.5 px-2 hover:bg-slate-100 hover:dark:bg-neutral-800 rounded-lg cursor-pointer mt-auto",
+        "flex items-center justify-between m-2 mb-3 py-1.5 px-2 hover:bg-slate-100 hover:dark:bg-neutral-800 rounded-lg cursor-pointer mt-auto",
         isActive ? "bg-slate-100 dark:bg-neutral-800" : ""
       )}
       onClick={() => router.push(`/project/${projectId}/${name}`)}
     >
-      <div className="">
+      <div className="flex items-center">
         <Icons
           iconName={iconName}
           variant={isActive ? "Bold" : "Outline"}
@@ -172,18 +184,41 @@ const Card = (props: CardProps) => {
               : "text-gray-dark dark:text-gray-light"
           )}
         />
+        <p
+          className={cn(
+            "pl-2",
+            isActive
+              ? "text-black dark:text-white"
+              : "text-gray-dark dark:text-gray-light"
+          )}
+        >
+          {capitalizeFirstLetter(name)}
+        </p>
       </div>
 
-      <p
-        className={cn(
-          "pl-2",
-          isActive
-            ? "text-black dark:text-white"
-            : "text-gray-dark dark:text-gray-light"
-        )}
-      >
-        {capitalizeFirstLetter(name)}
-      </p>
+      {showMoreIcon ? (
+        <DropdownMenu>
+          <DropdownMenuTrigger>
+            <button
+              type="button"
+              className="w-9 h-full ml-auto rotate-90 flex items-center justify-center"
+            >
+              <More size={20} />
+            </button>
+          </DropdownMenuTrigger>
+
+          <DropdownMenuContent className="w-52">
+            <DropdownMenuItem>
+              <Edit size={20} className="mr-2" />
+              Edit {project?.database === "mongodb" ? "Collection" : "Table"}
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+              <Trash className="text-red-500 mr-2" size={20} />
+              Delete {project?.database === "mongodb" ? "Collection" : "Table"}
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      ) : null}
     </div>
   );
 };
