@@ -2,11 +2,12 @@
 
 import { Button } from "@/components/ui/button";
 import { useProjectStore } from "../../../store/project-store";
-import { useModelStore } from "@/app/(protected)/store/ModelStore";
+import { useCollectionModalStore } from "../../../store/collection-modal-store";
 
 export const CreateCard = () => {
   const project = useProjectStore((store) => store.project);
-  const { setIsOpen } = useModelStore();
+  const { setIsOpen: setIsCollectionOpen } = useCollectionModalStore();
+
   return (
     <div className="grid place-items-center h-[calc(100vh-60px)]">
       <div className="cursor-pointer border-[1.5px] rounded-lg h-[180px] w-[350px] bg-white dark:bg-dark border-slate-200 dark:border-neutral-800 p-4 flex flex-col transition-transform duration-300 ">
@@ -22,7 +23,7 @@ export const CreateCard = () => {
 
         <Button
           className="w-fit mt-auto rounded-lg"
-          onClick={() => setIsOpen(true)}
+          onClick={() => setIsCollectionOpen(true)}
         >
           Create a new{" "}
           {project?.database === "mongodb" ? "collection" : "table"}

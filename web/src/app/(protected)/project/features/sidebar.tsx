@@ -15,6 +15,7 @@ import { useProjectStore } from "../store/project-store";
 import Link from "next/link";
 import Image from "next/image";
 import { Add, Refresh } from "iconsax-react";
+import { useCollectionModalStore } from "../store/collection-modal-store";
 
 export const Sidebar = () => {
   return (
@@ -77,6 +78,8 @@ const Content = () => {
   const { setIsOpen } = useSidebarStore();
 
   const project = useProjectStore((store) => store.project!);
+  const { setIsOpen: setIsCollectionOpen } = useCollectionModalStore();
+  
 
   const items = project.collections.map((co) => ({
     icon: co.icon as IconNames,
@@ -87,7 +90,7 @@ const Content = () => {
     <div className="flex flex-col bg-white dark:bg-dark h-full">
       <div className="lg:hidden m-2 p-2 flex items-center justify-between">
         <Link
-          href={`/project/${projectId}/overview`}
+          href={`/project/${projectId}`}
           className="flex items-center cursor-pointer"
         >
           {project.logo ? (
@@ -114,9 +117,9 @@ const Content = () => {
       </div>
 
       <div className="flex items-center justify-between gap-2 m-2 mb-3 mt-5">
-        <div className="py-1.5 px-2 bg-slate-100 dark:bg-neutral-800 rounded-lg cursor-pointer flex items-center w-full ">
+        <div className="py-1.5 px-2 bg-slate-100 dark:bg-neutral-800 rounded-lg cursor-pointer flex items-center w-full " onClick={() => setIsCollectionOpen(true)}>
           <Add size={20} className="text-black dark:text-white" />
-          <p className="pl-2 text-black dark:text-white">New Table</p>
+          <p className="pl-2 text-black dark:text-white">New {project?.database === "mongodb" ? "Collection" : "Table"}</p>
         </div>
 
         <button

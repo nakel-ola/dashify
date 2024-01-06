@@ -11,7 +11,7 @@ import { createProject } from "../services/create-project";
 import { FormStepOne } from "./form-step-one";
 import { FormStepTwo } from "./form-step-two";
 import { CreateProjectForm } from "./type";
-import { useModelStore } from "../../store/ModelStore";
+import { useModalStore } from "../../store/ModelStore";
 import {
   Dialog,
   DialogContent,
@@ -41,7 +41,7 @@ const Schema = Yup.object().shape({
 
 export const CreateCard = (props: Props) => {
   const [active, setActive] = useState(0);
-  const { isOpen, setIsOpen } = useModelStore();
+  const { isOpen, setIsOpen } = useModalStore();
   const { toast } = useToast();
 
   const { data } = useSession();

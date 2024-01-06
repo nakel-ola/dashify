@@ -1,10 +1,10 @@
 "use client";
 import { RippleCard } from "@/components/ripple-card";
 import { Add } from "iconsax-react";
-import { useModelStore } from "../../store/ModelStore";
+import { useModalStore } from "../../store/ModelStore";
 
 export const AddCard = () => {
-  const { setIsOpen } = useModelStore();
+  const { setIsOpen } = useModalStore();
 
   return (
     <RippleCard

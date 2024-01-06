@@ -1,10 +1,10 @@
 import { create } from "zustand";
 
-type ModalStoreType = {
+type CollectionModalStoreType = {
   isOpen: boolean;
   setIsOpen: (value: boolean) => void;
 };
-export const useModalStore = create<ModalStoreType>((set, get) => ({
+export const useCollectionModalStore = create<CollectionModalStoreType>((set, get) => ({
   isOpen: false,
   setIsOpen: (value) => set({ isOpen: value }),
 }));

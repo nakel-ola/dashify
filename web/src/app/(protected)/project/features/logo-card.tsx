@@ -30,7 +30,7 @@ export const LogoCard = (props: Props) => {
       ) : null}
 
       <Link
-        href={`/project/${projectId}/overview`}
+        href={`/project/${projectId}`}
         className="flex items-center cursor-pointer"
       >
         {logo ? (

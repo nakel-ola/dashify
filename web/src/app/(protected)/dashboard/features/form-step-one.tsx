@@ -115,7 +115,7 @@ export const FormStepOne = (props: Props) => {
 
       <div>
         <label
-          htmlFor="name"
+          htmlFor="database"
           className="block text-base font-semibold leading-6 text-black dark:text-white"
         >
           Database

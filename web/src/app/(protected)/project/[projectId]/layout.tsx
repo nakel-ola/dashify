@@ -7,6 +7,7 @@ import {
   QueryClient,
   dehydrate,
 } from "@tanstack/react-query";
+import { CreateCollection } from "../features/create-collection";
 
 type Props = {
   params: { projectId: string };
@@ -40,6 +41,8 @@ export default async function ProjectLayout(props: PropsWithChildren<Props>) {
             </div>
           </div>
         </div>
+
+        <CreateCollection />
       </DataWrapper>
     </HydrationBoundary>
   );

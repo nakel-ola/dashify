@@ -2,7 +2,7 @@
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Add, ArrowDown2, Logout, User, Grid2 } from "iconsax-react";
 import { useSession } from "next-auth/react";
-import { useModelStore } from "../../store/ModelStore";
+import { useModalStore } from "../../store/ModelStore";
 import { cn } from "@/lib/utils";
 import { useSignOut } from "@/hooks/use-sign-out";
 import {
@@ -20,7 +20,7 @@ export const UserCard = (props: Props) => {
   const { isScrollUp } = props;
   const { data } = useSession();
 
-  const { setIsOpen } = useModelStore();
+  const { setIsOpen } = useModalStore();
 
   const signOut = useSignOut();
 

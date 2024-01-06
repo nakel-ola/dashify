@@ -9,6 +9,7 @@ import { Signika_Negative } from "next/font/google";
 import "./globals.css";
 import TanstackProvider from "@/providers/tanstack-provider";
 import { AuthStateChanged } from "@/components/auth-state-changed";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 const font = Signika_Negative({
   subsets: ["latin"],
@@ -108,11 +109,13 @@ export default async function RootLayout({
           disableTransitionOnChange
           storageKey="dashify-theme"
         >
-          <AuthProvider session={session}>
-            <AuthStateChanged>
-              <TanstackProvider>{children}</TanstackProvider>
-            </AuthStateChanged>
-          </AuthProvider>
+          <TooltipProvider>
+            <AuthProvider session={session}>
+              <AuthStateChanged>
+                <TanstackProvider>{children}</TanstackProvider>
+              </AuthStateChanged>
+            </AuthProvider>
+          </TooltipProvider>
           <Toaster />
         </ThemeProvider>
       </body>
