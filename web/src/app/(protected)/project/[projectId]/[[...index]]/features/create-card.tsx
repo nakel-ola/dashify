@@ -2,11 +2,11 @@
 
 import { Button } from "@/components/ui/button";
 import { useProjectStore } from "../../../store/project-store";
-import { useCollectionModalStore } from "../../../store/collection-modal-store";
+import { useRouter } from "next/navigation";
 
 export const CreateCard = () => {
   const project = useProjectStore((store) => store.project);
-  const { setIsOpen: setIsCollectionOpen } = useCollectionModalStore();
+  const router = useRouter();
 
   return (
     <div className="grid place-items-center h-[calc(100vh-60px)]">
@@ -23,7 +23,7 @@ export const CreateCard = () => {
 
         <Button
           className="w-fit mt-auto rounded-lg"
-          onClick={() => setIsCollectionOpen(true)}
+          onClick={() => router.push(`/project/${project?.projectId}/create`)}
         >
           Create a new{" "}
           {project?.database === "mongodb" ? "collection" : "table"}

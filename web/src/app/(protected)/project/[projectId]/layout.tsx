@@ -7,7 +7,6 @@ import {
   QueryClient,
   dehydrate,
 } from "@tanstack/react-query";
-import { CreateCollection } from "../features/create-collection";
 
 type Props = {
   params: { projectId: string };
@@ -31,18 +30,13 @@ export default async function ProjectLayout(props: PropsWithChildren<Props>) {
         <div className="page-max-width h-screen overflow-hidden">
           <Navbar />
 
-          <div className="grid grid-cols-10 h-[calc(100vh-57.4px)]">
+          <div className="grid grid-cols-10 h-[calc(100vh-57.4px)] overflow-hidden">
             <Sidebar />
-            <div
-              id="project-body"
-              className="col-span-10 lg:col-span-8 h-full overflow-y-auto"
-            >
+            <div className="col-span-10 lg:col-span-8 h-full overflow-y-auto">
               {children}
             </div>
           </div>
         </div>
-
-        <CreateCollection />
       </DataWrapper>
     </HydrationBoundary>
   );
