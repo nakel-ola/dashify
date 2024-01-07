@@ -7,15 +7,15 @@ export type Collection = {
   name: string;
   icon: string | null;
   fields: Fields[];
-  widgets?: Widgets[];
 };
 
 export type Fields = {
   name: string;
   type: string;
+  dataType?: string;
+  udtName?: string;
+  defaultValue?: string;
 };
-
-export type Widgets = any;
 
 export type DatabaseConfig = {
   name: string;

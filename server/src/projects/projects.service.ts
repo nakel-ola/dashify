@@ -9,13 +9,13 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import clean from '../common/clean';
 import Cryptr from '../common/cryptr';
-import { getDatabaseCollections } from '../common/getDatabaseCollections';
+import { getDatabaseCollections } from './common/getDatabaseCollections';
 import { User } from '../users/entities/user.entity';
 import { UsersService } from './../users/users.service';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { Project } from './entities';
-import { Collection } from './types/collection.type';
+import { Collection } from './types/project.type';
 import {
   DatabaseConfig,
   InvitationType,

@@ -1,5 +1,5 @@
 import * as mysql from 'mysql2/promise';
-import { Collection } from '../types/collection.type';
+import { Collection } from '../types/project.type';
 import { categorizeMySQLDataType } from './utils';
 
 interface ConnectionOption {
@@ -69,9 +69,11 @@ export class MySQLDatabase {
   public async getTables(name: string) {
     try {
       const [rows]: any[] = await this.connection.query(
-        `SELECT TABLE_NAME, COLUMN_NAME, DATA_TYPE, COLUMN_TYPE
-               FROM INFORMATION_SCHEMA.COLUMNS
-               WHERE TABLE_SCHEMA = ?`,
+        `
+          SELECT COLUMN_DEFAULT, TABLE_NAME, COLUMN_NAME, DATA_TYPE, COLUMN_TYPE 
+          FROM INFORMATION_SCHEMA.COLUMNS 
+          WHERE TABLE_SCHEMA = ?
+        `,
         [name],
       );
 
@@ -80,21 +82,21 @@ export class MySQLDatabase {
         const existingSchema = tableSchemas.find(
           (schema) => schema.name === row.TABLE_NAME,
         );
+
+        const field = {
+          name: row.COLUMN_NAME,
+          ...categorizeMySQLDataType(row.DATA_TYPE, row.COLUMN_TYPE),
+          dataType: row.DATA_TYPE,
+          udtName: row.COLUMN_TYPE,
+          defaultValue: row.COLUMN_DEFAULT,
+        };
         if (existingSchema) {
-          existingSchema.fields.push({
-            name: row.COLUMN_NAME,
-            ...categorizeMySQLDataType(row.DATA_TYPE, row.COLUMN_TYPE),
-          });
+          existingSchema.fields.push(field);
         } else {
           tableSchemas.push({
             name: row.TABLE_NAME,
             icon: 'Settings',
-            fields: [
-              {
-                name: row.COLUMN_NAME,
-                ...categorizeMySQLDataType(row.DATA_TYPE, row.COLUMN_TYPE),
-              },
-            ],
+            fields: [field],
           });
         }
       });

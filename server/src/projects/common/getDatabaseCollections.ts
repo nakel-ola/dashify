@@ -1,7 +1,7 @@
-import { CockroachDatabase } from '../projects/common/cockroachdb';
-import { MongoDatabase } from '../projects/common/mongodb';
-import { MySQLDatabase } from '../projects/common/mysql';
-import { PostgresDatabase } from '../projects/common/postgres';
+import { CockroachDatabase } from './cockroachdb';
+import { MongoDatabase } from './mongodb';
+import { MySQLDatabase } from './mysql';
+import { PostgresDatabase } from './postgres';
 
 type Args = {
   name: string;

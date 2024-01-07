@@ -1,6 +1,6 @@
 import { MongoClient, Collection as MongodbCollection } from 'mongodb';
 import { getMongodbArrayType, getMongodbObjectFieldType } from './utils';
-import { Collection } from '../types/collection.type';
+import { Collection } from '../types/project.type';
 
 type ConnectionOption = {
   name: string;
@@ -71,6 +71,8 @@ export class MongoDatabase {
       for (const collection of collections) {
         const collectionName = collection.name;
         const sampleDocument = await db.collection(collectionName).findOne();
+
+        console.log(sampleDocument);
 
         const schema = [];
 

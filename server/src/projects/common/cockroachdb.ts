@@ -1,5 +1,6 @@
 import { Client, QueryResult } from 'pg';
 import { getDataTypeGroup } from './utils';
+import { Collection } from '../types/project.type';
 
 interface ConnectionOption {
   name: string;
@@ -81,14 +82,14 @@ export class CockroachDatabase {
         AND table_type = 'BASE TABLE';
      `;
 
-      const results = [];
+      const results: Collection[] = [];
 
       const tableResult = await this.client.query(query);
       const tables = tableResult.rows.map((row) => row.table_name);
 
       for (const tableName of tables) {
         const schemaQuery = `
-          SELECT column_name, data_type
+          SELECT column_name, data_type, udt_name, column_default
           FROM information_schema.columns
           WHERE table_schema = 'public'
           AND table_name = $1;
@@ -100,6 +101,9 @@ export class CockroachDatabase {
         const tables = tableSchema.map((row) => ({
           name: row.column_name,
           type: getDataTypeGroup(row.data_type),
+          dataType: row.data_type,
+          udtName: row.udt_name,
+          defaultValue: row.column_default,
         }));
 
         results.push({ name: tableName, icon: 'Settings', fields: tables });

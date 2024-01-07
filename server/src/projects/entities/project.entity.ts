@@ -48,10 +48,16 @@ class Fields {
 
   @Column({ nullable: false })
   type: string;
-}
 
-@Entity()
-class Widgets {}
+  @Column({ nullable: true })
+  dataType: string;
+
+  @Column({ nullable: true })
+  udtName: string;
+
+  @Column({ nullable: true })
+  defaultValue: string;
+}
 
 @Entity()
 class Collection {
@@ -63,9 +69,6 @@ class Collection {
 
   @Column({ nullable: false })
   fields: Fields[];
-
-  @Column()
-  widgets?: Widgets[];
 }
 
 @Entity()

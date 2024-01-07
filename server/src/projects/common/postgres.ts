@@ -1,5 +1,5 @@
 import { Client } from 'pg';
-import { Collection, Fields } from '../types/collection.type';
+import { Collection, Fields } from '../types/project.type';
 import { getDataTypeGroup } from './utils';
 
 interface ConnectionOption {
@@ -18,6 +18,8 @@ type TableInfo = {
 type ColumnInfo = {
   column_name: string;
   data_type: string;
+  udt_name: string;
+  column_default: string;
 };
 
 type GetTableArgs = {
@@ -96,7 +98,7 @@ export class PostgresDatabase {
         const tableName = tableInfo.table_name;
 
         const columnQuery = `
-            SELECT column_name, data_type
+            SELECT column_name, data_type, udt_name, column_default
             FROM information_schema.columns
             WHERE table_schema = $1 AND table_name = $2
           `;
@@ -113,6 +115,9 @@ export class PostgresDatabase {
           fields.push({
             name: columnInfo.column_name,
             type: getDataTypeGroup(dataType),
+            dataType,
+            udtName: columnInfo.udt_name,
+            defaultValue: columnInfo.column_default,
           });
         }
 
