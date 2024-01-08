@@ -74,7 +74,7 @@ export const FilterCard = (props: Props) => {
 
   const [{ pageName }] = useQueries();
 
-  const fields = useProjectStore((store) => store.getField(pageName)!);
+  const fields = useProjectStore((store) => store.getFields(pageName)!);
 
   const onNameChange = (index: number, value: string) => {
     let arr = [...items];
@@ -186,7 +186,7 @@ const Card = (props: CardProps) => {
 
   const [{ pageName }] = useQueries();
 
-  const fields = useProjectStore((store) => store.getField(pageName)!);
+  const fields = useProjectStore((store) => store.getFields(pageName)!);
 
   const handleChange = (value: string) => {
     const item = operators.find((op) => op.value === value);

@@ -35,12 +35,19 @@ type DataType = {
   isArray: boolean;
   isIdentify: boolean;
   defaultValue?: string | null;
+  references?: {
+    onUpdate?: "Cascade" | "Restrict" | null;
+    onDelete?: "Cascade" | "Restrict" | "Set default" | "Set NULL" | null;
+    collectionName: string;
+    fieldName: string;
+  };
 };
 
 const formatPostgresDataType = (items: DataType[]) => {
-  const results: string[] = [];
+  let results: string[] = [];
 
   const primaries = items.filter((item) => item.isPrimary === true);
+  const foreigns = items.filter((item) => item.references);
 
   for (let i = 0; i < items.length; i++) {
     const item = items[i];
@@ -69,6 +76,36 @@ const formatPostgresDataType = (items: DataType[]) => {
     );
   }
 
+  if (foreigns.length > 0) {
+    results = [...results, ...formatForeigns(foreigns)];
+  }
+
+  return results;
+};
+
+const formatForeigns = (items: DataType[]) => {
+  const results: string[] = [];
+  for (let i = 0; i < items.length; i++) {
+    const item = items[i];
+
+    const references = item.references;
+
+    const constraintName = "fk_" + references?.collectionName;
+    let foreign = `CONSTRAINT ${constraintName}
+      FOREIGN KEY (${item.name})
+      REFERENCES ${references?.collectionName} (${item.references?.fieldName})
+    `;
+
+    if (references?.onUpdate) {
+      foreign += `ON UPDATE ${references?.onUpdate.toUpperCase()}\n`;
+    }
+    if (references?.onDelete) {
+      foreign += `    ON DELETE ${references?.onDelete.toUpperCase()}`;
+    }
+
+    results.push(foreign);
+  }
+
   return results;
 };
 
@@ -86,9 +123,9 @@ const formatDefaultValue = (value: string | null) => {
 };
 
 const dataType: Record<DataType["dataType"], string> = {
-  int2: "SERIAL",
-  int4: "SERIAL",
-  int8: "BIGSERIAL",
+  int2: "SMALLINT",
+  int4: "INTEGER",
+  int8: "BIGINT",
   numeric: "NUMERIC",
   float4: "FLOAT4",
   float8: "FLOAT8",
@@ -151,6 +188,8 @@ export default function Create() {
     validateOnMount: true,
     onSubmit: (values) => {
       console.log(formatPostgresDataType(values.columns as DataType[]));
+
+      console.log("Helloe");
 
       setSubmitting(false);
     },
@@ -220,8 +259,6 @@ export default function Create() {
             showErrorMessage={false}
           />
 
-          {/* <div className="h-screen"></div> */}
-
           <ColumnsCard
             columns={values.columns}
             removeColumn={removeColumn}
@@ -230,7 +267,11 @@ export default function Create() {
           />
 
           <div className="flex">
-            <Button type="submit" className="ml-auto">
+            <Button
+              type="submit"
+              // onClick={() => handleSubmit()}
+              className="ml-auto"
+            >
               Create {project?.database === "mongodb" ? "collection" : "table"}
               <MoonLoader
                 size={20}
@@ -242,7 +283,7 @@ export default function Create() {
           </div>
         </form>
 
-        <ForeignSheet />
+        <ForeignSheet updateColumn={updateColumn} />
       </div>
     </div>
   );

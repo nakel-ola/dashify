@@ -29,7 +29,7 @@ export const SortCard = (props: Props) => {
 
   const [{ pageName }] = useQueries();
 
-  const fields = useProjectStore((store) => store.getField(pageName)!);
+  const fields = useProjectStore((store) => store.getFields(pageName)!);
 
   const onAscendingChange = (index: number) => {
     let arr = [...items];

@@ -72,8 +72,6 @@ export class MongoDatabase {
         const collectionName = collection.name;
         const sampleDocument = await db.collection(collectionName).findOne();
 
-        console.log(sampleDocument);
-
         const schema = [];
 
         if (!sampleDocument) {
@@ -87,22 +85,36 @@ export class MongoDatabase {
 
         for (const key in sampleDocument) {
           const value = sampleDocument[key];
-          let valueType: any = { name: key, type: typeof value };
+          let valueType: any = {
+            name: key,
+            type: typeof value,
+            dataType: typeof value,
+          };
 
           if (key === '__v') continue;
 
           if (key === '_id') {
-            valueType = { name: key, type: 'string' };
+            valueType = { name: key, type: 'string', dataType: 'string' };
           } else if (value === null) {
-            valueType = { name: key, type: 'null' };
+            valueType = { name: key, type: 'null', dataType: 'null' };
           } else if (Array.isArray(value)) {
             const arrayType = getMongodbArrayType(value);
-            valueType = { name: key, type: 'array', fields: arrayType };
+            valueType = {
+              name: key,
+              type: 'array',
+              dataType: 'array',
+              fields: arrayType,
+            };
           } else if (valueType.type === 'object' && value instanceof Date) {
-            valueType = { name: key, type: 'Date' };
+            valueType = { name: key, type: 'Date', dataType: 'Date' };
           } else if (valueType.type === 'object') {
             const objectType = getMongodbObjectFieldType(value);
-            valueType = { name: key, type: 'object', fields: objectType };
+            valueType = {
+              name: key,
+              type: 'object',
+              dataType: 'object',
+              fields: objectType,
+            };
           }
 
           schema.push(valueType);

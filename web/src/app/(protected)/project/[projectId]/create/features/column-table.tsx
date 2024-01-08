@@ -11,6 +11,7 @@ import { useForeignStore } from "../../../store/foreign-store";
 import { Link21 } from "iconsax-react";
 
 type Props = ColumnType & {
+  index: number;
   removeColumn: () => void;
   updateColumn: <T extends keyof ColumnType>(
     key: T,
@@ -30,6 +31,7 @@ export const ColumnTable = (props: Props) => {
     defaultValue,
     removeColumn,
     updateColumn,
+    index,
   } = props;
 
   const setColumn = useForeignStore((store) => store.setColumn);
@@ -57,6 +59,7 @@ export const ColumnTable = (props: Props) => {
                 isNullable,
                 isUnique,
                 defaultValue,
+                index
               })
             }
             className="bg-slate-100 dark:bg-neutral-800 rounded shrink-0 ml-2 flex items-center justify-center hover:scale-105 active:scale-95 transition-all duration-300 h-9 w-9 cursor-pointer"
@@ -73,17 +76,6 @@ export const ColumnTable = (props: Props) => {
       </TableCell>
 
       <TableCell>
-        {/* <Input
-          placeholder="NULL"
-          type="text"
-          value={defaultValue!}
-          required={!!isIdentify}
-          readOnly={isIdentify}
-          disabled={isIdentify}
-          onChange={(e) => updateColumn("defaultValue", e.target.value)}
-          classes={{ root: "w-[100px]", input: "!h-8" }}
-        /> */}
-
         <DefaultValueCard
           isIdentify={isIdentify}
           defaultValue={defaultValue}
@@ -105,6 +97,7 @@ export const ColumnTable = (props: Props) => {
           isArray={isArray}
           isIdentify={isIdentify}
           isNullable={isNullable}
+          isPrimary={isPrimary}
           isUnique={isUnique}
           updateColumn={updateColumn}
           dataType={dataType}

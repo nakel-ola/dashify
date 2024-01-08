@@ -4,7 +4,8 @@ type ProjectStoreType = {
   project: Projects | null;
   setProject: (value: Projects) => void;
   getCollection: (name: string) => Collection | undefined;
-  getField: (name: string, sort?: boolean) => Fields[] | undefined;
+  getFields: (name: string, sort?: boolean) => Fields[];
+  getField: (collectionName: string, fieldName: string) => Fields | undefined;
 };
 export const useProjectStore = create<ProjectStoreType>((set, get) => ({
   project: null,
@@ -18,12 +19,19 @@ export const useProjectStore = create<ProjectStoreType>((set, get) => ({
 
     return collection;
   },
-  getField: (name, sort = true) => {
+  getFields: (name, sort = true) => {
     const collection = get().getCollection(name);
 
     const sortedFields =
       collection?.fields.sort((a, b) => a.name.localeCompare(b.name)) ?? [];
 
     return sort ? sortedFields : collection?.fields ?? [];
+  },
+  getField: (collectionName, fieldName, sort = true) => {
+    const fields = get().getFields(collectionName);
+
+    const field = fields.find((field) => field.name === fieldName);
+
+    return field;
   },
 }));

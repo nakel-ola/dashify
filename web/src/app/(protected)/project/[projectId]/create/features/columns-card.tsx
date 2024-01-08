@@ -98,6 +98,7 @@ export const ColumnsCard = (props: Props) => {
               <ColumnTable
                 key={index}
                 {...column}
+                index={index}
                 removeColumn={() => removeColumn(index)}
                 updateColumn={(key, value) => updateColumn(index, key, value)}
               />

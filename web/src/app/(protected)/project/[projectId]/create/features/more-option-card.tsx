@@ -9,7 +9,12 @@ import { Checkbox } from "@/components/ui/checkbox";
 
 type Props = Pick<
   ColumnType,
-  "isArray" | "isIdentify" | "isNullable" | "isUnique" | "dataType"
+  | "isArray"
+  | "isIdentify"
+  | "isNullable"
+  | "isUnique"
+  | "isPrimary"
+  | "dataType"
 > & {
   updateColumn: <T extends keyof ColumnType>(
     key: T,
@@ -25,8 +30,15 @@ type Item = {
 };
 
 export const MoreOptionCard = (props: Props) => {
-  const { isArray, isIdentify, isNullable, isUnique, updateColumn, dataType } =
-    props;
+  const {
+    isArray,
+    isIdentify,
+    isNullable,
+    isUnique,
+    updateColumn,
+    dataType,
+    isPrimary,
+  } = props;
 
   const items = [
     {
@@ -52,13 +64,15 @@ export const MoreOptionCard = (props: Props) => {
           checked: isIdentify,
         }
       : false,
-    {
-      key: "isArray",
-      name: "Define as Array",
-      description:
-        "Allow column to be defined as variable-length multidimensional arrays",
-      checked: isArray,
-    },
+    !isPrimary
+      ? {
+          key: "isArray",
+          name: "Define as Array",
+          description:
+            "Allow column to be defined as variable-length multidimensional arrays",
+          checked: isArray,
+        }
+      : false,
   ].filter(Boolean) as Item[];
 
   const checks = items.filter((item) => item.checked);

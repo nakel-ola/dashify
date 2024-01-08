@@ -12,6 +12,18 @@ export const Schema = Yup.object().shape({
       isUnique: Yup.boolean().required().default(false),
       isIdentify: Yup.boolean().required().default(false),
       isArray: Yup.boolean().required().default(false),
+      references: Yup.object()
+        .shape({
+          collectionName: Yup.string(),
+          fieldName: Yup.string(),
+          onUpdate: Yup.string()
+            .oneOf(["Cascade", "Restrict"] as const)
+            .nullable(),
+          onDelete: Yup.string()
+            .oneOf(["Cascade", "Restrict", "Set default", "Set NULL"] as const)
+            .nullable(),
+        })
+        .notRequired(),
     })
   )
     .required()

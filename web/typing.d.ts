@@ -64,4 +64,7 @@ type Collection = {
 type Fields = {
   name: string;
   type: string;
+  dataType?: string;
+  udtName?: string;
+  defaultValue?: string;
 };

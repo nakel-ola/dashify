@@ -3,8 +3,8 @@ import { create } from "zustand";
 import { ColumnType } from "../[projectId]/create/schema";
 
 type ForeignStoreType = {
-  column: ColumnType | null;
-  setColumn: (column: ColumnType | null) => void;
+  column: (ColumnType & { index: number }) | null;
+  setColumn: (column: (ColumnType & { index: number }) | null) => void;
 };
 
 export const useForeignStore = create<ForeignStoreType>((set, get) => ({
