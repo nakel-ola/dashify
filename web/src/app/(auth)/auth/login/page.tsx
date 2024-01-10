@@ -2,14 +2,13 @@
 import CustomInput from "@/components/custom-input";
 import { PasswordEye } from "@/components/password-eye";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/components/ui/use-toast";
-import { isObjectValueEmpty } from "@/lib/is-object-value-empty";
+import { toast } from "sonner";
 import { useFormik } from "formik";
 import { signIn } from "next-auth/react";
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import React, { Fragment, useState } from "react";
+import { Fragment, useState } from "react";
 import { MoonLoader } from "react-spinners";
 import * as Yup from "yup";
 
@@ -38,7 +37,6 @@ export default function Login(props: Props) {
 
   const [isVisible, setIsVisible] = useState(false);
 
-  const { toast } = useToast();
   const router = useRouter();
 
   const {
@@ -62,14 +60,11 @@ export default function Login(props: Props) {
       await signIn("credentials", { redirect: false, ...values }).then(
         ({ ok, error }: any) => {
           if (ok) {
-            toast({ variant: "default", title: "Successfully logged in" });
+            toast.success("Successfully logged in");
 
             router.replace(callbackUrl ?? "/dashboard");
           } else {
-            toast({
-              variant: "destructive",
-              title: error ?? "Uh oh! Something went wrong.",
-            });
+            toast.error(error ?? "Uh oh! Something went wrong.");
           }
         }
       );

@@ -1,14 +1,12 @@
 import { useState } from "react";
 import { refetchCollections } from "../services/refetch-collections";
 import { useProjectStore } from "../store/project-store";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
 
 export const useRefetchCollections = () => {
   const { project } = useProjectStore();
   const [isLoading, setIsLoading] = useState(false);
-
-  const { toast } = useToast();
 
   const queryClient = useQueryClient();
 
@@ -20,12 +18,11 @@ export const useRefetchCollections = () => {
 
     await refetchCollections({ projectId })
       .then(async () => {
-        toast({
-          variant: "default",
-          title: `${
+        toast.success(
+          `${
             project.database === "mongodb" ? "Collections" : "Tables"
-          } refetched successfully`,
-        });
+          } refetched successfully`
+        );
 
         await queryClient.invalidateQueries({
           queryKey: ["project", projectId],
@@ -33,7 +30,7 @@ export const useRefetchCollections = () => {
       })
       .catch((err) => {
         console.log(err);
-        toast({ variant: "destructive", title: err.message });
+        toast.error(err.message);
       })
       .finally(() => setIsLoading(false));
   };

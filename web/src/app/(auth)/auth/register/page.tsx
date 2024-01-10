@@ -3,7 +3,7 @@ import { createAccount } from "@/app/(auth)/auth/services/create-account";
 import CustomInput from "@/components/custom-input";
 import { PasswordEye } from "@/components/password-eye";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 import { useFormik } from "formik";
 import Head from "next/head";
 import { useRouter } from "next/navigation";
@@ -38,7 +38,6 @@ export default function Register(props: Props) {
 
   const [isVisible, setIsVisible] = useState(false);
 
-  const { toast } = useToast();
   const router = useRouter();
 
   const {
@@ -63,14 +62,11 @@ export default function Register(props: Props) {
     onSubmit: async (values) => {
       await createAccount(values)
         .then((results) => {
-          toast({ variant: "default", title: results.message });
+          toast.success(results.message);
           router.push(`/auth/login?callbackUrl=${callbackUrl}`);
         })
         .catch((err) => {
-          toast({
-            variant: "destructive",
-            title: err.message ?? "Uh oh! Something went wrong.",
-          });
+          toast.error(err.message ?? "Uh oh! Something went wrong.");
         });
     },
   });

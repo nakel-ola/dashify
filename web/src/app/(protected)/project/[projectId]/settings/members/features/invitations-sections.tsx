@@ -10,13 +10,12 @@ import { formatDistance } from "date-fns";
 import { TableCard } from "./table-card";
 import { useQueryClient } from "@tanstack/react-query";
 import { deleteInviteMember } from "../../services/delete-invite-member";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 
 export const InvitationsSection = () => {
   const project = useProjectStore((state) => state.project!);
 
   const queryClient = useQueryClient();
-  const { toast } = useToast();
 
   const [inviteId, setInviteId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -89,13 +88,10 @@ export const InvitationsSection = () => {
         });
         setInviteId(null);
 
-        toast({
-          variant: "default",
-          title: "Revoke invite successfully",
-        });
+        toast.success("Revoke invite successfully");
       })
       .catch((err) => {
-        toast({ variant: "destructive", title: err.message });
+        toast.error(err.message);
       })
       .finally(() => setIsLoading(false));
   };

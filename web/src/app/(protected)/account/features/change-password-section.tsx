@@ -8,7 +8,7 @@ import { PasswordEye } from "@/components/password-eye";
 import { Button } from "@/components/ui/button";
 import { MoonLoader } from "react-spinners";
 import { updatePassword } from "../services/update-password";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 
 const Schema = Yup.object().shape({
   currentPassword: Yup.string()
@@ -52,8 +52,6 @@ export const ChangePasswordSection = (props: Props) => {
     ("currentPassword" | "newPassword" | "confirmPassword")[]
   >([]);
 
-  const { toast } = useToast();
-
   const {
     handleSubmit,
     handleChange,
@@ -80,13 +78,10 @@ export const ChangePasswordSection = (props: Props) => {
       })
         .then(() => {
           resetForm();
-          toast({
-            variant: "default",
-            title: "Password updated successfully",
-          });
+          toast.success("Password updated successfully");
         })
         .catch((err) => {
-          toast({ variant: "destructive", title: err.message });
+          toast.error(err.message);
         });
     },
   });

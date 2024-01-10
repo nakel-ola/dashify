@@ -4,6 +4,7 @@ import { UserCard } from "../../dashboard/features/user-card";
 import { useProjectStore } from "../store/project-store";
 
 import { LogoCard } from "./logo-card";
+import { toast } from "sonner";
 
 export const Navbar = () => {
   const project = useProjectStore((store) => store.project!);

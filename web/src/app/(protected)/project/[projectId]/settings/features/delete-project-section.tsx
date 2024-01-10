@@ -29,7 +29,7 @@ export const DeleteProjectSection = (props: Props) => {
     //     });
     //   })
     //   .catch((err) => {
-    //     toast({ variant: "destructive", title: err.message });
+    //     toast.error(err.message);
     //   })
     //   .finally(() => setIsLoading(false));
   };

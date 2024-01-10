@@ -2,7 +2,7 @@
 import CustomInput from "@/components/custom-input";
 import { PasswordEye } from "@/components/password-eye";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 import { useFormik } from "formik";
 import Head from "next/head";
 import { useRouter } from "next/navigation";
@@ -42,8 +42,6 @@ export default function ResetPassword(props: Props) {
   const [isCodeLoading, setIsCodeLoading] = useState(false);
   const [codeSent, setCodeSent] = useState(false);
 
-  const { toast } = useToast();
-
   const router = useRouter();
 
   const {
@@ -68,10 +66,7 @@ export default function ResetPassword(props: Props) {
     onSubmit: async (values) => {
       await updatePassword(values)
         .then(() => {
-          toast({
-            variant: "default",
-            title: "Password change successfully, redirecting...",
-          });
+          toast.success("Password change successfully, redirecting...");
           router.push(
             callbackUrl
               ? `/auth/login?callbackUrl=${callbackUrl}`
@@ -79,7 +74,7 @@ export default function ResetPassword(props: Props) {
           );
         })
         .catch((err) => {
-          toast({ variant: "destructive", title: err.message });
+          toast.error(err.message);
         });
     },
   });
@@ -89,10 +84,10 @@ export default function ResetPassword(props: Props) {
     await resetPassword(values.email)
       .then((results) => {
         setCodeSent(true);
-        toast({ title: "Validation code sent" });
+        toast.success("Validation code sent");
       })
       .catch((err) => {
-        toast({ variant: "destructive", title: err.message });
+        toast.error(err.message);
       })
       .finally(() => setIsCodeLoading(false));
   };

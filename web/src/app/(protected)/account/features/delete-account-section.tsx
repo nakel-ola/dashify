@@ -9,7 +9,7 @@ import { Fragment, useState } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Warning2 } from "iconsax-react";
 import { deleteAccount } from "../services/delete-account";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 import { useSignOut } from "@/hooks/use-sign-out";
 
 type Props = {};
@@ -18,8 +18,6 @@ export const DeleteAccountSection = (props: Props) => {
 
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-
-  const { toast } = useToast();
 
   const signOut = useSignOut();
 
@@ -31,13 +29,10 @@ export const DeleteAccountSection = (props: Props) => {
     await deleteAccount()
       .then(async () => {
         await signOut({ callbackUrl: "/", redirect: true });
-        toast({
-          variant: "default",
-          title: "Account deleted successfully",
-        });
+        toast.success("Account deleted successfully");
       })
       .catch((err) => {
-        toast({ variant: "destructive", title: err.message });
+        toast.error(err.message);
       })
       .finally(() => setIsLoading(false));
   };

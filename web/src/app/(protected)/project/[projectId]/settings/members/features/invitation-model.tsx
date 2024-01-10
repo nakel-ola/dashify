@@ -20,7 +20,7 @@ import { RippleCard } from "@/components/ripple-card";
 import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useProjectStore } from "@/app/(protected)/project/store/project-store";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 import { inviteUser } from "../../services/invite-user";
 import { MoonLoader } from "react-spinners";
 
@@ -47,8 +47,6 @@ export const InvitationModel = (props: Props) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const project = useProjectStore((state) => state.project!);
-
-  const { toast } = useToast();
 
   const queryClient = useQueryClient();
 
@@ -104,10 +102,7 @@ export const InvitationModel = (props: Props) => {
       users: items,
     })
       .then(async (result) => {
-        toast({
-          variant: "default",
-          title: "Invitations sent successfully",
-        });
+        toast.success("Invitations sent successfully");
 
         await queryClient.invalidateQueries({
           queryKey: ["project", project?.projectId],
@@ -115,7 +110,7 @@ export const InvitationModel = (props: Props) => {
         handleClose();
       })
       .catch((err) => {
-        toast({ variant: "destructive", title: err.message });
+        toast.error(err.message);
       })
       .finally(() => setIsLoading(false));
   };

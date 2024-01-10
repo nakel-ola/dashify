@@ -12,7 +12,7 @@ import { formatDistance } from "date-fns";
 import { TableCard } from "../../members/features/table-card";
 import { deleteTokenFromProject } from "../../services/delete-token-from-project";
 import { useQueryClient } from "@tanstack/react-query";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 
 type Props = {};
 export const TokensSection = (props: Props) => {
@@ -21,7 +21,6 @@ export const TokensSection = (props: Props) => {
   const { project } = useProjectStore();
 
   const queryClient = useQueryClient();
-  const { toast } = useToast();
 
   const tokens = useMemo(() => project?.tokens ?? [], [project?.tokens]);
 
@@ -97,13 +96,10 @@ export const TokensSection = (props: Props) => {
           queryKey: ["project", project?.projectId],
         });
 
-        toast({
-          variant: "default",
-          title: "Delete token successfully",
-        });
+        toast.success("Delete token successfully");
       })
       .catch((err) => {
-        toast({ variant: "destructive", title: err.message });
+        toast.error(err.message);
       })
       .finally(() => setIsLoading(false));
   };

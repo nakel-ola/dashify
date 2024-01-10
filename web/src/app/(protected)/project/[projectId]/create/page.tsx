@@ -9,7 +9,7 @@ import { MoonLoader } from "react-spinners";
 import { type ColumnType, Schema, type SchemaType } from "./schema";
 import { ForeignSheet } from "./features/foreign-sheet";
 import { createCollection } from "../../services/create-collection";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 import { useRefetchCollections } from "../../hooks/use-refetch-collections";
 import { useRouter } from "next/navigation";
 
@@ -62,8 +62,6 @@ const postgresqlColumnsDefault = [
 export default function Create() {
   const project = useProjectStore((store) => store.project);
 
-  const { toast } = useToast();
-
   const { refetch } = useRefetchCollections();
 
   const router = useRouter();
@@ -98,12 +96,11 @@ export default function Create() {
 
       await createCollection({ projectId, ...values })
         .then(async (results) => {
-          toast({
-            variant: "default",
-            title: `${
+          toast.success(
+            `${
               project.database === "mongodb" ? "Collection" : "Table"
-            } created successfully`,
-          });
+            } created successfully`
+          );
 
           await refetch();
 
@@ -111,7 +108,7 @@ export default function Create() {
         })
         .catch((err) => {
           console.log(err);
-          toast({ variant: "destructive", title: err.message });
+          toast.error(err.message);
         });
     },
   });

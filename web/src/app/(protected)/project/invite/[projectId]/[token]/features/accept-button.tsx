@@ -1,6 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 import axios from "@/lib/axios";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
@@ -13,8 +13,6 @@ type Props = {
 export const AcceptButton = (props: Props) => {
   const { projectId, token } = props;
 
-  const { toast } = useToast();
-
   const router = useRouter();
 
   const [isLoading, setIsLoading] = useState(false);
@@ -25,15 +23,12 @@ export const AcceptButton = (props: Props) => {
     await axios
       .post(`/projects/${projectId}/accept-member-invite`, { token })
       .then(async (result) => {
-        toast({
-          variant: "default",
-          title: "Invitation accepted successfully",
-        });
+        toast.success("Invitation accepted successfully");
 
         router.replace(`/project/${projectId}/overiew`);
       })
       .catch((err) => {
-        toast({ variant: "destructive", title: err.message });
+        toast.error(err.message);
       })
       .finally(() => setIsLoading(false));
   };

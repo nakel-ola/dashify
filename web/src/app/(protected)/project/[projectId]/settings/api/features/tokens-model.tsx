@@ -20,7 +20,7 @@ import { MoonLoader } from "react-spinners";
 import { useQueryClient } from "@tanstack/react-query";
 import { useProjectStore } from "@/app/(protected)/project/store/project-store";
 import { createToken } from "../../services/create-token";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 import { useCopyToClipboard } from "usehooks-ts";
 import { CheckIcon } from "lucide-react";
 import { Copy } from "iconsax-react";
@@ -36,7 +36,6 @@ export const TokensModel = (props: Props) => {
   const { open, onClose } = props;
 
   const project = useProjectStore((state) => state.project!);
-  const { toast } = useToast();
 
   const [name, setName] = useState("");
   const [permission, setPermission] = useState<
@@ -73,10 +72,7 @@ export const TokensModel = (props: Props) => {
       projectId: project.projectId,
     })
       .then(async (result) => {
-        toast({
-          variant: "default",
-          title: "Created token successfully",
-        });
+        toast.success("Created token successfully");
 
         await queryClient.invalidateQueries({
           queryKey: ["project", project?.projectId],
@@ -85,7 +81,7 @@ export const TokensModel = (props: Props) => {
         setToken(result.token);
       })
       .catch((err) => {
-        toast({ variant: "destructive", title: err.message });
+        toast.error(err.message);
       })
       .finally(() => setIsLoading(false));
   };

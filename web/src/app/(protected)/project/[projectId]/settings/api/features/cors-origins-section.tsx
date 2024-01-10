@@ -11,7 +11,7 @@ import { formatDistance } from "date-fns";
 import { TableCard } from "../../members/features/table-card";
 import { cn } from "@/lib/utils";
 import { deleteOriginFromProject } from "../../services/delete-origin-from-project";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
 
 type Props = {};
@@ -23,8 +23,6 @@ export const CorsOriginsSection = (props: Props) => {
   const { project } = useProjectStore();
 
   const queryClient = useQueryClient();
-
-  const { toast } = useToast();
 
   const corsOrigins = useMemo(
     () => project?.corsOrigins ?? [],
@@ -105,13 +103,10 @@ export const CorsOriginsSection = (props: Props) => {
           queryKey: ["project", project?.projectId],
         });
 
-        toast({
-          variant: "default",
-          title: "Removed origin successfully",
-        });
+        toast.success("Removed origin successfully");
       })
       .catch((err) => {
-        toast({ variant: "destructive", title: err.message });
+        toast.error(err.message);
       })
       .finally(() => setIsLoading(false));
   };

@@ -12,7 +12,7 @@ import { useProjectStore } from "@/app/(protected)/project/store/project-store";
 import { formatDistance } from "date-fns";
 import { TableCard } from "./table-card";
 import { useQueryClient } from "@tanstack/react-query";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 import { deleteMember } from "../../services/delete-member";
 
 type Props = {};
@@ -22,7 +22,6 @@ export const MembersSection = (props: Props) => {
   const { project } = useProjectStore();
 
   const queryClient = useQueryClient();
-  const { toast } = useToast();
 
   const members = useMemo(() => project?.members ?? [], [project?.members]);
 
@@ -105,13 +104,10 @@ export const MembersSection = (props: Props) => {
         });
         setMemberId(null);
 
-        toast({
-          variant: "default",
-          title: "Revoke invite successfully",
-        });
+        toast.success("Revoke invite successfully");
       })
       .catch((err) => {
-        toast({ variant: "destructive", title: err.message });
+        toast.error(err.message);
       })
       .finally(() => setIsLoading(false));
   };

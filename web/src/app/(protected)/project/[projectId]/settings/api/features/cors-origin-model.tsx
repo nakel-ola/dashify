@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/select";
 import { addOriginToProject } from "../../services/add-origin-to-project";
 import { useProjectStore } from "@/app/(protected)/project/store/project-store";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 import { MoonLoader } from "react-spinners";
 import { useQueryClient } from "@tanstack/react-query";
 import { isValidUrl } from "@/utils/is-valid-url";
@@ -34,8 +34,6 @@ export const CorsOriginModel = (props: Props) => {
   const { open, onClose } = props;
 
   const project = useProjectStore((state) => state.project!);
-
-  const { toast } = useToast();
 
   const queryClient = useQueryClient();
 
@@ -77,10 +75,7 @@ export const CorsOriginModel = (props: Props) => {
       projectId: project?.projectId,
     })
       .then(async (result) => {
-        toast({
-          variant: "default",
-          title: "Added origin successfully",
-        });
+        toast.success("Added origin successfully");
 
         await queryClient.invalidateQueries({
           queryKey: ["project", project?.projectId],
@@ -88,7 +83,7 @@ export const CorsOriginModel = (props: Props) => {
         handleClose();
       })
       .catch((err) => {
-        toast({ variant: "destructive", title: err.message });
+        toast.error(err.message);
       })
       .finally(() => setIsLoading(false));
   };

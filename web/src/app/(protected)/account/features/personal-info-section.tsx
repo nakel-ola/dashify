@@ -10,7 +10,7 @@ import { MoonLoader } from "react-spinners";
 import { useEffectOnce } from "usehooks-ts";
 import { clean } from "@/utils/clean";
 import { updateUser } from "../services/update-user";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 import { UserImage } from "./user-image";
 
 const Schema = Yup.object().shape({
@@ -34,7 +34,6 @@ type FormType = Yup.InferType<typeof Schema>;
 type Props = {};
 export const PersonalInfoSection = (props: Props) => {
   const { data, update } = useSession();
-  const { toast } = useToast();
 
   const user = data?.user;
 
@@ -71,13 +70,10 @@ export const PersonalInfoSection = (props: Props) => {
             ...data,
             user: { ...user, ...args, photoUrl: result.photoUrl },
           });
-          toast({
-            variant: "default",
-            title: "Details updated successfully",
-          });
+          toast.success("Details updated successfully");
         })
         .catch((err) => {
-          toast({ variant: "destructive", title: err.message });
+          toast.error(err.message);
         });
     },
   });

@@ -1,6 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 import { Information, TickCircle } from "iconsax-react";
 import { useState } from "react";
 import { resendEmailVerification } from "../services/resend-email-verification";
@@ -10,17 +10,15 @@ export const ExpiredCard = () => {
   const session = useSession();
   const [emailSent, setEmailSent] = useState(false);
 
-  const { toast } = useToast();
-
   const resendEmail = async () => {
     if (!session.data) return;
     await resendEmailVerification(session.data.user.accessToken)
       .then((results) => {
-        toast({ variant: "default", title: results.message });
+        toast.success(results.message);
         setEmailSent(true);
       })
       .catch((err) => {
-        toast({ variant: "destructive", title: err });
+        toast.error(err.message);
       });
   };
 

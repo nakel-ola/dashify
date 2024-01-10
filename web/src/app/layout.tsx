@@ -1,6 +1,6 @@
 import AuthProvider from "@/components/auth-provider";
 import { ThemeProvider } from "@/components/theme-provider";
-import { Toaster } from "@/components/ui/toaster";
+import { Toaster } from "@/components/ui/sonner";
 import { nextAuthOptions } from "@/lib/auth/next-auth-options";
 import { cn } from "@/lib/utils";
 import type { Metadata, Viewport } from "next";

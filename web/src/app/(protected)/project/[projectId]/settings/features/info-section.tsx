@@ -12,7 +12,7 @@ import { MoonLoader } from "react-spinners";
 import { useEffect, useState } from "react";
 import { clean } from "@/utils/clean";
 import { updateProject } from "../services/update-project";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 import { Copy } from "iconsax-react";
 import { CheckIcon } from "lucide-react";
 
@@ -36,8 +36,6 @@ type FormType = Yup.InferType<typeof Schema>;
 type Props = {};
 export const InfoSection = (props: Props) => {
   const { project, setProject } = useProjectStore();
-
-  const { toast } = useToast();
 
   const [copyValue, setCopyValue] = useCopyToClipboard();
 
@@ -72,13 +70,10 @@ export const InfoSection = (props: Props) => {
       await updateProject({ ...args, projectId: project?.projectId })
         .then(async (result) => {
           setProject({ ...project, ...args });
-          toast({
-            variant: "default",
-            title: "Details updated successfully",
-          });
+          toast.success("Details updated successfully");
         })
         .catch((err) => {
-          toast({ variant: "destructive", title: err.message });
+          toast.error(err.message);
         });
     },
   });

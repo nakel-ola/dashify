@@ -1,6 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 import { nanoid } from "@/lib/nanoid";
 import slugify from "@/lib/slugify";
 import { cn } from "@/lib/utils";
@@ -42,7 +42,6 @@ const Schema = Yup.object().shape({
 export const CreateCard = (props: Props) => {
   const [active, setActive] = useState(0);
   const { isOpen, setIsOpen } = useModalStore();
-  const { toast } = useToast();
 
   const { data } = useSession();
 
@@ -93,7 +92,7 @@ export const CreateCard = (props: Props) => {
 
       await createProject({ ...values, image: url, projectId })
         .then(async (results) => {
-          toast({ variant: "default", title: "Dash created successfully" });
+          toast.success("Dash created successfully");
 
           await queryClient.invalidateQueries({
             queryKey: ["projects"],
@@ -104,7 +103,7 @@ export const CreateCard = (props: Props) => {
         })
         .catch((err) => {
           console.log(err);
-          toast({ variant: "destructive", title: err.message });
+          toast.error(err.message);
         });
     },
   });
