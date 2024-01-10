@@ -2,9 +2,9 @@
 
 import { useQueries } from "@/app/(protected)/project/hooks/use-queries";
 import { useSidebarStore } from "../store/sidebar-store";
-import { IconNames, Icons } from "./Icons";
+import { IconNames } from "./Icons";
 import { cn } from "@/lib/utils";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { capitalizeFirstLetter } from "@/lib/capitalize-first-letter";
 import { Fragment, useEffect, useRef } from "react";
 import { AnimatePresence, motion } from "framer-motion";
@@ -14,14 +14,9 @@ import { X } from "lucide-react";
 import { useProjectStore } from "../store/project-store";
 import Link from "next/link";
 import Image from "next/image";
-import { Add, More, Refresh, Edit, Trash } from "iconsax-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { Add, Refresh, Setting, Settings } from "iconsax-react";
 import { useRefetchCollections } from "../hooks/use-refetch-collections";
+import { MenuCard } from "./menu-card";
 
 export const Sidebar = () => {
   return (
@@ -145,81 +140,12 @@ const Content = () => {
         </button>
       </div>
       <div className="pt-5">
-        {items.map(({ icon, name }, index) => (
-          <Card key={index} iconName={icon} name={name} />
+        {items.map(({ name }, index) => (
+          <MenuCard key={index} Icon={Settings} name={name} />
         ))}
       </div>
 
-      <Card iconName="Setting" name="settings" showMoreIcon={false} />
-    </div>
-  );
-};
-
-type CardProps = {
-  iconName: IconNames;
-  name: string;
-  showMoreIcon?: boolean;
-};
-const Card = (props: CardProps) => {
-  const { iconName, name, showMoreIcon = true } = props;
-  const pathname = usePathname();
-  const router = useRouter();
-  const [{ projectId }] = useQueries();
-  const project = useProjectStore((store) => store.project);
-
-  const isActive = pathname.startsWith(`/project/${projectId}/${name}`);
-
-  return (
-    <div
-      className={cn(
-        "flex items-center justify-between m-2 mb-3 py-1.5 px-2 hover:bg-slate-100 hover:dark:bg-neutral-800 rounded-lg cursor-pointer mt-auto",
-        isActive ? "bg-slate-100 dark:bg-neutral-800" : ""
-      )}
-      onClick={() => router.push(`/project/${projectId}/${name}`)}
-    >
-      <div className="flex items-center">
-        <Icons
-          iconName={iconName}
-          variant={isActive ? "Bold" : "Outline"}
-          size={20}
-          className={cn(
-            isActive
-              ? "text-black dark:text-white"
-              : "text-gray-dark dark:text-gray-light"
-          )}
-        />
-        <p
-          className={cn(
-            "pl-2",
-            isActive
-              ? "text-black dark:text-white"
-              : "text-gray-dark dark:text-gray-light"
-          )}
-        >
-          {name}
-        </p>
-      </div>
-
-      {showMoreIcon ? (
-        <DropdownMenu>
-          <DropdownMenuTrigger>
-            <div className="w-9 h-full ml-auto rotate-90 flex items-center justify-center">
-              <More size={20} />
-            </div>
-          </DropdownMenuTrigger>
-
-          <DropdownMenuContent className="w-52">
-            <DropdownMenuItem>
-              <Edit size={20} className="mr-2" />
-              Edit {project?.database === "mongodb" ? "Collection" : "Table"}
-            </DropdownMenuItem>
-            <DropdownMenuItem>
-              <Trash className="text-red-500 mr-2" size={20} />
-              Delete {project?.database === "mongodb" ? "Collection" : "Table"}
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      ) : null}
+      <MenuCard name="Settings" showMoreIcon={false} Icon={Setting} />
     </div>
   );
 };

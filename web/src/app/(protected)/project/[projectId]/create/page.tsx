@@ -66,6 +66,13 @@ export default function Create() {
 
   const router = useRouter();
 
+  const columns =
+    project?.database === "mongodb"
+      ? []
+      : project?.database === "mysql"
+      ? mySqlColumnsDefault
+      : postgresqlColumnsDefault;
+
   const {
     handleSubmit,
     handleChange,
@@ -80,10 +87,7 @@ export default function Create() {
   } = useFormik<SchemaType>({
     initialValues: {
       name: "",
-      columns:
-        project?.database === "mysql"
-          ? mySqlColumnsDefault
-          : postgresqlColumnsDefault,
+      columns: [...columns],
     },
     validationSchema: Schema,
     validateOnChange: true,
@@ -189,6 +193,7 @@ export default function Create() {
             <Button
               type="submit"
               // onClick={() => handleSubmit()}
+              disabled={!isValid}
               className="ml-auto"
             >
               Create {project?.database === "mongodb" ? "collection" : "table"}

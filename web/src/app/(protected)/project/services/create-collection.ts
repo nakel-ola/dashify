@@ -34,10 +34,14 @@ export async function createCollection(args: Args) {
   try {
     const url = `/projects/${projectId}/create-new-collection`;
 
-    const { data } = await axios.post<CreateResponse>(url, { name, columns });
+    const { data } = await axios.post<CreateResponse>(url, {
+      collectionName: name,
+      columns,
+    });
 
     return data;
   } catch (error: any) {
+    console.log(error);
     throw new Error(error.message);
   }
 }
