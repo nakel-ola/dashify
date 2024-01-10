@@ -16,6 +16,7 @@ export async function refetchCollections(args: Args) {
 
     return data;
   } catch (error: any) {
+    console.log(error);
     throw new Error(error.message);
   }
 }

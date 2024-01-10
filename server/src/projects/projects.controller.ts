@@ -301,7 +301,7 @@ export class ProjectsController {
   }
 
   @ApiOperation({ summary: 'Refetch collections or tables' })
-  @Post(':projectId/refetch-collections/')
+  @Get(':projectId/refetch-collections')
   @ApiParam({ name: 'projectId', example: 'finance-tracker-78493' })
   refetchCollections(@Request() req, @Param('projectId') projectId: string) {
     return this.projectsService.refetchCollections(projectId, req.user.uid);

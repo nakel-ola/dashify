@@ -21,6 +21,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useRefetchCollections } from "../hooks/use-refetch-collections";
 
 export const Sidebar = () => {
   return (
@@ -86,6 +87,8 @@ const Content = () => {
 
   const project = useProjectStore((store) => store.project!);
 
+  const { refetch, isLoading } = useRefetchCollections();
+
   const items = project.collections.map((co) => ({
     icon: co.icon as IconNames,
     name: co.name,
@@ -134,10 +137,11 @@ const Content = () => {
 
         <button
           type="button"
-          // onClick={() => removeItem()}
-          className="w-8 h-8 rounded-md flex items-center justify-center hover:bg-slate-100 dark:hover:bg-neutral-800 shrink-0"
+          onClick={() => refetch()}
+          className="w-8 h-8 rounded-md flex items-center justify-center hover:bg-slate-100 dark:hover:bg-neutral-800 shrink-0 disabled:opacity-60 disabled:hover:bg-transparent disabled:hover:dark:bg-transparent"
+          disabled={isLoading}
         >
-          <Refresh size={20} />
+          <Refresh size={20} className={cn(isLoading ? "animate-spin" : "")} />
         </button>
       </div>
       <div className="pt-5">
@@ -192,7 +196,7 @@ const Card = (props: CardProps) => {
               : "text-gray-dark dark:text-gray-light"
           )}
         >
-          {capitalizeFirstLetter(name)}
+          {name}
         </p>
       </div>
 
