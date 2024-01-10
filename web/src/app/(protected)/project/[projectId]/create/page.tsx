@@ -10,8 +10,8 @@ import { type ColumnType, Schema, type SchemaType } from "./schema";
 import { ForeignSheet } from "./features/foreign-sheet";
 import { createCollection } from "../../services/create-collection";
 import { toast } from "sonner";
-import { useRefetchCollections } from "../../hooks/use-refetch-collections";
 import { useRouter } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
 
 const mySqlColumnsDefault = [
   {
@@ -62,7 +62,7 @@ const postgresqlColumnsDefault = [
 export default function Create() {
   const project = useProjectStore((store) => store.project);
 
-  const { refetch } = useRefetchCollections();
+  const queryClient = useQueryClient();
 
   const router = useRouter();
 
@@ -106,7 +106,9 @@ export default function Create() {
             } created successfully`
           );
 
-          await refetch();
+          await queryClient.invalidateQueries({
+            queryKey: ["project", projectId],
+          });
 
           router.push(`/project/${projectId}/${values.name}`);
         })

@@ -8,7 +8,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { More,Edit, Trash, Icon } from "iconsax-react";
+import { More, Edit, Trash, Icon } from "iconsax-react";
+import { toast } from "sonner";
+import { deleteCollection } from "../services/delete-collection";
+import { DeleteCollectionCard } from "./delete-collection-card";
+import { useState } from "react";
 
 type Props = {
   Icon: Icon;
@@ -22,7 +26,21 @@ export const MenuCard = (props: Props) => {
   const [{ projectId }] = useQueries();
   const project = useProjectStore((store) => store.project);
 
+  const [isOpen, setIsOpen] = useState(false);
+
   const isActive = pathname.startsWith(`/project/${projectId}/${name}`);
+
+  const databaseName = project?.database === "mongodb" ? "Collection" : "table";
+
+  const handleDelete = async () => {
+    toast.promise(() => deleteCollection({ name, projectId }), {
+      loading: `Deleting ${databaseName} ...`,
+      success: (data) => {
+        return `${databaseName} deleted successfully`;
+      },
+      error: (error) => `${error.message}`,
+    });
+  };
 
   return (
     <div
@@ -55,24 +73,37 @@ export const MenuCard = (props: Props) => {
       </div>
 
       {showMoreIcon ? (
-        <DropdownMenu>
-          <DropdownMenuTrigger>
-            <div className="w-9 h-full ml-auto rotate-90 flex items-center justify-center">
-              <More size={20} />
-            </div>
-          </DropdownMenuTrigger>
+        <>
+          <DropdownMenu>
+            <DropdownMenuTrigger>
+              <div className="w-9 h-full ml-auto rotate-90 flex items-center justify-center">
+                <More size={20} />
+              </div>
+            </DropdownMenuTrigger>
 
-          <DropdownMenuContent className="w-52">
-            <DropdownMenuItem>
-              <Edit size={20} className="mr-2" />
-              Edit {project?.database === "mongodb" ? "Collection" : "Table"}
-            </DropdownMenuItem>
-            <DropdownMenuItem>
-              <Trash className="text-red-500 mr-2" size={20} />
-              Delete {project?.database === "mongodb" ? "Collection" : "Table"}
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+            <DropdownMenuContent className="w-52">
+              <DropdownMenuItem>
+                <Edit size={20} className="mr-2" />
+                Edit {databaseName}
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                className="w-full"
+                onClick={() => setIsOpen(true)}
+              >
+                <Trash className="text-red-500 mr-2" size={20} />
+                Delete {databaseName}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          <DeleteCollectionCard
+            isOpen={isOpen}
+            setIsOpen={setIsOpen}
+            name={name}
+            databaseName={databaseName}
+            projectId={projectId}
+          />
+        </>
       ) : null}
     </div>
   );
