@@ -41,6 +41,8 @@ export const DeleteCollectionCard = (props: Props) => {
           queryKey: ["project", projectId],
         });
 
+        setIsOpen(false);
+
         router.push(`/project/${projectId}`);
       })
       .catch((err) => {
