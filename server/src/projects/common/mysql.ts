@@ -114,11 +114,12 @@ export class MySQLDatabase {
 
     try {
       const escapeTableName = mysql.escapeId(tableName);
-      const query = `SELECT * FROM ${escapeTableName} LIMIT ? OFFSET ?`;
+      const escapeLimit = mysql.escape(parseInt(limit.toString()) || 10);
+      const escapeOffset = mysql.escape(parseInt(offset.toString()) || 10);
+      const query = `SELECT * FROM ${escapeTableName} LIMIT ${escapeLimit} OFFSET ${escapeOffset}`;
       const countQuery = `SELECT COUNT(*) AS totalCount FROM ${escapeTableName};`;
-      const [rows] = await this.connection.execute(query, [limit, offset]);
+      const [rows] = await this.connection.execute(query);
       const data = await this.connection.query(countQuery);
-      console.log('Selected rows:', data);
       return { results: rows, totalItems: (data[0] as any).totalCount };
     } catch (error) {
       console.error(`Error getting table '${tableName}':`, error);
