@@ -1,5 +1,120 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsOptional } from 'class-validator';
+import { IsString, IsOptional, IsBoolean } from 'class-validator';
+
+class Reference {
+  @ApiProperty({
+    description: 'Reference table name ',
+    type: [String],
+  })
+  @IsString()
+  collectionName: string;
+
+  @ApiProperty({
+    description: 'Reference column name',
+    type: [String],
+  })
+  @IsString()
+  fieldName: string;
+
+  @ApiProperty({
+    description: 'On Update can either be Cascade, Restrict',
+    type: [String],
+  })
+  @IsString()
+  @IsOptional()
+  onUpdate?: 'Cascade' | 'Restrict' | null;
+
+  @ApiProperty({
+    description:
+      'On Delete can either be Cascade, Restrict, Set default, Set NULL',
+    type: [String],
+  })
+  @IsString()
+  @IsOptional()
+  onDelete?: 'Cascade' | 'Restrict' | 'Set default' | 'Set NULL' | null;
+}
+
+class Column {
+  @ApiProperty({
+    description: 'Column name',
+    type: [String],
+  })
+  @IsString()
+  name: string;
+
+  @ApiProperty({
+    description: 'Datatype',
+    type: [String],
+  })
+  @IsString()
+  dataType:
+    | 'int2'
+    | 'int4'
+    | 'int8'
+    | 'float4'
+    | 'float8'
+    | 'numeric'
+    | 'json'
+    | 'jsonb'
+    | 'text'
+    | 'varchar'
+    | 'uuid'
+    | 'date'
+    | 'time'
+    | 'timetz'
+    | 'timestamp'
+    | 'timestamptz'
+    | 'bool';
+
+  @ApiProperty({
+    description: 'If column is primary',
+    type: [String],
+  })
+  @IsBoolean()
+  isPrimary: boolean;
+
+  @ApiProperty({
+    description: 'If column is nullable',
+    type: [String],
+  })
+  @IsBoolean()
+  isNullable: boolean;
+
+  @ApiProperty({
+    description: 'If column is unique',
+    type: [String],
+  })
+  @IsBoolean()
+  isUnique: boolean;
+
+  @ApiProperty({
+    description: 'If column is an array',
+    type: [String],
+  })
+  @IsBoolean()
+  isArray: boolean;
+
+  @ApiProperty({
+    description: 'is identify',
+    type: [String],
+  })
+  @IsBoolean()
+  isIdentify: boolean;
+
+  @ApiProperty({
+    description: 'Column default value',
+    type: [String],
+  })
+  @IsString()
+  @IsOptional()
+  defaultValue?: string | null;
+
+  @ApiProperty({
+    description: 'Column foreign reference',
+  })
+  @IsOptional()
+  references?: Reference;
+}
 
 export class CreateNewCollectionDto {
   @ApiProperty({
@@ -10,10 +125,9 @@ export class CreateNewCollectionDto {
   collectionName: string;
 
   @ApiProperty({
-    description: 'If the database is not mongodb required',
+    description: 'If the database is not mongodb then this is required',
     type: [String],
   })
-  @IsString()
   @IsOptional()
-  column?: string[];
+  column?: Column[];
 }

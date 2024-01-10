@@ -1,6 +1,7 @@
 import * as mysql from 'mysql2/promise';
 import { Collection } from '../types/project.type';
 import { categorizeMySQLDataType } from './utils';
+import { MySqlQueryGenerator, type DataType } from './query-generatore/mysql';
 
 interface ConnectionOption {
   name: string;
@@ -51,15 +52,16 @@ export class MySQLDatabase {
 
   public async createTable(
     tableName: string,
-    columns: string[],
+    columns: DataType[],
   ): Promise<void> {
     try {
-      const newColumns = columns.length > 0 ? columns : ['id INT PRIMARY KEY'];
+      const queryGen = new MySqlQueryGenerator();
+
       const escapeTableName = mysql.escapeId(tableName);
-      const createTableQuery = `CREATE TABLE IF NOT EXISTS ${escapeTableName} (${newColumns.join(
-        ', ',
-      )})`;
-      await this.connection.execute(createTableQuery);
+
+      const tableQuery = queryGen.createTable(escapeTableName, columns);
+
+      await this.connection.execute(tableQuery);
     } catch (error) {
       console.error(`Error creating table "${tableName}":`, error);
       throw error;

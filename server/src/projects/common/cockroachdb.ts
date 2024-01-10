@@ -1,6 +1,10 @@
 import { Client, QueryResult } from 'pg';
 import { getDataTypeGroup } from './utils';
 import { Collection } from '../types/project.type';
+import {
+  PostgresQueryGenerator,
+  type DataType,
+} from './query-generatore/postgres';
 
 interface ConnectionOption {
   name: string;
@@ -56,16 +60,15 @@ export class CockroachDatabase {
 
   public async createTable(
     tableName: string,
-    columns: string[],
+    columns: DataType[],
   ): Promise<QueryResult> {
     try {
-      const newColumns =
-        columns.length > 0 ? columns : ['id SERIAL PRIMARY KEY'];
+      const queryGen = new PostgresQueryGenerator();
       const escapeTableName = this.client.escapeIdentifier(tableName);
-      const query = `CREATE TABLE IF NOT EXISTS ${escapeTableName} (${newColumns.join(
-        ', ',
-      )});`;
-      const result = await this.client.query(query);
+
+      const tableQuery = queryGen.createTable(escapeTableName, columns);
+
+      const result = await this.client.query(tableQuery);
       return result;
     } catch (error) {
       console.error(`Error creating table "${tableName}":`, error);

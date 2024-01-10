@@ -15,13 +15,7 @@ import { UsersService } from './../users/users.service';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { Project } from './entities';
-import { Collection } from './types/project.type';
-import {
-  DatabaseConfig,
-  InvitationType,
-  Member,
-  ProjectType,
-} from './types/project.type';
+
 import {
   AcceptMemberInviteDto,
   AddCorsOriginDto,
@@ -38,6 +32,15 @@ import { MongoDatabase } from './common/mongodb';
 import { CockroachDatabase } from './common/cockroachdb';
 import { PostgresDatabase } from './common/postgres';
 import { MySQLDatabase } from './common/mysql';
+
+import type { DataType } from './common/query-generatore/mysql';
+import type { Collection } from './types/project.type';
+import type {
+  DatabaseConfig,
+  InvitationType,
+  Member,
+  ProjectType,
+} from './types/project.type';
 
 @Injectable()
 export class ProjectsService {
@@ -240,7 +243,7 @@ export class ProjectsService {
     uid: string,
     createNewCollectionDto: CreateNewCollectionDto,
   ) {
-    const { collectionName } = createNewCollectionDto;
+    const { collectionName, column } = createNewCollectionDto;
 
     const project = await this.findOne(projectId, uid);
 
@@ -263,7 +266,7 @@ export class ProjectsService {
     if (database === 'cockroachdb') {
       const cockroachdb = new CockroachDatabase(dbConfig);
 
-      await cockroachdb.createTable(collectionName, []);
+      await cockroachdb.createTable(collectionName, column);
 
       await cockroachdb.close();
     }
@@ -271,7 +274,7 @@ export class ProjectsService {
     if (database === 'postgres') {
       const postgres = new PostgresDatabase(dbConfig);
 
-      await postgres.createTable(collectionName, []);
+      await postgres.createTable(collectionName, column);
 
       await postgres.close();
     }
@@ -281,7 +284,7 @@ export class ProjectsService {
 
       await mysql.connect(dbConfig);
 
-      await mysql.createTable(collectionName, []);
+      await mysql.createTable(collectionName, column as DataType[]);
 
       await mysql.close();
     }
