@@ -243,7 +243,7 @@ export class ProjectsService {
     uid: string,
     createNewCollectionDto: CreateNewCollectionDto,
   ) {
-    const { collectionName, column } = createNewCollectionDto;
+    const { collectionName, columns } = createNewCollectionDto;
 
     const project = await this.findOne(projectId, uid);
 
@@ -266,7 +266,7 @@ export class ProjectsService {
     if (database === 'cockroachdb') {
       const cockroachdb = new CockroachDatabase(dbConfig);
 
-      await cockroachdb.createTable(collectionName, column);
+      await cockroachdb.createTable(collectionName, columns);
 
       await cockroachdb.close();
     }
@@ -274,7 +274,7 @@ export class ProjectsService {
     if (database === 'postgres') {
       const postgres = new PostgresDatabase(dbConfig);
 
-      await postgres.createTable(collectionName, column);
+      await postgres.createTable(collectionName, columns);
 
       await postgres.close();
     }
@@ -284,7 +284,7 @@ export class ProjectsService {
 
       await mysql.connect(dbConfig);
 
-      await mysql.createTable(collectionName, column as DataType[]);
+      await mysql.createTable(collectionName, columns as DataType[]);
 
       await mysql.close();
     }
@@ -347,7 +347,7 @@ export class ProjectsService {
     return { message: 'Collection deleted successfully' };
   }
 
-  async refetchCollection(projectId: string, uid: string) {
+  async refetchCollections(projectId: string, uid: string) {
     const project = await this.findOne(projectId, uid);
 
     return await this.updateCollection(projectId, project.databaseConfig);

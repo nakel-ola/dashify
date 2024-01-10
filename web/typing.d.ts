@@ -3,7 +3,7 @@ type Projects = {
   name: string;
   logo: string | null;
   projectId: string;
-  database: string;
+  database: 'mongodb' | 'postgres' | 'mysql' | 'cockroachdb';
   members: Omit<
     UserType & { role: "administrator" | "editor" | "viewer" | "developer" },
     "accessToken" | "refreshToken"
@@ -48,7 +48,7 @@ type Tokens = {
 type DatabaseConfig = {
   host: string;
   name: string;
-  dbType: string;
+  dbType: 'mongodb' | 'postgres' | 'mysql' | 'cockroachdb';
   password: string;
   port: number;
   username: string;

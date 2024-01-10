@@ -32,3 +32,5 @@ export const Schema = Yup.object().shape({
 
 export type SchemaType = Yup.InferType<typeof Schema>;
 export type ColumnType = Yup.InferType<typeof Schema>["columns"][number];
+
+type RE = ColumnType["references"]

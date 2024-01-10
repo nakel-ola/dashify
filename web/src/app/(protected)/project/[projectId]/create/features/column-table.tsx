@@ -2,7 +2,6 @@ import { Input } from "@/components/ui/input";
 import { TableRow, TableCell } from "@/components/ui/table";
 import { X } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
-import { LinkCard } from "./link-card";
 import { DataTypeSelectCard } from "./data-type-select-card";
 import { MoreOptionCard } from "./more-option-card";
 import type { ColumnType } from "../schema";
@@ -11,6 +10,7 @@ import { useForeignStore } from "../../../store/foreign-store";
 import { Link21 } from "iconsax-react";
 
 type Props = ColumnType & {
+  database: Projects["database"];
   index: number;
   removeColumn: () => void;
   updateColumn: <T extends keyof ColumnType>(
@@ -31,6 +31,7 @@ export const ColumnTable = (props: Props) => {
     defaultValue,
     removeColumn,
     updateColumn,
+    database,
     index,
   } = props;
 
@@ -59,20 +60,22 @@ export const ColumnTable = (props: Props) => {
                 isNullable,
                 isUnique,
                 defaultValue,
-                index
+                index,
               })
             }
             className="bg-slate-100 dark:bg-neutral-800 rounded shrink-0 ml-2 flex items-center justify-center hover:scale-105 active:scale-95 transition-all duration-300 h-9 w-9 cursor-pointer"
           >
             <Link21 size={20} />
           </div>
-
-          {/* <LinkCard /> */}
         </div>
       </TableCell>
 
       <TableCell>
-        <DataTypeSelectCard dataType={dataType} updateColumn={updateColumn} />
+        <DataTypeSelectCard
+          dataType={dataType}
+          database={database}
+          updateColumn={updateColumn}
+        />
       </TableCell>
 
       <TableCell>
@@ -81,6 +84,7 @@ export const ColumnTable = (props: Props) => {
           defaultValue={defaultValue}
           updateColumn={updateColumn}
           dataType={dataType}
+          database={database}
         />
       </TableCell>
 

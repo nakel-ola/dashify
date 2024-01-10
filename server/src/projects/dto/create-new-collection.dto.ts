@@ -129,5 +129,5 @@ export class CreateNewCollectionDto {
     type: [String],
   })
   @IsOptional()
-  column?: Column[];
+  columns?: Column[];
 }

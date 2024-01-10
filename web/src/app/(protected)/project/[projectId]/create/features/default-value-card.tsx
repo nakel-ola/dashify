@@ -9,15 +9,14 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 
 type Props = Pick<ColumnType, "defaultValue" | "isIdentify" | "dataType"> & {
+  database: Projects["database"];
   updateColumn: <T extends keyof ColumnType>(
     key: T,
     value: ColumnType[T]
   ) => void;
 };
 export const DefaultValueCard = (props: Props) => {
-  const { updateColumn, isIdentify, defaultValue, dataType } = props;
-
-  // [text, varchar], uuid, [time, timetz, timestamp, timestamptz] is option
+  const { updateColumn, isIdentify, defaultValue, dataType, database } = props;
 
   const isOption = [
     "text",
@@ -32,9 +31,9 @@ export const DefaultValueCard = (props: Props) => {
   const items = {
     text,
     varchar: text,
-    time,
+    time: database === "mysql" ? [time[0]] : time,
     timetz: time,
-    timestamp: time,
+    timestamp: database === "mysql" ? [time[0]] : time,
     timestamptz: time,
     uuid,
   };

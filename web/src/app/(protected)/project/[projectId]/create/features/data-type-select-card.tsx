@@ -9,13 +9,16 @@ import type { ColumnType } from "../schema";
 
 type Props = {
   dataType: string;
+  database: Projects["database"];
   updateColumn: <T extends keyof ColumnType>(
     key: T,
     value: ColumnType[T]
   ) => void;
 };
 export const DataTypeSelectCard = (props: Props) => {
-  const { updateColumn, dataType } = props;
+  const { updateColumn, dataType, database } = props;
+
+  const datatypes = database === "mysql" ? mySqlDataTypes : postgresqlDatatypes;
   return (
     <Select
       value={dataType}
@@ -26,7 +29,7 @@ export const DataTypeSelectCard = (props: Props) => {
       </SelectTrigger>
 
       <SelectContent className="max-h-52 overflow-y-scroll">
-        {datatypes.map(({ name }, index) => (
+        {datatypes.map((name, index) => (
           <SelectItem key={index} value={name}>
             {name}
           </SelectItem>
@@ -36,56 +39,57 @@ export const DataTypeSelectCard = (props: Props) => {
   );
 };
 
-const datatypes = [
-  {
-    name: "int2",
-  },
-  {
-    name: "int4",
-  },
-  {
-    name: "int8",
-  },
-  {
-    name: "float4",
-  },
-  {
-    name: "float8",
-  },
-  {
-    name: "numeric",
-  },
-  {
-    name: "json",
-  },
-  {
-    name: "jsonb",
-  },
-  {
-    name: "text",
-  },
-  {
-    name: "varchar",
-  },
-  {
-    name: "uuid",
-  },
-  {
-    name: "date",
-  },
-  {
-    name: "time",
-  },
-  {
-    name: "timetz",
-  },
-  {
-    name: "timestamp",
-  },
-  {
-    name: "timestamptz",
-  },
-  {
-    name: "bool",
-  },
+const postgresqlDatatypes = [
+  "int2",
+  "int4",
+  "int8",
+  "float4",
+  "float8",
+  "numeric",
+  "json",
+  "jsonb",
+  "text",
+  "varchar",
+  "uuid",
+  "date",
+  "time",
+  "timetz",
+  "timestamp",
+  "timestamptz",
+  "bool",
+];
+
+const mySqlDataTypes = [
+  "int",
+  "tinyint",
+  "smallint",
+  "mediumint",
+  "bigint",
+  "float",
+  "double",
+  "decimal",
+  "date",
+  "time",
+  "datetime",
+  "timestamp",
+  "year",
+  "char",
+  "varchar",
+  "tinytext",
+  "text",
+  "mediumtext",
+  "longtext",
+  "enum",
+  "set",
+  "binary",
+  "varbinary",
+  "tinyblob",
+  "blob",
+  "mediumblob",
+  "longblob",
+  "geometry",
+  "point",
+  "linestring",
+  "ploygon",
+  "json",
 ];

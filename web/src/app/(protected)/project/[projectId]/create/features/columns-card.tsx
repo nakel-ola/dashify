@@ -42,6 +42,7 @@ const head = [
 ];
 
 type Props = {
+  database: Projects["database"];
   columns: SchemaType["columns"];
   removeColumn: (index: number) => void;
   addColumn: () => void;
@@ -52,7 +53,7 @@ type Props = {
   ) => void;
 };
 export const ColumnsCard = (props: Props) => {
-  const { columns, removeColumn, addColumn, updateColumn } = props;
+  const { columns, removeColumn, addColumn, updateColumn, database } = props;
 
   const hasPrimary = !!columns.find((column) => column.isPrimary === true);
   return (
@@ -99,6 +100,7 @@ export const ColumnsCard = (props: Props) => {
                 key={index}
                 {...column}
                 index={index}
+                database={database}
                 removeColumn={() => removeColumn(index)}
                 updateColumn={(key, value) => updateColumn(index, key, value)}
               />

@@ -301,10 +301,10 @@ export class ProjectsController {
   }
 
   @ApiOperation({ summary: 'Refetch collections or tables' })
-  @Post(':projectId/refetch-collection/')
+  @Post(':projectId/refetch-collections/')
   @ApiParam({ name: 'projectId', example: 'finance-tracker-78493' })
-  refetchCollection(@Request() req, @Param('projectId') projectId: string) {
-    return this.projectsService.refetchCollection(projectId, req.user.uid);
+  refetchCollections(@Request() req, @Param('projectId') projectId: string) {
+    return this.projectsService.refetchCollections(projectId, req.user.uid);
   }
 
   @ApiOperation({ summary: 'Edit collections or tables' })
