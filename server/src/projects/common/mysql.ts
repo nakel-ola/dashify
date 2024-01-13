@@ -28,6 +28,17 @@ type EditTableArgs = {
   newTableName: string;
 };
 
+type ColumnInfo = {
+  COLUMN_DEFAULT: string;
+  TABLE_NAME: string;
+  COLUMN_NAME: string;
+  DATA_TYPE: string;
+  COLUMN_TYPE: string;
+  COLUMN_KEY: string;
+  IS_NULLABLE: string;
+  EXTRA: string;
+};
+
 export class MySQLDatabase {
   private connection: mysql.Connection;
 
@@ -70,17 +81,27 @@ export class MySQLDatabase {
 
   public async getTables(name: string) {
     try {
-      const [rows]: any[] = await this.connection.query(
+      // SELECT COLUMN_NAME, CONSTRAINT_NAME, CONSTRAINT_TYPE
+      // FROM information_schema.KEY_COLUMN_USAGE
+      // WHERE TABLE_SCHEMA = '${connection.config.database}'
+      //   AND TABLE_NAME = '${tableName}'
+      const [result]: any[] = await this.connection.query(
         `
-          SELECT COLUMN_DEFAULT, TABLE_NAME, COLUMN_NAME, DATA_TYPE, COLUMN_TYPE 
+          SELECT * 
           FROM INFORMATION_SCHEMA.COLUMNS 
           WHERE TABLE_SCHEMA = ?
         `,
         [name],
       );
 
+      const rows = result as ColumnInfo[];
+
+      console.log(rows);
+
+      // COLUMN_DEFAULT, TABLE_NAME, COLUMN_NAME, DATA_TYPE, COLUMN_TYPE, COLUMN_KEY,
+
       const tableSchemas: Collection[] = [];
-      rows.forEach((row: any) => {
+      rows.forEach((row) => {
         const existingSchema = tableSchemas.find(
           (schema) => schema.name === row.TABLE_NAME,
         );
@@ -91,6 +112,11 @@ export class MySQLDatabase {
           dataType: row.DATA_TYPE,
           udtName: row.COLUMN_TYPE,
           defaultValue: row.COLUMN_DEFAULT,
+          isNullable: this.convertToBool(row.IS_NULLABLE),
+          isIdentify: row.EXTRA.includes('DEFAULT_GENERATED'),
+          isPrimary: false,
+          isUnique: false,
+          ...this.formatConstraint(row.COLUMN_KEY),
         };
         if (existingSchema) {
           existingSchema.fields.push(field);
@@ -170,6 +196,19 @@ export class MySQLDatabase {
       console.error(`Error deleting table "${tableName}":`, error);
       throw error;
     }
+  }
+
+  private formatConstraint(COLUMN_KEY: string) {
+    if (!COLUMN_KEY) return {};
+    if (COLUMN_KEY === 'PRI') return { isPrimary: true };
+    if (COLUMN_KEY === 'UNI') return { isUnique: true };
+
+    return {};
+  }
+
+  private convertToBool(value: string) {
+    if (value.toLowerCase() === 'no') return false;
+    if (value.toLowerCase() === 'yes') return true;
   }
 
   public async close(): Promise<void> {
