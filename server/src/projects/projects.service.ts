@@ -31,7 +31,7 @@ import * as bcrypt from 'bcrypt';
 import { MongoDatabase } from './common/mongodb';
 import { CockroachDatabase } from './common/cockroachdb';
 import { PostgresDatabase } from './common/postgres';
-import { MySQLDatabase } from './common/mysql';
+import { EditTableArgs, MySQLDatabase } from './common/mysql';
 
 import type { DataType } from './common/query-generatore/mysql';
 import type { Collection } from './types/project.type';
@@ -358,7 +358,7 @@ export class ProjectsService {
     uid: string,
     editCollectionDto: EditCollectionDto,
   ) {
-    const { collectionName, newCollectionName } = editCollectionDto;
+    const { collectionName, newCollectionName, columns } = editCollectionDto;
 
     const project = await this.findOne(projectId, uid);
 
@@ -373,6 +373,7 @@ export class ProjectsService {
     const args = {
       tableName: collectionName,
       newTableName: newCollectionName,
+      columns,
     };
 
     if (database === 'mongodb') {
@@ -404,7 +405,10 @@ export class ProjectsService {
 
       await mysql.connect(dbConfig);
 
-      await mysql.editTable(args);
+      await mysql.editTable({
+        ...args,
+        columns: columns as EditTableArgs['columns'],
+      });
 
       await mysql.close();
     }

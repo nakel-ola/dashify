@@ -1,9 +1,10 @@
-import { Client } from 'pg';
+import { Client, QueryResult } from 'pg';
 import { Collection, Fields } from '../types/project.type';
 import { getDataTypeGroup } from './utils';
 import {
   PostgresQueryGenerator,
   type DataType,
+  type AlterModifyType,
 } from './query-generatore/postgres';
 
 interface ConnectionOption {
@@ -38,9 +39,17 @@ type GetTableArgs = {
   limit: number;
 };
 
+type EditModifyTable = AlterModifyType & {
+  type: 'modify';
+};
+type EditColumnTable = DataType & {
+  type: 'add' | 'drop';
+};
+
 type EditTableArgs = {
   tableName: string;
-  newTableName: string;
+  newTableName?: string;
+  columns?: (EditModifyTable | EditColumnTable)[];
 };
 
 type DuplicateTableArgs = {
@@ -51,6 +60,7 @@ type DuplicateTableArgs = {
 
 export class PostgresDatabase {
   private client: Client;
+  private queryGen = new PostgresQueryGenerator();
 
   constructor(connectionOption: ConnectionOption) {
     const { host, name, username, port, password } = connectionOption;
@@ -74,10 +84,9 @@ export class PostgresDatabase {
 
   public async createTable(tableName: string, columns: DataType[]) {
     try {
-      const queryGen = new PostgresQueryGenerator();
       const escapeTableName = this.client.escapeIdentifier(tableName);
 
-      const tableQuery = queryGen.createTable(escapeTableName, columns);
+      const tableQuery = this.queryGen.createTable(escapeTableName, columns);
 
       const result = await this.client.query(tableQuery);
       return result;
@@ -185,16 +194,39 @@ export class PostgresDatabase {
   }
 
   public async editTable(args: EditTableArgs) {
-    const { tableName, newTableName } = args;
+    const { tableName, newTableName, columns = [] } = args;
 
     try {
       const escapeTableName = this.client.escapeIdentifier(tableName);
-      const escapeNewTableName = this.client.escapeIdentifier(newTableName);
-      const query = `ALTER TABLE ${escapeTableName} RENAME TO ${escapeNewTableName};`;
 
-      const result = await this.client.query(query);
+      let queries: string[] = [];
 
-      return result;
+      for (let i = 0; i < columns.length; i++) {
+        const column = columns[i];
+
+        if (column.type === 'modify') {
+          queries = [
+            ...queries,
+            ...this.queryGen.alterModify(escapeTableName, column),
+          ];
+        } else {
+          queries.push(
+            this.queryGen.alterTable(escapeTableName, column.type, column),
+          );
+        }
+      }
+
+      if (newTableName) {
+        const escapeNewTableName = this.client.escapeIdentifier(newTableName);
+
+        queries.push(
+          `ALTER TABLE ${escapeTableName} RENAME TO ${escapeNewTableName};`,
+        );
+      }
+
+      const results = await this.runMultipleQueries(queries);
+
+      return results;
     } catch (error) {
       console.error(`Error updating table '${tableName}':`, error);
       throw error;
@@ -231,6 +263,17 @@ export class PostgresDatabase {
       console.error(`Error deleting table "${tableName}":`, error);
       throw error;
     }
+  }
+
+  private async runMultipleQueries(queries: string[]) {
+    const results: QueryResult<any>[] = [];
+    for (const query of queries) {
+      const result = await this.client.query(query);
+
+      results.push(result);
+    }
+
+    return results;
   }
 
   private formatConstraint(contraint: ColumnConstraintInfo) {

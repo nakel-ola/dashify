@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString, IsOptional, IsBoolean } from 'class-validator';
 
-class Reference {
+export class Reference {
   @ApiProperty({
     description: 'Reference table name ',
     type: [String],
@@ -34,7 +34,7 @@ class Reference {
   onDelete?: 'Cascade' | 'Restrict' | 'Set default' | 'Set NULL' | null;
 }
 
-class Column {
+export class Column {
   @ApiProperty({
     description: 'Column name',
     type: [String],

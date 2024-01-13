@@ -57,7 +57,7 @@ type InsetType = {
   values: (string | number)[][];
 };
 
-type AlterModifyType = {
+export type AlterModifyType = {
   operations: (
     | 'Rename'
     | 'Type'
@@ -136,11 +136,6 @@ export class PostgresQueryGenerator {
     for (let i = 0; i < item.operations.length; i++) {
       const operation = item.operations[i];
 
-      if (operation === 'Rename') {
-        results.push(`${query} 
-        RENAME COLUMN ${item.name} TO ${item.newName};`);
-      }
-
       if (operation === 'Type') {
         results.push(`${query} 
         ALTER COLUMN ${item.name} TYPE ${dataType[item.dataType]};`);
@@ -174,6 +169,11 @@ export class PostgresQueryGenerator {
         results.push(`${query}
         ADD ${foreign}`);
       }
+
+      if (operation === 'Rename') {
+        results.push(`${query} 
+        RENAME COLUMN ${item.name} TO ${item.newName};`);
+      }
     }
 
     return results;
@@ -191,7 +191,7 @@ export class PostgresQueryGenerator {
   }
 
   public dropTable(tableName: string) {
-    return `DROP TABLE ${tableName};`;
+    return `DROP TABLE IF EXISTS ${tableName};`;
   }
 
   private createColumn(item: DataType, singlePrimary: boolean) {

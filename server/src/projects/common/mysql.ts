@@ -1,7 +1,11 @@
 import * as mysql from 'mysql2/promise';
 import { Collection } from '../types/project.type';
 import { categorizeMySQLDataType } from './utils';
-import { MySqlQueryGenerator, type DataType } from './query-generatore/mysql';
+import {
+  MySqlQueryGenerator,
+  type DataType,
+  AlterModifyType,
+} from './query-generatore/mysql';
 
 interface ConnectionOption {
   name: string;
@@ -23,9 +27,17 @@ type GetTableArgs = {
   limit: number;
 };
 
-type EditTableArgs = {
+type EditModifyTable = AlterModifyType & {
+  type: 'modify';
+};
+type EditColumnTable = DataType & {
+  type: 'add' | 'drop';
+};
+
+export type EditTableArgs = {
   tableName: string;
-  newTableName: string;
+  newTableName?: string;
+  columns?: (EditModifyTable | EditColumnTable)[];
 };
 
 type ColumnInfo = {
@@ -41,6 +53,8 @@ type ColumnInfo = {
 
 export class MySQLDatabase {
   private connection: mysql.Connection;
+
+  private queryGen = new MySqlQueryGenerator();
 
   constructor() {}
 
@@ -66,11 +80,9 @@ export class MySQLDatabase {
     columns: DataType[],
   ): Promise<void> {
     try {
-      const queryGen = new MySqlQueryGenerator();
-
       const escapeTableName = mysql.escapeId(tableName);
 
-      const tableQuery = queryGen.createTable(escapeTableName, columns);
+      const tableQuery = this.queryGen.createTable(escapeTableName, columns);
 
       await this.connection.execute(tableQuery);
     } catch (error) {
@@ -146,13 +158,37 @@ export class MySQLDatabase {
   }
 
   public async editTable(args: EditTableArgs) {
-    const { tableName, newTableName } = args;
+    const { tableName, newTableName, columns } = args;
 
     try {
       const escapeTableName = mysql.escapeId(tableName);
-      const escapeNewTableName = mysql.escapeId(newTableName);
-      const query = `RENAME TABLE ${escapeTableName} TO ${escapeNewTableName}`;
-      await this.connection.execute(query);
+
+      let queries: string[] = [];
+
+      for (let i = 0; i < columns.length; i++) {
+        const column = columns[i];
+
+        if (column.type === 'modify') {
+          queries = [
+            ...queries,
+            ...this.queryGen.alterModify(escapeTableName, column),
+          ];
+        } else {
+          queries.push(
+            this.queryGen.alterTable(escapeTableName, column.type, column),
+          );
+        }
+      }
+
+      if (newTableName) {
+        const escapeNewTableName = mysql.escapeId(newTableName);
+
+        queries.push(
+          `RENAME TABLE ${escapeTableName} TO ${escapeNewTableName};`,
+        );
+      }
+
+      await this.runMultipleQueries(queries);
     } catch (error) {
       console.error(`Error updating table '${tableName}':`, error);
       throw error;
@@ -187,6 +223,12 @@ export class MySQLDatabase {
     } catch (error) {
       console.error(`Error deleting table "${tableName}":`, error);
       throw error;
+    }
+  }
+
+  private async runMultipleQueries(queries: string[]) {
+    for (const query of queries) {
+      await this.connection.execute(query);
     }
   }
 

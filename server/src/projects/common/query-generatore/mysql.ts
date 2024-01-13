@@ -52,7 +52,7 @@ type InsetType = {
   value: string | number;
 };
 
-type AlterModifyType = {
+export type AlterModifyType = {
   operations: (
     | 'Rename'
     | 'Type'
@@ -73,6 +73,8 @@ type AlterModifyType = {
     fieldName: string;
   };
 };
+
+type ForeignKeyType = Pick<DataType, 'references' | 'name'>;
 
 const dataTypes: Record<DataType['dataType'], string> = {
   int: 'INT',
@@ -145,20 +147,13 @@ export class MySqlQueryGenerator {
     return query;
   }
 
-  public alterTable(
-    tableName: string,
-    type: 'add' | 'modify' | 'drop',
-    item: DataType,
-  ) {
+  public alterTable(tableName: string, type: 'add' | 'drop', item: DataType) {
     const column = this.createColumn(item);
 
     let query = `ALTER TABLE ${tableName}`;
 
-    if (type === 'add') query += ' ADD COLUMN';
-    if (type === 'modify') query += ' MODIFY COLUMN';
+    if (type === 'add') query += ` ADD COLUMN ${column}`;
     if (type === 'drop') query += ` DROP COLUMN ${item.name}`;
-
-    if (type !== 'drop') query += ` ${column}`;
 
     return query;
   }
@@ -170,11 +165,6 @@ export class MySqlQueryGenerator {
 
     for (let i = 0; i < item.operations.length; i++) {
       const operation = item.operations[i];
-
-      if (operation === 'Rename') {
-        results.push(`${query} 
-        CHANGE COLUMN ${item.name} ${item.newName};`);
-      }
 
       if (operation === 'Type') {
         results.push(`${query} 
@@ -189,6 +179,20 @@ export class MySqlQueryGenerator {
       if (operation === 'Remove Default') {
         results.push(`${query}
         ALTER COLUMN ${item.name} DROP DEFAULT;`);
+      }
+
+      if (operation === 'FOREIGN') {
+        const foreign = this.formatForeignKey({
+          references: item.references,
+          name: item.name,
+        });
+        results.push(`${query}
+        ADD ${foreign}`);
+      }
+
+      if (operation === 'Rename') {
+        results.push(`${query} 
+        CHANGE COLUMN ${item.name} ${item.newName};`);
       }
     }
 
@@ -239,23 +243,32 @@ export class MySqlQueryGenerator {
     for (let i = 0; i < items.length; i++) {
       const item = items[i];
 
-      const references = item.references;
-
-      let foreign = `FOREIGN KEY (${item.name})
-        REFERENCES ${references?.collectionName}(${item.references?.fieldName})
-      `;
-
-      if (references?.onUpdate) {
-        foreign += `ON UPDATE ${references?.onUpdate.toUpperCase()}\n`;
-      }
-      if (references?.onDelete) {
-        foreign += `    ON DELETE ${references?.onDelete.toUpperCase()}`;
-      }
+      const foreign = this.formatForeignKey({
+        name: item.name,
+        references: item.references,
+      });
 
       results.push(foreign);
     }
 
     return results;
+  }
+
+  private formatForeignKey(item: ForeignKeyType) {
+    const references = item.references;
+
+    let foreign = `FOREIGN KEY (${item.name})
+    REFERENCES ${references?.collectionName}(${item.references?.fieldName})
+  `;
+
+    if (references?.onUpdate) {
+      foreign += `ON UPDATE ${references?.onUpdate.toUpperCase()}\n`;
+    }
+    if (references?.onDelete) {
+      foreign += `    ON DELETE ${references?.onDelete.toUpperCase()}`;
+    }
+
+    return foreign;
   }
 
   private formatDefaultValue(value: string | null, dataType: string) {
