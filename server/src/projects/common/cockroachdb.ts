@@ -129,7 +129,6 @@ export class CockroachDatabase {
         );
 
         const tableSchema = schemaResult.rows;
-        console.log(schemaResult);
 
         const tables = tableSchema.map((row) => {
           const dataType = row.data_type;

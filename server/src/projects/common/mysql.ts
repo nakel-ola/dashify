@@ -81,10 +81,6 @@ export class MySQLDatabase {
 
   public async getTables(name: string) {
     try {
-      // SELECT COLUMN_NAME, CONSTRAINT_NAME, CONSTRAINT_TYPE
-      // FROM information_schema.KEY_COLUMN_USAGE
-      // WHERE TABLE_SCHEMA = '${connection.config.database}'
-      //   AND TABLE_NAME = '${tableName}'
       const [result]: any[] = await this.connection.query(
         `
           SELECT COLUMN_DEFAULT, TABLE_NAME, COLUMN_NAME, DATA_TYPE, COLUMN_TYPE, COLUMN_KEY, IS_NULLABLE, EXTRA

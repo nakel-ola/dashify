@@ -116,7 +116,6 @@ export class PostgresDatabase {
           WHERE ku.table_name = $1;
         `;
 
-        // column_name, data_type, udt_name, column_default, is_nullable, is_identity
         const columnResult = await this.client.query<ColumnInfo>(columnQuery, [
           tableName,
         ]);
