@@ -24,7 +24,11 @@ export default async function Dashboard(props: Props) {
   const queryClient = new QueryClient();
   await queryClient.prefetchQuery({
     queryKey: ["projects"],
-    queryFn: () => fetchProjects({ offset, limit }),
+    queryFn: async () => {
+      const data = await fetchProjects({ offset, limit });
+
+      return data;
+    },
   });
 
   return (

@@ -3,10 +3,11 @@ import { Button } from "@/components/ui/button";
 import { CloseCircle } from "iconsax-react";
 
 type Props = {
+  error: Error & { digest?: string };
   reset: () => void;
 };
 
-export default function Error({ reset }: Props) {
+export default function Error({ reset, error }: Props) {
   return (
     <div className="flex flex-col items-center justify-center py-20">
       <CloseCircle className="text-red-500 w-24 h-24" />
@@ -16,7 +17,7 @@ export default function Error({ reset }: Props) {
       </p>
 
       <Button onClick={() => reset()} className="mt-2">
-        Refetch
+        Try again
       </Button>
     </div>
   );

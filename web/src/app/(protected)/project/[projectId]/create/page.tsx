@@ -192,12 +192,7 @@ export default function Create() {
           />
 
           <div className="flex">
-            <Button
-              type="submit"
-              // onClick={() => handleSubmit()}
-              disabled={!isValid}
-              className="ml-auto"
-            >
+            <Button type="submit" disabled={!isValid} className="ml-auto">
               Create {project?.database === "mongodb" ? "collection" : "table"}
               <MoonLoader
                 size={20}

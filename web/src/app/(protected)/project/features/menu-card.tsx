@@ -9,8 +9,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { More, Edit, Trash, Icon } from "iconsax-react";
-import { toast } from "sonner";
-import { deleteCollection } from "../services/delete-collection";
 import { DeleteCollectionCard } from "./delete-collection-card";
 import { useState } from "react";
 
@@ -28,19 +26,11 @@ export const MenuCard = (props: Props) => {
 
   const [isOpen, setIsOpen] = useState(false);
 
-  const isActive = pathname.startsWith(`/project/${projectId}/${name}`);
+  const basePath = `/project/${projectId}/${name}`;
+
+  const isActive = pathname.startsWith(basePath);
 
   const databaseName = project?.database === "mongodb" ? "Collection" : "table";
-
-  const handleDelete = async () => {
-    toast.promise(() => deleteCollection({ name, projectId }), {
-      loading: `Deleting ${databaseName} ...`,
-      success: (data) => {
-        return `${databaseName} deleted successfully`;
-      },
-      error: (error) => `${error.message}`,
-    });
-  };
 
   return (
     <div
@@ -48,9 +38,11 @@ export const MenuCard = (props: Props) => {
         "flex items-center justify-between m-2 mb-3 py-1.5 px-2 hover:bg-slate-100 hover:dark:bg-neutral-800 rounded-lg cursor-pointer mt-auto",
         isActive ? "bg-slate-100 dark:bg-neutral-800" : ""
       )}
-      onClick={() => router.push(`/project/${projectId}/${name}`)}
     >
-      <div className="flex items-center">
+      <div
+        onClick={() => router.push(basePath)}
+        className="flex items-center w-full"
+      >
         <Icon
           variant={isActive ? "Bold" : "Outline"}
           size={20}
@@ -82,7 +74,11 @@ export const MenuCard = (props: Props) => {
             </DropdownMenuTrigger>
 
             <DropdownMenuContent className="w-52">
-              <DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() =>
+                  router.push(`/project/${projectId}/edit/${name}`)
+                }
+              >
                 <Edit size={20} className="mr-2" />
                 Edit {databaseName}
               </DropdownMenuItem>
