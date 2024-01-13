@@ -24,6 +24,12 @@ type ColumnInfo = {
   data_type: string;
   udt_name: string;
   column_default: string;
+  is_nullable: string;
+  is_identity: string;
+};
+type ColumnConstraintInfo = {
+  column_name: string;
+  constraint_type: string;
 };
 
 type GetTableArgs = {
@@ -99,26 +105,52 @@ export class PostgresDatabase {
         const tableName = tableInfo.table_name;
 
         const columnQuery = `
-            SELECT column_name, data_type, udt_name, column_default
-            FROM information_schema.columns
-            WHERE table_schema = $1 AND table_name = $2
-          `;
+          SELECT column_name, data_type, udt_name, column_default, is_nullable, is_identity
+          FROM information_schema.columns
+          WHERE table_schema = $1 AND table_name = $2
+        `;
+        const columnKeyQuery = `
+          SELECT ku.column_name, tc.constraint_type
+          FROM information_schema.key_column_usage ku
+          JOIN information_schema.table_constraints tc
+            ON ku.table_name = tc.table_name
+            AND ku.constraint_name = tc.constraint_name
+          WHERE ku.table_name = $1;
+        `;
+
+        // column_name, data_type, udt_name, column_default, is_nullable, is_identity
         const columnResult = await this.client.query<ColumnInfo>(columnQuery, [
           schema,
           tableName,
         ]);
+        const columnKeyResult = await this.client.query<ColumnConstraintInfo>(
+          columnKeyQuery,
+          [tableName],
+        );
 
         const fields: Fields[] = [];
 
         for (const columnInfo of columnResult.rows) {
           const dataType = columnInfo.data_type;
 
+          const constraint = columnKeyResult.rows.find(
+            (row) => row.column_name === columnInfo.column_name,
+          );
+
+          const isArray = dataType === 'ARRAY';
+
           fields.push({
             name: columnInfo.column_name,
             type: getDataTypeGroup(dataType),
-            dataType,
+            dataType: isArray ? columnInfo.udt_name.slice(1) : dataType,
             udtName: columnInfo.udt_name,
             defaultValue: columnInfo.column_default,
+            isNullable: this.convertToBool(columnInfo.is_nullable),
+            isIdentify: this.convertToBool(columnInfo.is_identity),
+            isArray,
+            isPrimary: false,
+            isUnique: false,
+            ...this.formatConstraint(constraint),
           });
         }
 
@@ -203,6 +235,19 @@ export class PostgresDatabase {
       console.error(`Error deleting table "${tableName}":`, error);
       throw error;
     }
+  }
+
+  private formatConstraint(contraint: ColumnConstraintInfo) {
+    if (!contraint) return {};
+    if (contraint.constraint_type === 'PRIMARY KEY') return { isPrimary: true };
+    if (contraint.constraint_type === 'UNIQUE') return { isUnique: true };
+
+    return {};
+  }
+
+  private convertToBool(value: string) {
+    if (value.toLowerCase() === 'no') return false;
+    if (value.toLowerCase() === 'yes') return true;
   }
 
   public async close() {

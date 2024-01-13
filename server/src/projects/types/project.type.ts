@@ -15,6 +15,9 @@ export type Fields = {
   dataType?: string;
   udtName?: string;
   defaultValue?: string;
+  isIdentify?: boolean;
+  isNullable?: boolean;
+  isArray?: boolean;
 };
 
 export type DatabaseConfig = {
