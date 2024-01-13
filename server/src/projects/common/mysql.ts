@@ -87,7 +87,7 @@ export class MySQLDatabase {
       //   AND TABLE_NAME = '${tableName}'
       const [result]: any[] = await this.connection.query(
         `
-          SELECT * 
+          SELECT COLUMN_DEFAULT, TABLE_NAME, COLUMN_NAME, DATA_TYPE, COLUMN_TYPE, COLUMN_KEY
           FROM INFORMATION_SCHEMA.COLUMNS 
           WHERE TABLE_SCHEMA = ?
         `,
@@ -95,10 +95,6 @@ export class MySQLDatabase {
       );
 
       const rows = result as ColumnInfo[];
-
-      console.log(rows);
-
-      // COLUMN_DEFAULT, TABLE_NAME, COLUMN_NAME, DATA_TYPE, COLUMN_TYPE, COLUMN_KEY,
 
       const tableSchemas: Collection[] = [];
       rows.forEach((row) => {

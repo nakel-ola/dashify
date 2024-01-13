@@ -18,6 +18,7 @@ export type Fields = {
   isIdentify?: boolean;
   isNullable?: boolean;
   isArray?: boolean;
+  fields?: any[];
 };
 
 export type DatabaseConfig = {

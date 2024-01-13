@@ -1,6 +1,6 @@
 import { MongoClient, Collection as MongodbCollection } from 'mongodb';
 import { getMongodbArrayType, getMongodbObjectFieldType } from './utils';
-import { Collection } from '../types/project.type';
+import { Collection, Fields } from '../types/project.type';
 
 type ConnectionOption = {
   name: string;
@@ -85,18 +85,36 @@ export class MongoDatabase {
 
         for (const key in sampleDocument) {
           const value = sampleDocument[key];
-          let valueType: any = {
+          let valueType: Fields = {
             name: key,
             type: typeof value,
             dataType: typeof value,
+            udtName: typeof value,
           };
 
           if (key === '__v') continue;
 
           if (key === '_id') {
-            valueType = { name: key, type: 'string', dataType: 'string' };
+            valueType = {
+              name: key,
+              type: 'string',
+              dataType: 'string',
+              defaultValue: null,
+              isArray: false,
+              isNullable: false,
+              isIdentify: false,
+            };
           } else if (value === null) {
-            valueType = { name: key, type: 'null', dataType: 'null' };
+            valueType = {
+              name: key,
+              type: 'null',
+              dataType: 'null',
+              udtName: 'null',
+              defaultValue: null,
+              isArray: false,
+              isNullable: false,
+              isIdentify: false,
+            };
           } else if (Array.isArray(value)) {
             const arrayType = getMongodbArrayType(value);
             valueType = {
@@ -104,16 +122,35 @@ export class MongoDatabase {
               type: 'array',
               dataType: 'array',
               fields: arrayType,
+              udtName: 'array',
+              defaultValue: null,
+              isArray: true,
+              isNullable: false,
+              isIdentify: false,
             };
           } else if (valueType.type === 'object' && value instanceof Date) {
-            valueType = { name: key, type: 'Date', dataType: 'Date' };
+            valueType = {
+              name: key,
+              type: 'Date',
+              dataType: 'Date',
+              udtName: 'Date',
+              defaultValue: null,
+              isArray: false,
+              isNullable: false,
+              isIdentify: false,
+            };
           } else if (valueType.type === 'object') {
             const objectType = getMongodbObjectFieldType(value);
             valueType = {
               name: key,
               type: 'object',
               dataType: 'object',
+              udtName: 'object',
               fields: objectType,
+              defaultValue: null,
+              isArray: false,
+              isNullable: false,
+              isIdentify: false,
             };
           }
 
