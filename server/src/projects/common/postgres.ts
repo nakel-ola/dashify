@@ -99,15 +99,13 @@ export class PostgresDatabase {
       `;
 
       const tableResult = await this.client.query<TableInfo>(tableQuery);
+      const tables = tableResult.rows.map((row) => row.table_name);
 
-      for (const tableInfo of tableResult.rows) {
-        const schema = tableInfo.schema;
-        const tableName = tableInfo.table_name;
-
+      for (const tableName of tables) {
         const columnQuery = `
           SELECT column_name, data_type, udt_name, column_default, is_nullable, is_identity
           FROM information_schema.columns
-          WHERE table_schema = $1 AND table_name = $2
+          WHERE table_schema = 'public' AND table_name = $1
         `;
         const columnKeyQuery = `
           SELECT ku.column_name, tc.constraint_type
@@ -120,7 +118,6 @@ export class PostgresDatabase {
 
         // column_name, data_type, udt_name, column_default, is_nullable, is_identity
         const columnResult = await this.client.query<ColumnInfo>(columnQuery, [
-          schema,
           tableName,
         ]);
         const columnKeyResult = await this.client.query<ColumnConstraintInfo>(

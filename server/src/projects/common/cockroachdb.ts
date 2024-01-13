@@ -31,6 +31,19 @@ type EditTableArgs = {
   newTableName: string;
 };
 
+type ColumnInfo = {
+  column_name: string;
+  data_type: string;
+  udt_name: string;
+  column_default: string;
+  is_nullable: string;
+  is_identity: string;
+};
+type ColumnConstraintInfo = {
+  column_name: string;
+  constraint_type: string;
+};
+
 export class CockroachDatabase {
   private client: Client;
 
@@ -92,22 +105,57 @@ export class CockroachDatabase {
 
       for (const tableName of tables) {
         const schemaQuery = `
-          SELECT column_name, data_type, udt_name, column_default
+          SELECT column_name, data_type, udt_name, column_default, is_nullable, is_identity
           FROM information_schema.columns
           WHERE table_schema = 'public'
           AND table_name = $1;
         `;
 
-        const schemaResult = await this.client.query(schemaQuery, [tableName]);
-        const tableSchema = schemaResult.rows;
+        const columnKeyQuery = `
+          SELECT ku.column_name, tc.constraint_type
+          FROM information_schema.key_column_usage ku
+          JOIN information_schema.table_constraints tc
+            ON ku.table_name = tc.table_name
+            AND ku.constraint_name = tc.constraint_name
+          WHERE ku.table_name = $1;
+        `;
 
-        const tables = tableSchema.map((row) => ({
-          name: row.column_name,
-          type: getDataTypeGroup(row.data_type),
-          dataType: row.data_type,
-          udtName: row.udt_name,
-          defaultValue: row.column_default,
-        }));
+        const schemaResult = await this.client.query<ColumnInfo>(schemaQuery, [
+          tableName,
+        ]);
+        const columnKeyResult = await this.client.query<ColumnConstraintInfo>(
+          columnKeyQuery,
+          [tableName],
+        );
+
+        const tableSchema = schemaResult.rows;
+        console.log(schemaResult);
+
+        const tables = tableSchema.map((row) => {
+          const dataType = row.data_type;
+
+          const udtName = row.udt_name;
+
+          const constraint = columnKeyResult.rows.find(
+            (row) => row.column_name === row.column_name,
+          );
+
+          const isArray = dataType === 'ARRAY';
+
+          return {
+            name: row.column_name,
+            type: getDataTypeGroup(dataType),
+            dataType: isArray ? udtName.slice(1) : dataType,
+            udtName,
+            defaultValue: row.column_default,
+            isNullable: this.convertToBool('row.is_nullable'),
+            isIdentify: this.convertToBool('row.is_identity'),
+            isArray,
+            isPrimary: false,
+            isUnique: false,
+            ...this.formatConstraint(constraint),
+          };
+        });
 
         results.push({ name: tableName, icon: 'Settings', fields: tables });
       }
@@ -191,6 +239,19 @@ export class CockroachDatabase {
       console.error(`Error deleting table "${tableName}":`, error);
       throw error;
     }
+  }
+
+  private formatConstraint(contraint: ColumnConstraintInfo) {
+    if (!contraint) return {};
+    if (contraint.constraint_type === 'PRIMARY KEY') return { isPrimary: true };
+    if (contraint.constraint_type === 'UNIQUE') return { isUnique: true };
+
+    return {};
+  }
+
+  private convertToBool(value: string) {
+    if (value.toLowerCase() === 'no') return false;
+    if (value.toLowerCase() === 'yes') return true;
   }
 
   public async close(): Promise<void> {

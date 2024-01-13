@@ -87,7 +87,7 @@ export class MySQLDatabase {
       //   AND TABLE_NAME = '${tableName}'
       const [result]: any[] = await this.connection.query(
         `
-          SELECT COLUMN_DEFAULT, TABLE_NAME, COLUMN_NAME, DATA_TYPE, COLUMN_TYPE, COLUMN_KEY
+          SELECT COLUMN_DEFAULT, TABLE_NAME, COLUMN_NAME, DATA_TYPE, COLUMN_TYPE, COLUMN_KEY, IS_NULLABLE, EXTRA
           FROM INFORMATION_SCHEMA.COLUMNS 
           WHERE TABLE_SCHEMA = ?
         `,
