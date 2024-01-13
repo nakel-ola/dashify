@@ -66,12 +66,13 @@ export default function Create() {
 
   const router = useRouter();
 
-  const columns =
-    project?.database === "mongodb"
-      ? []
-      : project?.database === "mysql"
-      ? mySqlColumnsDefault
-      : postgresqlColumnsDefault;
+  const isMongodb = project?.database === "mongodb";
+
+  const columns = isMongodb
+    ? []
+    : project?.database === "mysql"
+    ? mySqlColumnsDefault
+    : postgresqlColumnsDefault;
 
   const {
     handleSubmit,
@@ -101,9 +102,7 @@ export default function Create() {
       await createCollection({ projectId, ...values })
         .then(async (results) => {
           toast.success(
-            `${
-              project.database === "mongodb" ? "Collection" : "Table"
-            } created successfully`
+            `${isMongodb ? "Collection" : "Table"} created successfully`
           );
 
           await queryClient.invalidateQueries({
@@ -159,12 +158,12 @@ export default function Create() {
     <div className="flex justify-center py-10">
       <div className="w-[90%] lg:w-[65%] ">
         <h2 className="text-4xl font-semibold leading-none tracking-tight">
-          Create a new{" "}
-          {project?.database === "mongodb" ? "collection" : "table"}
+          Create a new {isMongodb ? "collection" : "table"}
         </h2>
 
         <p className="text-base text-gray-dark dark:text-gray-light pt-2">
-          Fill in the details. Click Save when you&apos;re done.
+          Fill in the details. Click Create {isMongodb ? "collection" : "table"}{" "}
+          when you&apos;re done.
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-6 mt-6 w-full">
@@ -183,17 +182,19 @@ export default function Create() {
             showErrorMessage={false}
           />
 
-          <ColumnsCard
-            columns={values.columns}
-            removeColumn={removeColumn}
-            addColumn={addColumn}
-            updateColumn={updateColumn}
-            database={project?.database!}
-          />
+          {!isMongodb ? (
+            <ColumnsCard
+              columns={values.columns}
+              removeColumn={removeColumn}
+              addColumn={addColumn}
+              updateColumn={updateColumn}
+              database={project?.database!}
+            />
+          ) : null}
 
           <div className="flex">
             <Button type="submit" disabled={!isValid} className="ml-auto">
-              Create {project?.database === "mongodb" ? "collection" : "table"}
+              Create {isMongodb ? "collection" : "table"}
               <MoonLoader
                 size={20}
                 color="white"

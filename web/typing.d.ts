@@ -3,7 +3,7 @@ type Projects = {
   name: string;
   logo: string | null;
   projectId: string;
-  database: 'mongodb' | 'postgres' | 'mysql' | 'cockroachdb';
+  database: "mongodb" | "postgres" | "mysql" | "cockroachdb";
   members: Omit<
     UserType & { role: "administrator" | "editor" | "viewer" | "developer" },
     "accessToken" | "refreshToken"
@@ -48,7 +48,7 @@ type Tokens = {
 type DatabaseConfig = {
   host: string;
   name: string;
-  dbType: 'mongodb' | 'postgres' | 'mysql' | 'cockroachdb';
+  dbType: "mongodb" | "postgres" | "mysql" | "cockroachdb";
   password: string;
   port: number;
   username: string;
@@ -64,7 +64,11 @@ type Collection = {
 type Fields = {
   name: string;
   type: string;
-  dataType?: string;
-  udtName?: string;
-  defaultValue?: string;
+  dataType: string;
+  udtName: string;
+  defaultValue: string;
+  isIdentify: boolean;
+  isNullable: boolean;
+  isArray: boolean;
+  fields: any[];
 };
