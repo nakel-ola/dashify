@@ -7,33 +7,35 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { deleteCollection } from "../services/delete-collection";
-import { useState } from "react";
-import { toast } from "sonner";
-import { useQueryClient } from "@tanstack/react-query";
-import { MoonLoader } from "react-spinners";
 import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { MoonLoader } from "react-spinners";
+import { editCollection } from "../../../services/edit-collection";
+import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 type Props = {
   isOpen: boolean;
   setIsOpen: (value: boolean) => void;
   name: string;
-  databaseName: string;
   projectId: string;
+  tableName: string;
 };
-export const DeleteCollectionCard = (props: Props) => {
-  const { isOpen, setIsOpen, name, databaseName, projectId } = props;
+export const ColumnDeleteCard = (props: Props) => {
+  const { isOpen, setIsOpen, name, tableName, projectId } = props;
 
   const [isLoading, setIsLoading] = useState(false);
 
   const queryClient = useQueryClient();
 
-  const router = useRouter();
-
   const handleDelete = async () => {
     setIsLoading(true);
-    await deleteCollection({ name, projectId })
+
+    await editCollection({
+      name: tableName,
+      projectId,
+      columns: [{ name, type: "drop" }],
+    })
       .then(async () => {
         toast.success(`${name} deleted successfully`);
         await queryClient.invalidateQueries({
@@ -41,26 +43,26 @@ export const DeleteCollectionCard = (props: Props) => {
         });
 
         setIsOpen(false);
-
-        router.push(`/project/${projectId}`);
       })
       .catch((err) => {
         toast.error(err.message);
       })
       .finally(() => setIsLoading(false));
   };
+
   return (
     <AlertDialog open={isOpen} onOpenChange={() => setIsOpen(false)}>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>
-            Confirm deletion of {databaseName} {`"${name}"`}
+            Confirm deletion of column {`"${name}"`}
           </AlertDialogTitle>
           <AlertDialogDescription>
-            Are you sure you want to delete the selected {databaseName}? <br />
+            Are you sure you want to delete the selected column? <br />
             The action cannot be undone.
           </AlertDialogDescription>
         </AlertDialogHeader>
+
         <AlertDialogFooter>
           <AlertDialogCancel className="bg-slate-100 dark:bg-neutral-800 text-black dark:text-white hover:bg-slate-100 hover:dark:bg-neutral-800">
             Cancel

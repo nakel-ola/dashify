@@ -3,7 +3,13 @@
 import axios from "@/lib/axios";
 import { clean } from "@/utils/clean";
 
-type Column = {
+type Reference = {
+  fieldName: string;
+  collectionName: string;
+  onUpdate: "Cascade" | "Restrict" | null;
+  onDelete: "Cascade" | "Restrict" | "Set default" | "Set NULL" | null;
+};
+type AddColumn = {
   name: string;
   dataType: string;
   defaultValue?: string | null;
@@ -12,18 +18,37 @@ type Column = {
   isUnique: boolean;
   isIdentify: boolean;
   isArray: boolean;
-  references?: {
-    collectionName?: string;
-    fieldName?: string;
-    onUpdate?: "Cascade" | "Restrict" | null;
-    onDelete?: "Cascade" | "Restrict" | "Set default" | "Set NULL" | null;
-  } | null;
+  type: "add";
+  references?: Reference | null;
+};
+
+type DropColumn = {
+  name: string;
+  type: "drop";
+};
+
+type ModifyColumn = {
+  operations: (
+    | "Rename"
+    | "Type"
+    | "Add Default"
+    | "Remove Default"
+    | "Add Not null"
+    | "Remove Not null"
+    | "FOREIGN"
+  )[];
+  name: string;
+  type: "modify";
+  newName?: string;
+  dataType?: string;
+  defaultValue?: string | null;
+  references?: Reference | null;
 };
 type Args = {
   projectId: string;
   name: string;
   newName?: string;
-  columns?: Column[];
+  columns?: (AddColumn | ModifyColumn | DropColumn)[];
 };
 
 type CreateResponse = {

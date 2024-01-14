@@ -14,7 +14,7 @@ import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import { ColumnsCard } from "../../create/features/columns-card";
 import { v4 } from "uuid";
-import { sortByIsPrimary } from "./utils/sort-by-is-primary";
+import { sortByIsPrimary } from "../../../utils/sort-by-is-primary";
 import { findChangedObjects } from "./utils/find-changed-objects";
 import { formatColumns } from "./utils/format-columns";
 import { findDeletedObjects } from "./utils/find-deleted-objects";

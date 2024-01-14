@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { sortByIsPrimary } from "../utils/sort-by-is-primary";
 
 type ProjectStoreType = {
   project: Projects | null;
@@ -22,8 +23,7 @@ export const useProjectStore = create<ProjectStoreType>((set, get) => ({
   getFields: (name, sort = true) => {
     const collection = get().getCollection(name);
 
-    const sortedFields =
-      collection?.fields.sort((a, b) => a.name.localeCompare(b.name)) ?? [];
+    const sortedFields = sortByIsPrimary(collection?.fields ?? []);
 
     return sort ? sortedFields : collection?.fields ?? [];
   },
