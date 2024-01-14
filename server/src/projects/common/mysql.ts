@@ -158,7 +158,7 @@ export class MySQLDatabase {
   }
 
   public async editTable(args: EditTableArgs) {
-    const { tableName, newTableName, columns } = args;
+    const { tableName, newTableName, columns = [] } = args;
 
     try {
       const escapeTableName = mysql.escapeId(tableName);

@@ -45,10 +45,10 @@ const dataType: Record<DataType['dataType'], string> = {
   varchar: 'VARCHAR(255)',
   uuid: 'UUID',
   date: 'DATE',
-  time: 'TIME',
-  timetz: 'TIMETZ',
-  timestamp: 'TIMESTAMP',
-  timestamptz: 'TIMESTAMPTZ',
+  time: 'TIME WITHOUT TIME ZONE',
+  timetz: 'TIME WITH TIME ZONE',
+  timestamp: 'TIMESTAMP WITHOUT TIME ZONE',
+  timestamptz: 'TIMESTAMP WITH TIME ZONE',
   bool: 'BOOL',
 };
 
@@ -205,18 +205,18 @@ export class PostgresQueryGenerator {
 
     if (item.isUnique) column += ' UNIQUE';
 
+    if (!item.isNullable) column += ' NOT NULL';
+    
     if (item.defaultValue !== null && item.defaultValue !== undefined)
       column += ` DEFAULT ${this.formatDefaultValue(item.defaultValue)}`;
-
-    if (!item.isNullable) column += ' NOT NULL';
 
     return column;
   }
 
   private formatDefaultValue(value: string | null) {
-    if (value === 'now()') return 'CURRENT_TIME';
+    if (value === 'now()') return 'now()';
     if (value === "(now() at time zone 'utc)")
-      return "(CURRENT_TIMESTAMP AT TIME ZONE 'UTC')::TIME";
+      return "(now() AT TIME ZONE 'UTC'::text)";
     if (value === 'gen_random_uuid()') return 'gen_random_uuid()';
 
     if (value === '') return `""`;

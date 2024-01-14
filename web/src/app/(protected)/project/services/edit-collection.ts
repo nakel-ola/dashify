@@ -1,6 +1,7 @@
 "use server";
 
 import axios from "@/lib/axios";
+import { clean } from "@/utils/clean";
 
 type Column = {
   name: string;
@@ -21,7 +22,8 @@ type Column = {
 type Args = {
   projectId: string;
   name: string;
-  columns: Column[];
+  newName?: string;
+  columns?: Column[];
 };
 
 type CreateResponse = {
@@ -29,15 +31,19 @@ type CreateResponse = {
 };
 
 export async function editCollection(args: Args) {
-  const { projectId, name, columns } = args;
+  const { projectId, name, newName, columns } = args;
 
   try {
     const url = `/projects/${projectId}/edit-collection`;
 
-    const { data } = await axios.post<CreateResponse>(url, {
-      collectionName: name,
-      columns,
-    });
+    const { data } = await axios.put<CreateResponse>(
+      url,
+      clean({
+        collectionName: name,
+        newCollectionName: newName,
+        columns,
+      })
+    );
 
     return data;
   } catch (error: any) {

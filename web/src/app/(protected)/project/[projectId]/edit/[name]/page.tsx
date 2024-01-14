@@ -6,6 +6,12 @@ import { Schema, SchemaType } from "../../create/schema";
 import CustomInput from "@/components/custom-input";
 import { Button } from "@/components/ui/button";
 import { MoonLoader } from "react-spinners";
+import { useEffectOnce } from "usehooks-ts";
+import { editCollection } from "../../../services/edit-collection";
+import { clean } from "@/utils/clean";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
 
 type Props = {
   params: { name: string };
@@ -16,6 +22,11 @@ export default function ProjectEdit(props: Props) {
     params: { name },
   } = props;
   const project = useProjectStore((store) => store.project);
+  const fields = useProjectStore((store) => store.getFields(name, false));
+
+  const queryClient = useQueryClient();
+
+  const router = useRouter();
 
   const isMongodb = project?.database === "mongodb";
 
@@ -29,7 +40,6 @@ export default function ProjectEdit(props: Props) {
     resetForm,
     isValid,
     isSubmitting,
-    setSubmitting,
   } = useFormik<SchemaType>({
     initialValues: {
       name: "",
@@ -43,7 +53,42 @@ export default function ProjectEdit(props: Props) {
       if (!project) return;
 
       const projectId = project.projectId;
+
+      const args = clean({
+        projectId,
+        name,
+        newName: values.name !== name ? values.name : null,
+      });
+
+      await editCollection(args)
+        .then(async () => {
+          toast.success(
+            `${isMongodb ? "Collection" : "Table"} updated successfully`
+          );
+
+          await queryClient.invalidateQueries({
+            queryKey: ["project", projectId],
+          });
+
+          router.push(`/project/${projectId}`);
+        })
+        .catch((err) => {
+          console.log(err);
+          toast.error(err.message);
+        });
     },
+  });
+
+  const isDisabled = () => {
+    if (values.name !== name) return false;
+
+    if (isSubmitting) return true;
+
+    return true;
+  };
+
+  useEffectOnce(() => {
+    setFieldValue("name", name);
   });
 
   return (
@@ -57,9 +102,8 @@ export default function ProjectEdit(props: Props) {
         </h2>
 
         <p className="text-base text-gray-dark dark:text-gray-light pt-2">
-          Fill in the details. Click Update{" "}
-          {isMongodb ? "collection" : "table"} when
-          you&apos;re done.
+          Fill in the details. Click Update {isMongodb ? "collection" : "table"}{" "}
+          when you&apos;re done.
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-6 mt-6 w-full">
@@ -79,7 +123,11 @@ export default function ProjectEdit(props: Props) {
           />
 
           <div className="flex">
-            <Button type="submit" disabled={!isValid} className="ml-auto">
+            <Button
+              type="submit"
+              disabled={!isValid || isDisabled()}
+              className="ml-auto"
+            >
               Update {isMongodb ? "collection" : "table"}
               <MoonLoader
                 size={20}
