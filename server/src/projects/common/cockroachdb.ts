@@ -6,6 +6,7 @@ import {
   type DataType,
   AlterModifyType,
 } from './query-generatore/postgres';
+import { v4 } from 'uuid';
 
 interface ConnectionOption {
   name: string;
@@ -145,19 +146,20 @@ export class CockroachDatabase {
           const udtName = row.udt_name;
 
           const constraint = columnKeyResult.rows.find(
-            (row) => row.column_name === row.column_name,
+            (r) => r.column_name === row.column_name,
           );
 
           const isArray = dataType === 'ARRAY';
 
           return {
+            id: v4(),
             name: row.column_name,
             type: getDataTypeGroup(dataType),
             dataType: isArray ? udtName.slice(1) : dataType,
             udtName,
             defaultValue: row.column_default,
-            isNullable: this.convertToBool('row.is_nullable'),
-            isIdentify: this.convertToBool('row.is_identity'),
+            isNullable: this.convertToBool(row.is_nullable),
+            isIdentify: this.convertToBool(row.is_identity),
             isArray,
             isPrimary: false,
             isUnique: false,

@@ -24,7 +24,7 @@ export const DataTypeSelectCard = (props: Props) => {
       value={dataType}
       onValueChange={(value) => updateColumn("dataType", value)}
     >
-      <SelectTrigger className="w-full lg:w-[120px] !h-[38px]">
+      <SelectTrigger className="w-full min-w-[120px] lg:w-full !h-[38px]">
         <SelectValue defaultValue="" placeholder="---" className="" />
       </SelectTrigger>
 

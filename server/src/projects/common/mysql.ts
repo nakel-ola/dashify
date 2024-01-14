@@ -6,6 +6,7 @@ import {
   type DataType,
   AlterModifyType,
 } from './query-generatore/mysql';
+import { v4 } from 'uuid';
 
 interface ConnectionOption {
   name: string;
@@ -111,6 +112,7 @@ export class MySQLDatabase {
         );
 
         const field = {
+          id: v4(),
           name: row.COLUMN_NAME,
           ...categorizeMySQLDataType(row.DATA_TYPE, row.COLUMN_TYPE),
           dataType: row.DATA_TYPE,

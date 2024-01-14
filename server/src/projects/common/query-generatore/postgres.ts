@@ -206,7 +206,7 @@ export class PostgresQueryGenerator {
     if (item.isUnique) column += ' UNIQUE';
 
     if (!item.isNullable) column += ' NOT NULL';
-    
+
     if (item.defaultValue !== null && item.defaultValue !== undefined)
       column += ` DEFAULT ${this.formatDefaultValue(item.defaultValue)}`;
 

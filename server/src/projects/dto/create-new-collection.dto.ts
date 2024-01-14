@@ -68,35 +68,35 @@ export class Column {
 
   @ApiProperty({
     description: 'If column is primary',
-    type: [String],
+    type: [Boolean],
   })
   @IsBoolean()
   isPrimary: boolean;
 
   @ApiProperty({
     description: 'If column is nullable',
-    type: [String],
+    type: [Boolean],
   })
   @IsBoolean()
   isNullable: boolean;
 
   @ApiProperty({
     description: 'If column is unique',
-    type: [String],
+    type: [Boolean],
   })
   @IsBoolean()
   isUnique: boolean;
 
   @ApiProperty({
     description: 'If column is an array',
-    type: [String],
+    type: [Boolean],
   })
   @IsBoolean()
   isArray: boolean;
 
   @ApiProperty({
     description: 'is identify',
-    type: [String],
+    type: [Boolean],
   })
   @IsBoolean()
   isIdentify: boolean;

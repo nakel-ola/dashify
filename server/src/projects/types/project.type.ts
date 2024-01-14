@@ -10,6 +10,7 @@ export type Collection = {
 };
 
 export type Fields = {
+  id: string;
   name: string;
   type: string;
   dataType?: string;
@@ -17,6 +18,8 @@ export type Fields = {
   defaultValue?: string;
   isIdentify?: boolean;
   isNullable?: boolean;
+  isPrimary?: boolean;
+  isUnique?: boolean;
   isArray?: boolean;
   fields?: any[];
 };

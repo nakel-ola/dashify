@@ -46,7 +46,7 @@ export const ColumnTable = (props: Props) => {
             value={name}
             required
             onChange={(e) => updateColumn("name", e.target.value)}
-            classes={{ root: "w-[120px]", input: "!h-9" }}
+            classes={{ root: "w-full", input: "!h-9" }}
           />
 
           <div

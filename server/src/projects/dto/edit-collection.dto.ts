@@ -39,7 +39,7 @@ class EditModifyCollection {
   })
   @IsString()
   @IsOptional()
-  dataType:
+  dataType?:
     | 'int2'
     | 'int4'
     | 'int8'

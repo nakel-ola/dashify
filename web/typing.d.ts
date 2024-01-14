@@ -62,6 +62,7 @@ type Collection = {
 };
 
 type Fields = {
+  id: string;
   name: string;
   type: string;
   dataType: string;
@@ -69,6 +70,8 @@ type Fields = {
   defaultValue: string;
   isIdentify: boolean;
   isNullable: boolean;
+  isPrimary: boolean;
+  isUnique: boolean;
   isArray: boolean;
   fields: any[];
 };

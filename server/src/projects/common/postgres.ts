@@ -6,6 +6,7 @@ import {
   type DataType,
   type AlterModifyType,
 } from './query-generatore/postgres';
+import { v4 } from 'uuid';
 
 interface ConnectionOption {
   name: string;
@@ -144,11 +145,14 @@ export class PostgresDatabase {
 
           const isArray = dataType === 'ARRAY';
 
+          const udtName = columnInfo.udt_name;
+
           fields.push({
+            id: v4(),
             name: columnInfo.column_name,
             type: getDataTypeGroup(dataType),
-            dataType: isArray ? columnInfo.udt_name.slice(1) : dataType,
-            udtName: columnInfo.udt_name,
+            dataType: isArray ? udtName.slice(1) : dataType,
+            udtName: isArray ? udtName.slice(1) : udtName,
             defaultValue: columnInfo.column_default,
             isNullable: this.convertToBool(columnInfo.is_nullable),
             isIdentify: this.convertToBool(columnInfo.is_identity),

@@ -1,6 +1,7 @@
 import { MongoClient, Collection as MongodbCollection } from 'mongodb';
 import { getMongodbArrayType, getMongodbObjectFieldType } from './utils';
 import { Collection, Fields } from '../types/project.type';
+import { v4 } from 'uuid';
 
 type ConnectionOption = {
   name: string;
@@ -85,7 +86,10 @@ export class MongoDatabase {
 
         for (const key in sampleDocument) {
           const value = sampleDocument[key];
+
+          const id = v4();
           let valueType: Fields = {
+            id,
             name: key,
             type: typeof value,
             dataType: typeof value,
@@ -96,6 +100,7 @@ export class MongoDatabase {
 
           if (key === '_id') {
             valueType = {
+              id,
               name: key,
               type: 'string',
               dataType: 'string',
@@ -106,6 +111,7 @@ export class MongoDatabase {
             };
           } else if (value === null) {
             valueType = {
+              id,
               name: key,
               type: 'null',
               dataType: 'null',
@@ -118,6 +124,7 @@ export class MongoDatabase {
           } else if (Array.isArray(value)) {
             const arrayType = getMongodbArrayType(value);
             valueType = {
+              id,
               name: key,
               type: 'array',
               dataType: 'array',
@@ -130,6 +137,7 @@ export class MongoDatabase {
             };
           } else if (valueType.type === 'object' && value instanceof Date) {
             valueType = {
+              id,
               name: key,
               type: 'Date',
               dataType: 'Date',
@@ -142,6 +150,7 @@ export class MongoDatabase {
           } else if (valueType.type === 'object') {
             const objectType = getMongodbObjectFieldType(value);
             valueType = {
+              id,
               name: key,
               type: 'object',
               dataType: 'object',

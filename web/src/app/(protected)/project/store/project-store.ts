@@ -27,7 +27,7 @@ export const useProjectStore = create<ProjectStoreType>((set, get) => ({
 
     return sort ? sortedFields : collection?.fields ?? [];
   },
-  getField: (collectionName, fieldName, sort = true) => {
+  getField: (collectionName, fieldName) => {
     const fields = get().getFields(collectionName);
 
     const field = fields.find((field) => field.name === fieldName);
