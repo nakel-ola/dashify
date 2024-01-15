@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import { CollectionsCard, Header, PaginationCard, TabsCard } from "./features";
 import { useProjectStore } from "../../store/project-store";
 import { useQuery } from "@tanstack/react-query";
@@ -8,6 +8,7 @@ import { fetchCollection } from "../../services/fetch-collection";
 import { cn } from "@/lib/utils";
 import { SpinnerCircular } from "spinners-react";
 import { generateNumbers } from "../../utils/generate-numbers";
+import { ColumnUpdateCard } from "./features/column-update-card";
 
 type Props = {
   params: {
@@ -109,64 +110,68 @@ export default function ProjectCollection(props: Props) {
   };
 
   return (
-    <div className="overflow-y-hidden h-full">
-      <TabsCard
-        isAnySelected={selected.length > 0}
-        totalSelected={selected.length}
-        totalItems={data?.totalItems ?? 0}
-        onRefresh={() => refetch()}
-        isRefreshing={isLoading}
-        removeSelected={() => setSelected([])}
-      />
-
-      <div
-        className={cn(
-          "overflow-scroll w-full h-full",
-          isLoading || pageCount <= 1
-            ? "max-h-[calc(100vh-102px)]"
-            : "max-h-[calc(100vh-148px)]"
-        )}
-      >
-        <Header
-          pageName={index[0]}
-          onSelectAll={onSelectAll}
-          isAllSelected={data?.results.length === selected.length}
-          projectId={projectId}
-          isMongodb={project.database === "mongodb"}
+    <Fragment>
+      <div className="overflow-y-hidden h-full">
+        <TabsCard
+          isAnySelected={selected.length > 0}
+          totalSelected={selected.length}
+          totalItems={data?.totalItems ?? 0}
+          onRefresh={() => refetch()}
+          isRefreshing={isLoading}
+          removeSelected={() => setSelected([])}
         />
 
-        {data ? (
-          <CollectionsCard
+        <div
+          className={cn(
+            "overflow-scroll w-full h-full",
+            isLoading || pageCount <= 1
+              ? "max-h-[calc(100vh-102px)]"
+              : "max-h-[calc(100vh-148px)]"
+          )}
+        >
+          <Header
             pageName={index[0]}
-            items={data.results}
-            isSelected={isSelected}
-            updateSelected={updateSelected}
+            onSelectAll={onSelectAll}
+            isAllSelected={data?.results.length === selected.length}
+            projectId={projectId}
+            isMongodb={project.database === "mongodb"}
           />
-        ) : null}
 
-        {isPending ? (
-          <div className="grid place-items-center h-[calc(100%-50px)]">
-            <SpinnerCircular
-              size={60}
-              thickness={100}
-              speed={100}
-              color="#4f46e5"
-              secondaryColor="rgba(242, 246, 250, 0.20)"
+          {data ? (
+            <CollectionsCard
+              pageName={index[0]}
+              items={data.results}
+              isSelected={isSelected}
+              updateSelected={updateSelected}
             />
-          </div>
+          ) : null}
+
+          {isPending ? (
+            <div className="grid place-items-center h-[calc(100%-50px)]">
+              <SpinnerCircular
+                size={60}
+                thickness={100}
+                speed={100}
+                color="#4f46e5"
+                secondaryColor="rgba(242, 246, 250, 0.20)"
+              />
+            </div>
+          ) : null}
+        </div>
+
+        {pageCount > 1 ? (
+          <PaginationCard
+            totalItems={data?.totalItems!}
+            limit={limit}
+            page={currentPage}
+            pageCount={pageCount}
+            onPageChange={onPageChange}
+            onLimitChange={setLimit}
+          />
         ) : null}
       </div>
 
-      {pageCount > 1 ? (
-        <PaginationCard
-          totalItems={data?.totalItems!}
-          limit={limit}
-          page={currentPage}
-          pageCount={pageCount}
-          onPageChange={onPageChange}
-          onLimitChange={setLimit}
-        />
-      ) : null}
-    </div>
+      <ColumnUpdateCard />
+    </Fragment>
   );
 }

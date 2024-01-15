@@ -6,6 +6,7 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import type { ColumnType } from "../schema";
+import { mySqlDataTypes, postgresqlDatatypes } from "../../../data/datatypes";
 
 type Props = {
   dataType: string;
@@ -38,58 +39,3 @@ export const DataTypeSelectCard = (props: Props) => {
     </Select>
   );
 };
-
-const postgresqlDatatypes = [
-  "int2",
-  "int4",
-  "int8",
-  "float4",
-  "float8",
-  "numeric",
-  "json",
-  "jsonb",
-  "text",
-  "varchar",
-  "uuid",
-  "date",
-  "time",
-  "timetz",
-  "timestamp",
-  "timestamptz",
-  "bool",
-];
-
-const mySqlDataTypes = [
-  "int",
-  "tinyint",
-  "smallint",
-  "mediumint",
-  "bigint",
-  "float",
-  "double",
-  "decimal",
-  "date",
-  "time",
-  "datetime",
-  "timestamp",
-  "year",
-  "char",
-  "varchar",
-  "tinytext",
-  "text",
-  "mediumtext",
-  "longtext",
-  "enum",
-  "set",
-  "binary",
-  "varbinary",
-  "tinyblob",
-  "blob",
-  "mediumblob",
-  "longblob",
-  "geometry",
-  "point",
-  "linestring",
-  "ploygon",
-  "json",
-];

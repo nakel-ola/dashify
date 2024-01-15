@@ -1,5 +1,41 @@
-export const formatColumns = (changedArray: Fields[], oldArray: Fields[]) => {
-  const results = [];
+type ArrayType = {
+  id: string;
+  name: string;
+  dataType: string;
+  isPrimary: boolean;
+  isNullable: boolean;
+  isUnique: boolean;
+  isArray: boolean;
+  isIdentify: boolean;
+  defaultValue?: string | null;
+};
+
+type AddColumn = {
+  name: string;
+  dataType: string;
+  defaultValue?: string | null;
+  isPrimary: boolean;
+  isNullable: boolean;
+  isUnique: boolean;
+  isIdentify: boolean;
+  isArray: boolean;
+  type: "add";
+  references?: Reference | null;
+};
+
+type DropColumn = {
+  name: string;
+  type: "drop";
+};
+
+type ResultType = (AddColumn | ModifyType | DropColumn)[];
+
+export const formatColumns = (
+  changedArray: ArrayType[],
+  oldArray: ArrayType[]
+): ResultType => {
+  const results: ResultType = [];
+
   for (let i = 0; i < changedArray.length; i++) {
     const column = changedArray[i];
 
@@ -44,17 +80,17 @@ type ModifyType = {
   newName?: string;
   dataType?: string;
   defaultValue?: string | null;
-  references?: Reference;
+  references?: Reference | null;
 };
 
 type Reference = {
   fieldName: string;
   collectionName: string;
-  onUpdate: string | null;
-  onDelete: string | null;
+  onUpdate: "Cascade" | "Restrict" | null;
+  onDelete: "Cascade" | "Restrict" | "Set default" | "Set NULL" | null;
 };
 
-const formatModify = (obj1: Fields, obj2: Fields): ModifyType => {
+const formatModify = (obj1: ArrayType, obj2: ArrayType): ModifyType => {
   let result: ModifyType = {
     operations: [],
     name: obj2.name,

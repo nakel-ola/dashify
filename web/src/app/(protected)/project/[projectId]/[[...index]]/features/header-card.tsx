@@ -7,6 +7,7 @@ import {
 import { ArrowDown2, Edit, Trash } from "iconsax-react";
 import { Fragment, useState } from "react";
 import { ColumnDeleteCard } from "./column-delete-card";
+import { useColumnUpdateStore } from "../../../store/column-update-store";
 
 type Props = Fields & {
   projectId: string;
@@ -14,9 +15,11 @@ type Props = Fields & {
   isMongodb: boolean;
 };
 export const HeaderCard = (props: Props) => {
-  const { name, udtName, projectId, tableName, isMongodb } = props;
+  const { name, udtName, projectId, tableName, isMongodb, ...rest } = props;
 
   const [isOpen, setIsOpen] = useState(false);
+
+  const { setColumn } = useColumnUpdateStore();
 
   return (
     <Fragment>
@@ -42,7 +45,11 @@ export const HeaderCard = (props: Props) => {
               align="end"
               className="w-60 h-fit"
             >
-              <DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() =>
+                  setColumn({ ...rest, name, udtName, projectId, tableName })
+                }
+              >
                 <Edit size={20} className="mr-2" />
                 Edit Column
               </DropdownMenuItem>
