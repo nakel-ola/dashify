@@ -163,8 +163,10 @@ export class MySqlQueryGenerator {
 
     const results: string[] = [];
 
-    for (let i = 0; i < item.operations.length; i++) {
-      const operation = item.operations[i];
+    const operations = item.operations.sort(this.customSort);
+
+    for (let i = 0; i < operations.length; i++) {
+      const operation = operations[i];
 
       if (operation === 'Type') {
         results.push(`${query} 
@@ -285,4 +287,10 @@ export class MySqlQueryGenerator {
 
     return `"${value}"`;
   }
+
+  private customSort = (a: string, b: string) => {
+    if (a === 'Rename') return 1;
+    else if (b === 'Rename') return -1;
+    else return a.localeCompare(b);
+  };
 }

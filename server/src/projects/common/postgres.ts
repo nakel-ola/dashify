@@ -7,6 +7,7 @@ import {
   type AlterModifyType,
 } from './query-generatore/postgres';
 import { v4 } from 'uuid';
+import { InternalServerErrorException } from '@nestjs/common';
 
 interface ConnectionOption {
   name: string;
@@ -78,8 +79,9 @@ export class PostgresDatabase {
   private async connect() {
     try {
       await this.client.connect();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error connecting to PostgreSQL database:', error);
+      throw new Error(error.message);
     }
   }
 
@@ -91,9 +93,9 @@ export class PostgresDatabase {
 
       const result = await this.client.query(tableQuery);
       return result;
-    } catch (error) {
+    } catch (error: any) {
       console.error(`Error creating table "${tableName}":`, error);
-      throw error;
+      throw new InternalServerErrorException(error.message);
     }
   }
 
@@ -167,9 +169,9 @@ export class PostgresDatabase {
       }
 
       return results;
-    } catch (error) {
+    } catch (error: any) {
       console.error(`Error getting tables:`, error);
-      throw error;
+      throw new InternalServerErrorException(error.message);
     }
   }
 
@@ -191,9 +193,9 @@ export class PostgresDatabase {
         results: schemaResult.rows,
         totalItems: totalItems.rows[0].count,
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error(`Error getting table '${tableName}':`, error);
-      throw error;
+      throw new InternalServerErrorException(error.message);
     }
   }
 
@@ -231,9 +233,9 @@ export class PostgresDatabase {
       const results = await this.runMultipleQueries(queries);
 
       return results;
-    } catch (error) {
+    } catch (error: any) {
       console.error(`Error updating table '${tableName}':`, error);
-      throw error;
+      throw new InternalServerErrorException(error.message);
     }
   }
 
@@ -247,12 +249,12 @@ export class PostgresDatabase {
 
       const result = await this.client.query(query);
       return result;
-    } catch (error) {
+    } catch (error: any) {
       console.error(
         `Error duplicating table '${tableName}' to '${duplicateName}':`,
         error,
       );
-      throw error;
+      throw new InternalServerErrorException(error.message);
     }
   }
 
@@ -263,9 +265,9 @@ export class PostgresDatabase {
       const query = `DROP TABLE IF EXISTS ${escapeTableName};`;
       const result = await this.client.query(query);
       return result;
-    } catch (error) {
+    } catch (error: any) {
       console.error(`Error deleting table "${tableName}":`, error);
-      throw error;
+      throw new InternalServerErrorException(error.message);
     }
   }
 

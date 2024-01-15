@@ -7,6 +7,7 @@ import {
   AlterModifyType,
 } from './query-generatore/postgres';
 import { v4 } from 'uuid';
+import { InternalServerErrorException } from '@nestjs/common';
 
 interface ConnectionOption {
   name: string;
@@ -77,7 +78,7 @@ export class CockroachDatabase {
     } catch (error) {
       console.error('Error connecting to Cockroach database:', error);
 
-      throw error;
+      throw new InternalServerErrorException(error.message);
     }
   }
 
@@ -95,7 +96,7 @@ export class CockroachDatabase {
       return result;
     } catch (error) {
       console.error(`Error creating table "${tableName}":`, error);
-      throw error;
+      throw new InternalServerErrorException(error.message);
     }
   }
 
@@ -173,7 +174,7 @@ export class CockroachDatabase {
       return results;
     } catch (error) {
       console.error(`Error getting tables:`, error);
-      throw error;
+      throw new InternalServerErrorException(error.message);
     }
   }
 
@@ -198,7 +199,7 @@ export class CockroachDatabase {
       };
     } catch (error) {
       console.error(`Error getting table '${tableName}':`, error);
-      throw error;
+      throw new InternalServerErrorException(error.message);
     }
   }
 
@@ -238,7 +239,7 @@ export class CockroachDatabase {
       return results;
     } catch (error) {
       console.error(`Error updating table '${tableName}':`, error);
-      throw error;
+      throw new InternalServerErrorException(error.message);
     }
   }
 
@@ -258,7 +259,7 @@ export class CockroachDatabase {
         `Error duplicating table '${tableName}' to '${duplicateName}':`,
         error,
       );
-      throw error;
+      throw new InternalServerErrorException(error.message);
     }
   }
 
@@ -271,7 +272,7 @@ export class CockroachDatabase {
       return result;
     } catch (error) {
       console.error(`Error deleting table "${tableName}":`, error);
-      throw error;
+      throw new InternalServerErrorException(error.message);
     }
   }
 

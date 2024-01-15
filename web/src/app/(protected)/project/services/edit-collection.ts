@@ -1,6 +1,7 @@
 "use server";
 
 import axios from "@/lib/axios";
+import { AxiosThrowError } from "@/utils/axios-throw-error";
 import { clean } from "@/utils/clean";
 
 type Reference = {
@@ -72,7 +73,6 @@ export async function editCollection(args: Args) {
 
     return data;
   } catch (error: any) {
-    console.log(error);
-    throw new Error(error.message);
+    AxiosThrowError(error);
   }
 }
