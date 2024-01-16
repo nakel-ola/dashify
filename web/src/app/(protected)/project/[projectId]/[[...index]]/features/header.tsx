@@ -5,6 +5,7 @@ import { useProjectStore } from "../../../store/project-store";
 import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
 import { HeaderCard } from "./header-card";
+import { useAddColumnStore } from "../../../store/add-column-store";
 
 type Props = {
   pageName: string;
@@ -17,6 +18,7 @@ export const Header = (props: Props) => {
   const { pageName, onSelectAll, isAllSelected, projectId, isMongodb } = props;
 
   const sortedFields = useProjectStore((store) => store.getFields(pageName));
+  const { setIsOpen } = useAddColumnStore();
 
   return (
     <div
@@ -41,7 +43,10 @@ export const Header = (props: Props) => {
         />
       ))}
 
-      <button className="min-w-[100px] bg-white dark:bg-black p-2 shrink-0 flex items-center justify-center cursor-pointer hover:bg-slate-100 hover:dark:bg-neutral-800 border-y-[1.5px] border-slate-100 dark:border-neutral-800">
+      <button
+        onClick={() => setIsOpen(true)}
+        className="min-w-[100px] bg-white dark:bg-black p-2 shrink-0 flex items-center justify-center cursor-pointer hover:bg-slate-100 hover:dark:bg-neutral-800 border-y-[1.5px] border-slate-100 dark:border-neutral-800"
+      >
         <Add />
       </button>
     </div>

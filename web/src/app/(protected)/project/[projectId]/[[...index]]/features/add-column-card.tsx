@@ -1,9 +1,5 @@
 import CustomInput from "@/components/custom-input";
 import {
-  FieldType,
-  useColumnUpdateStore,
-} from "../../../store/column-update-store";
-import {
   Sheet,
   SheetContent,
   SheetHeader,
@@ -24,17 +20,20 @@ import {
 import { mySqlDataTypes, postgresqlDatatypes } from "../../../data/datatypes";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Switch } from "@/components/ui/switch";
-import { useEffect } from "react";
-import { areObjectsEqual } from "../utils/are-objects-equal";
-import { editCollection } from "../../../services/edit-collection";
-import { formatColumns } from "../../edit/[name]/utils/format-columns";
 import { useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
 import { MoonLoader } from "react-spinners";
+import { useAddColumnStore } from "../../../store/add-column-store";
+import { useQueries } from "../../../hooks/use-queries";
+import { formatColumns } from "../../edit/[name]/utils/format-columns";
+import { v4 } from "uuid";
+import { toast } from "sonner";
+import { editCollection } from "../../../services/edit-collection";
 
 type Props = {};
-export const ColumnUpdateCard = (props: Props) => {
-  const { column, setColumn } = useColumnUpdateStore();
+export const AddColumnCard = (props: Props) => {
+  const { isOpen, setIsOpen } = useAddColumnStore();
+
+  const [{ pageName }] = useQueries();
 
   const project = useProjectStore((store) => store.project);
 
@@ -71,31 +70,22 @@ export const ColumnUpdateCard = (props: Props) => {
     validateOnBlur: true,
     validateOnMount: true,
     onSubmit: async (values) => {
-      if (!project || !column) return;
+      if (!project) return;
 
       const projectId = project.projectId;
 
-      const formattedColumn = formatColumns(
-        [
-          {
-            ...values,
-            id: column.id,
-          },
-        ],
-        [{ ...formatField(column), id: column.id }]
-      );
+      const formattedColumn = formatColumns([{ ...values, id: v4() }], []);
 
       await editCollection({
-        name: column.tableName,
+        name: pageName,
         projectId,
         columns: formattedColumn,
       })
         .then(async () => {
-          toast.success(`${column.name} updated successfully`);
+          toast.success(`${values.name} added successfully`);
           await queryClient.invalidateQueries({
             queryKey: ["project", projectId],
           });
-
           handleClose();
         })
         .catch((err) => {
@@ -150,37 +140,18 @@ export const ColumnUpdateCard = (props: Props) => {
   ];
 
   const handleClose = () => {
-    setColumn(null);
+    setIsOpen(false);
     resetForm();
   };
 
-  const isDisabled = () => {
-    if (!column || !values) return false;
-
-    if (!areObjectsEqual(values, formatField(column))) return false;
-
-    if (isSubmitting) return true;
-
-    return true;
-  };
-
-  useEffect(() => {
-    if (!column) return;
-    setValues(formatField(column));
-  }, [column, setFieldValue, setValues]);
-
   return (
-    <Sheet open={!!column} onOpenChange={() => handleClose()}>
+    <Sheet open={isOpen} onOpenChange={() => handleClose()}>
       <SheetContent className="sm:!w-[700px] sm:max-w-md !p-0">
         <SheetHeader className="p-6 border-b-[1.5px] border-slate-100 dark:border-neutral-800">
           <SheetTitle>
-            Update column
+            Add new column to
             <span className="bg-slate-100 dark:bg-neutral-800 rounded-md px-2.5 py-1.5 mx-2">
-              {column?.name}
-            </span>
-            from
-            <span className="bg-slate-100 dark:bg-neutral-800 rounded-md px-2.5 py-1.5 ml-2">
-              {column?.tableName}
+              {pageName}
             </span>
           </SheetTitle>
         </SheetHeader>
@@ -330,7 +301,7 @@ export const ColumnUpdateCard = (props: Props) => {
 
             <Button
               type="submit"
-              disabled={!isValid || isDisabled()}
+              disabled={isSubmitting || !isValid}
               className=""
             >
               Save
@@ -353,16 +324,4 @@ type Item = {
   name: string;
   description: string;
   checked: boolean;
-};
-const formatField = (field: FieldType) => {
-  return {
-    name: field.name,
-    dataType: field.udtName,
-    defaultValue: field.defaultValue,
-    isPrimary: field.isPrimary,
-    isNullable: field.isNullable,
-    isArray: field.isArray,
-    isIdentify: field.isIdentify,
-    isUnique: field.isUnique,
-  };
 };

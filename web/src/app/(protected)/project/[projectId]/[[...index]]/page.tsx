@@ -1,14 +1,20 @@
 "use client";
 
 import { Fragment, useState } from "react";
-import { CollectionsCard, Header, PaginationCard, TabsCard } from "./features";
+import {
+  AddColumnCard,
+  CollectionsCard,
+  Header,
+  PaginationCard,
+  TabsCard,
+  ColumnUpdateCard,
+} from "./features";
 import { useProjectStore } from "../../store/project-store";
 import { useQuery } from "@tanstack/react-query";
 import { fetchCollection } from "../../services/fetch-collection";
 import { cn } from "@/lib/utils";
 import { SpinnerCircular } from "spinners-react";
 import { generateNumbers } from "../../utils/generate-numbers";
-import { ColumnUpdateCard } from "./features/column-update-card";
 
 type Props = {
   params: {
@@ -172,6 +178,7 @@ export default function ProjectCollection(props: Props) {
       </div>
 
       <ColumnUpdateCard />
+      <AddColumnCard />
     </Fragment>
   );
 }
