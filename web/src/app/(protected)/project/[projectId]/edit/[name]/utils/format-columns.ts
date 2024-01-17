@@ -8,6 +8,7 @@ type ArrayType = {
   isArray: boolean;
   isIdentify: boolean;
   defaultValue?: string | null;
+  references?: Partial<Reference> | null;
 };
 
 type AddColumn = {
@@ -52,7 +53,7 @@ export const formatColumns = (
         isIdentify: column.isIdentify,
         defaultValue: column.defaultValue,
         // TODO: Work on the foreign keys
-        // references: column.references,
+        references: column.references as Reference,
         type: "add",
       });
     } else {

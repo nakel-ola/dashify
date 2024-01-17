@@ -19,7 +19,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Maximize4, Warning2 } from "iconsax-react";
 import { ExternalLink, HelpCircle } from "lucide-react";
 import { useProjectStore } from "../../../store/project-store";
@@ -28,14 +28,16 @@ import { Button } from "@/components/ui/button";
 import { ColumnType } from "../schema";
 
 type Props = {
+  isCreate?: boolean;
   updateColumn: <T extends keyof ColumnType>(
     index: number,
-    key: T,
-    value: ColumnType[T]
+    key: "references",
+    value: ColumnType["references"],
+    field?: Fields
   ) => void;
 };
 export const ForeignSheet = (props: Props) => {
-  const { updateColumn } = props;
+  const { updateColumn, isCreate = false } = props;
   const { column, setColumn } = useForeignStore();
   const [collection, setCollection] = useState<Collection | null>(null);
   const [field, setField] = useState<Fields | null>(null);
@@ -57,8 +59,7 @@ export const ForeignSheet = (props: Props) => {
   };
 
   const disabled = () => {
-    if (!collection || !field || field.udtName !== column?.dataType || !column)
-      return true;
+    if (!collection || !field || !column) return true;
 
     return false;
   };
@@ -72,17 +73,35 @@ export const ForeignSheet = (props: Props) => {
   };
 
   const handleSave = () => {
-    if (!collection || !field || field.udtName !== column?.dataType || !column)
-      return;
+    if (!collection || !field || !column) return;
 
-    updateColumn(column.index, "references", {
-      collectionName: collection.name,
-      fieldName: field.name,
-      onDelete: deleted,
-      onUpdate: updated,
-    });
+    updateColumn(
+      column.index,
+      "references",
+      {
+        collectionName: collection.name,
+        fieldName: field.name,
+        onDelete: deleted,
+        onUpdate: updated,
+      },
+      field
+    );
     handleClose();
   };
+
+  useEffect(() => {
+    if (!column || !column?.references) return;
+
+    const refer = column.references;
+
+    if (!refer) return;
+
+    setCollection(getCollection(refer.collectionName!) ?? null);
+    setField(getField(refer.collectionName!, refer.fieldName!) ?? null);
+
+    setUpdated(refer.onUpdate ?? null);
+    setDeleted(refer.onDelete ?? null);
+  }, [column, getCollection, getField]);
 
   return (
     <Sheet open={!!column} onOpenChange={() => handleClose()}>
@@ -90,13 +109,15 @@ export const ForeignSheet = (props: Props) => {
         <SheetHeader className="p-6 border-b-[1.5px] border-slate-100 dark:border-neutral-800">
           <SheetTitle>
             Edit foreign key relation
-            <span className="bg-slate-100 dark:bg-neutral-800 rounded-md px-2.5 py-1.5 ml-2">
-              {column?.name}
-            </span>
+            {column?.name ? (
+              <span className="bg-slate-100 dark:bg-neutral-800 rounded-md px-2.5 py-1.5 ml-2">
+                {column?.name}
+              </span>
+            ) : null}
           </SheetTitle>
         </SheetHeader>
 
-        <div className="h-[calc(100%-130px)] overflow-y-scroll p-6">
+        <div className="h-[calc(100%-140px)] overflow-y-scroll p-6">
           <Collapsible className="w-full space-y-2 px-4 py-2.5 rounded-md bg-slate-100/60 dark:bg-neutral-800/60">
             <div className="flex items-center justify-between space-x-4 ">
               <div className="flex items-center space-x-2">
@@ -137,7 +158,7 @@ export const ForeignSheet = (props: Props) => {
           <div className="mt-6">
             <label
               htmlFor="type"
-              className="block text-sm font-semibold leading-6 text-gray-dark dark:text-gray-light pl-0.5 pb-1"
+              className="block text-sm font-semibold leading-6 text-black dark:text-white pl-0.5 pb-1"
             >
               Select a table to reference to
             </label>
@@ -161,7 +182,7 @@ export const ForeignSheet = (props: Props) => {
               <div className="mt-6">
                 <label
                   htmlFor="type"
-                  className="block text-sm font-semibold leading-6 text-gray-dark dark:text-gray-light pl-0.5 pb-1"
+                  className="block text-sm font-semibold leading-6 text-black dark:text-white pl-0.5 pb-1"
                 >
                   Select a column from to reference to
                 </label>
@@ -184,7 +205,7 @@ export const ForeignSheet = (props: Props) => {
                 </Select>
               </div>
 
-              {field ? (
+              {field && column?.dataType ? (
                 <>
                   {field.udtName !== column?.dataType ? (
                     <div className="border-[1.5px] border-amber-700 rounded-lg bg-amber-700/10 dark:bg-amber-600/10 p-5 flex gap-5 my-4 mt-10">
@@ -337,7 +358,7 @@ export const ForeignSheet = (props: Props) => {
               <div className="mt-6">
                 <label
                   htmlFor="type"
-                  className="block text-sm font-semibold leading-6 text-gray-dark dark:text-gray-light pl-0.5 pb-1"
+                  className="block text-sm font-semibold leading-6 text-black dark:text-white pl-0.5 pb-1"
                 >
                   Action if referenced row is removed
                 </label>

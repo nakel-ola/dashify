@@ -211,7 +211,7 @@ export const ColumnUpdateCard = (props: Props) => {
             <div className="mt-6 px-6">
               <label
                 htmlFor="type"
-                className="block text-base font-semibold leading-6 text-gray-dark dark:text-gray-light pl-0.5 pb-1"
+                className="block text-base font-semibold leading-6 text-black dark:text-white pl-0.5 pb-1"
               >
                 Data Type
               </label>
@@ -284,7 +284,7 @@ export const ColumnUpdateCard = (props: Props) => {
             <div className="mt-6 px-6">
               <label
                 htmlFor="type"
-                className="block text-base font-semibold leading-6 text-gray-dark dark:text-gray-light pl-0.5 pb-1"
+                className="block text-base font-semibold leading-6 text-black dark:text-white pl-0.5 pb-1"
               >
                 Constraints
               </label>
