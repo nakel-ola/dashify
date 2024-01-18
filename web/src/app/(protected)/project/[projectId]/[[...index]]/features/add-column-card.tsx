@@ -31,7 +31,7 @@ import { editCollection } from "../../../services/edit-collection";
 import { ForeignSheet } from "../../create/features/foreign-sheet";
 import { useForeignStore } from "../../../store/foreign-store";
 import { ArrowRight } from "iconsax-react";
-import { useState } from "react";
+import { Fragment } from "react";
 
 type Props = {};
 export const AddColumnCard = (props: Props) => {
@@ -147,7 +147,7 @@ export const AddColumnCard = (props: Props) => {
   };
 
   return (
-    <>
+    <Fragment>
       <Sheet open={isOpen} onOpenChange={() => handleClose()}>
         <SheetContent className="sm:!w-[700px] sm:max-w-md !p-0">
           <SheetHeader className="p-6 border-b-[1.5px] border-slate-100 dark:border-neutral-800">
@@ -420,7 +420,7 @@ export const AddColumnCard = (props: Props) => {
           }
         }}
       />
-    </>
+    </Fragment>
   );
 };
 

@@ -74,6 +74,9 @@ type ModifyType = {
     | "Remove Default"
     | "Add Not null"
     | "Remove Not null"
+    | "Add Foreign key"
+    | "Remove Foreign key"
+    | "Update Foreign key"
     | "FOREIGN"
   )[];
   name: string;
@@ -136,6 +139,20 @@ const formatModify = (obj1: ArrayType, obj2: ArrayType): ModifyType => {
 
   if (obj1.isNullable && obj1.isNullable !== obj2.isNullable) {
     updateResult({ operations: [...result.operations, "Remove Not null"] });
+  }
+
+  if (obj1.references && !obj2.references) {
+    updateResult({
+      operations: [...result.operations, "Add Foreign key"],
+      references: obj1.references as Reference,
+    });
+  }
+
+  if (!obj1.references && obj2.references) {
+    updateResult({
+      operations: [...result.operations, "Remove Foreign key"],
+      references: obj2.references as Reference,
+    });
   }
 
   return result;

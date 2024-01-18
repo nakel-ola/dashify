@@ -14,7 +14,7 @@ export const findChangedObjects = <T extends { id: string }>(
   return changedObjects;
 };
 
-const objectsAreEqual = (obj1: any, obj2: any) => {
+export const objectsAreEqual = (obj1: any, obj2: any) => {
   const keys1 = Object.keys(obj1);
   const keys2 = Object.keys(obj2);
 

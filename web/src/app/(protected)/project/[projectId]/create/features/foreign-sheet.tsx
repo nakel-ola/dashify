@@ -117,8 +117,8 @@ export const ForeignSheet = (props: Props) => {
           </SheetTitle>
         </SheetHeader>
 
-        <div className="h-[calc(100%-140px)] overflow-y-scroll p-6">
-          <Collapsible className="w-full space-y-2 px-4 py-2.5 rounded-md bg-slate-100/60 dark:bg-neutral-800/60">
+        <div className="h-[calc(100%-140px)] overflow-y-scroll py-6">
+          <Collapsible className=" space-y-2 px-4 py-2.5 rounded-md bg-slate-100/60 dark:bg-neutral-800/60 mx-6">
             <div className="flex items-center justify-between space-x-4 ">
               <div className="flex items-center space-x-2">
                 <HelpCircle size={20} />
@@ -155,7 +155,7 @@ export const ForeignSheet = (props: Props) => {
             </CollapsibleContent>
           </Collapsible>
 
-          <div className="mt-6">
+          <div className="mt-6 px-6">
             <label
               htmlFor="type"
               className="block text-sm font-semibold leading-6 text-black dark:text-white pl-0.5 pb-1"
@@ -179,7 +179,7 @@ export const ForeignSheet = (props: Props) => {
 
           {collection ? (
             <>
-              <div className="mt-6">
+              <div className="mt-6 px-6">
                 <label
                   htmlFor="type"
                   className="block text-sm font-semibold leading-6 text-black dark:text-white pl-0.5 pb-1"
@@ -208,7 +208,7 @@ export const ForeignSheet = (props: Props) => {
               {field && column?.dataType ? (
                 <>
                   {field.udtName !== column?.dataType ? (
-                    <div className="border-[1.5px] border-amber-700 rounded-lg bg-amber-700/10 dark:bg-amber-600/10 p-5 flex gap-5 my-4 mt-10">
+                    <div className="border-[1.5px] border-amber-700 rounded-lg bg-amber-700/10 dark:bg-amber-600/10 p-5 flex gap-5 my-4 mt-10 mx-6">
                       <Warning2 className="text-amber-900 shrink-0 mt-1" />
 
                       <div className="">
@@ -243,7 +243,7 @@ export const ForeignSheet = (props: Props) => {
 
               <Separator className="my-8" />
 
-              <Collapsible className="w-full space-y-2 px-4 py-2.5 rounded-md bg-slate-100/60 dark:bg-neutral-800/60">
+              <Collapsible className="space-y-2 px-4 py-2.5 rounded-md bg-slate-100/60 dark:bg-neutral-800/60 mx-6">
                 <div className="flex items-center justify-between space-x-4 ">
                   <div className="flex items-center space-x-2">
                     <HelpCircle size={20} />
@@ -311,7 +311,7 @@ export const ForeignSheet = (props: Props) => {
                 </CollapsibleContent>
               </Collapsible>
 
-              <div className="mt-6">
+              <div className="mt-6 px-6">
                 <label
                   htmlFor="type"
                   className="block text-sm font-semibold leading-6 text-gray-dark dark:text-gray-light pl-0.5 pb-1"
@@ -355,7 +355,7 @@ export const ForeignSheet = (props: Props) => {
                 </p>
               </div>
 
-              <div className="mt-6">
+              <div className="mt-6 px-6">
                 <label
                   htmlFor="type"
                   className="block text-sm font-semibold leading-6 text-black dark:text-white pl-0.5 pb-1"

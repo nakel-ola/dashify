@@ -36,6 +36,9 @@ type ModifyColumn = {
     | "Remove Default"
     | "Add Not null"
     | "Remove Not null"
+    | "Add Foreign key"
+    | "Remove Foreign key"
+    | "Update Foreign key"
     | "FOREIGN"
   )[];
   name: string;
