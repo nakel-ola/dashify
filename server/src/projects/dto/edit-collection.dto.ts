@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString, IsOptional, IsArray } from 'class-validator';
 import { Column, Reference } from './create-new-collection.dto';
+import { ModifyOperation } from '../types/operations.type';
 
 class EditModifyCollection {
   @ApiProperty({
@@ -8,15 +9,7 @@ class EditModifyCollection {
     type: String,
   })
   @IsArray()
-  operations: (
-    | 'Rename'
-    | 'Type'
-    | 'Add Default'
-    | 'Remove Default'
-    | 'Add Not null'
-    | 'Remove Not null'
-    | 'FOREIGN'
-  )[];
+  operations: ModifyOperation;
 
   @ApiProperty({
     description: 'Name of column',

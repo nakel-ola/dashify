@@ -1,3 +1,5 @@
+import { ModifyOperation } from '../../types/operations.type';
+
 export type DataType = {
   name: string;
   dataType:
@@ -53,15 +55,7 @@ type InsetType = {
 };
 
 export type AlterModifyType = {
-  operations: (
-    | 'Rename'
-    | 'Type'
-    | 'Add Default'
-    | 'Remove Default'
-    | 'Add Not null'
-    | 'Remove Not null'
-    | 'FOREIGN'
-  )[];
+  operations: ModifyOperation;
   name: string;
   newName?: string;
   dataType?: DataType['dataType'];
@@ -75,6 +69,12 @@ export type AlterModifyType = {
 };
 
 type ForeignKeyType = Pick<DataType, 'references' | 'name'>;
+
+type ContraintNameType = {
+  type: 'FOREIGN' | 'PRIMARY';
+  tableName: string;
+  fieldName: string;
+};
 
 const dataTypes: Record<DataType['dataType'], string> = {
   int: 'INT',
@@ -168,22 +168,22 @@ export class MySqlQueryGenerator {
     for (let i = 0; i < operations.length; i++) {
       const operation = operations[i];
 
-      if (operation === 'Type') {
+      if (operation === 'TYPE') {
         results.push(`${query} 
         MODIFY COLUMN ${item.name} TYPE ${dataTypes[item.dataType]};`);
       }
 
-      if (operation === 'Add Default') {
+      if (operation === 'ADD DEFAULT') {
         results.push(`${query}
         ALTER COLUMN ${item.name} SET DEFAULT ${item.defaultValue};`);
       }
 
-      if (operation === 'Remove Default') {
+      if (operation === 'REMOVE DEFAULT') {
         results.push(`${query}
         ALTER COLUMN ${item.name} DROP DEFAULT;`);
       }
 
-      if (operation === 'FOREIGN') {
+      if (operation === 'ADD FOREIGN KEY') {
         const foreign = this.formatForeignKey({
           references: item.references,
           name: item.name,
@@ -192,7 +192,13 @@ export class MySqlQueryGenerator {
         ADD ${foreign}`);
       }
 
-      if (operation === 'Rename') {
+      if (operation === 'REMOVE FOREIGN KEY') {
+        const constraintName = 'fk_' + item.references?.collectionName;
+        results.push(`${query}
+        DROP FOREIGN KEY ${constraintName}`);
+      }
+
+      if (operation === 'RENAME') {
         results.push(`${query} 
         CHANGE COLUMN ${item.name} ${item.newName};`);
       }
@@ -259,7 +265,14 @@ export class MySqlQueryGenerator {
   private formatForeignKey(item: ForeignKeyType) {
     const references = item.references;
 
-    let foreign = `FOREIGN KEY (${item.name})
+    const constraintName = this.createContraintName({
+      type: 'FOREIGN',
+      tableName: references.collectionName,
+      fieldName: references.fieldName,
+    });
+
+    let foreign = `CONSTRAINT ${constraintName} 
+    FOREIGN KEY (${item.name})
     REFERENCES ${references?.collectionName}(${item.references?.fieldName})
   `;
 
@@ -286,6 +299,21 @@ export class MySqlQueryGenerator {
     if (!isNaN(value as any)) return Number(value);
 
     return `"${value}"`;
+  }
+
+  private createContraintName(item: ContraintNameType) {
+    let name = '';
+
+    if (item.type === 'FOREIGN') name += 'fk';
+
+    if (item.tableName) name += `_${item.tableName}`;
+
+    if (item.fieldName && item.type !== 'PRIMARY') name += `_${item.fieldName}`;
+
+    if (item.type === 'PRIMARY') name += '_pkey';
+    else name += '_key';
+
+    return name;
   }
 
   private customSort = (a: string, b: string) => {

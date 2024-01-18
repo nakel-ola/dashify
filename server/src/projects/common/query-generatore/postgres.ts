@@ -1,3 +1,5 @@
+import type { ModifyOperation } from '../../types/operations.type';
+
 export type DataType = {
   name: string;
   dataType:
@@ -57,16 +59,14 @@ type InsetType = {
   values: (string | number)[][];
 };
 
+type ContraintNameType = {
+  type: 'FOREIGN' | 'PRIMARY';
+  tableName: string;
+  fieldName: string;
+};
+
 export type AlterModifyType = {
-  operations: (
-    | 'Rename'
-    | 'Type'
-    | 'Add Default'
-    | 'Remove Default'
-    | 'Add Not null'
-    | 'Remove Not null'
-    | 'FOREIGN'
-  )[];
+  operations: ModifyOperation;
   name: string;
   newName?: string;
   dataType?: DataType['dataType'];
@@ -138,32 +138,37 @@ export class PostgresQueryGenerator {
     for (let i = 0; i < operations.length; i++) {
       const operation = operations[i];
 
-      if (operation === 'Type') {
+      if (operation === 'RENAME') {
+        results.push(`${query} 
+        RENAME COLUMN ${item.name} TO ${item.newName};`);
+      }
+
+      if (operation === 'TYPE') {
         results.push(`${query} 
         ALTER COLUMN ${item.name} TYPE ${dataType[item.dataType]};`);
       }
 
-      if (operation === 'Add Default') {
+      if (operation === 'ADD DEFAULT') {
         results.push(`${query}
         ALTER COLUMN ${item.name} SET DEFAULT ${item.defaultValue};`);
       }
 
-      if (operation === 'Remove Default') {
+      if (operation === 'REMOVE DEFAULT') {
         results.push(`${query}
         ALTER COLUMN ${item.name} DROP DEFAULT;`);
       }
 
-      if (operation === 'Add Not null') {
+      if (operation === 'ADD NOT NULL') {
         results.push(`${query}
         ALTER COLUMN ${item.name} SET NOT NULL;`);
       }
 
-      if (operation === 'Remove Not null') {
+      if (operation === 'REMOVE NOT NULL') {
         results.push(`${query}
         ALTER COLUMN ${item.name} DROP NOT NULL;`);
       }
 
-      if (operation === 'FOREIGN') {
+      if (operation === 'ADD FOREIGN KEY') {
         const foreign = this.formatForeignKey({
           references: item.references,
           name: item.name,
@@ -172,9 +177,14 @@ export class PostgresQueryGenerator {
         ADD ${foreign}`);
       }
 
-      if (operation === 'Rename') {
-        results.push(`${query} 
-        RENAME COLUMN ${item.name} TO ${item.newName};`);
+      if (operation === 'REMOVE FOREIGN KEY') {
+        const constraintName = this.createContraintName({
+          type: 'FOREIGN',
+          tableName: item.references.collectionName,
+          fieldName: item.references.fieldName,
+        });
+        results.push(`${query}
+        DROP CONSTRAINT ${constraintName}`);
       }
     }
 
@@ -257,7 +267,11 @@ export class PostgresQueryGenerator {
   private formatForeignKey(item: ForeignKeyType) {
     const references = item.references;
 
-    const constraintName = 'fk_' + references?.collectionName;
+    const constraintName = this.createContraintName({
+      type: 'FOREIGN',
+      tableName: references.collectionName,
+      fieldName: references.fieldName,
+    });
     let foreign = `CONSTRAINT ${constraintName}
         FOREIGN KEY (${item.name})
         REFERENCES ${references?.collectionName} (${item.references?.fieldName})
@@ -273,9 +287,27 @@ export class PostgresQueryGenerator {
     return foreign;
   }
 
-  private customSort = (a: string, b: string) => {
-    if (a === 'Rename') return 1;
-    else if (b === 'Rename') return -1;
-    else return a.localeCompare(b); // Sort other strings alphabetically
+  private createContraintName(item: ContraintNameType) {
+    let name = '';
+
+    if (item.type === 'FOREIGN') name += 'fk';
+
+    if (item.tableName) name += `_${item.tableName}`;
+
+    if (item.fieldName && item.type !== 'PRIMARY') name += `_${item.fieldName}`;
+
+    if (item.type === 'PRIMARY') name += '_pkey';
+    else name += '_key';
+
+    return name;
+  }
+
+  private customSort = (
+    a: ModifyOperation[number],
+    b: ModifyOperation[number],
+  ) => {
+    if (a === 'RENAME') return 1;
+    else if (b === 'RENAME') return -1;
+    else return a.localeCompare(b);
   };
 }
