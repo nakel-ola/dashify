@@ -138,7 +138,11 @@ export default function ProjectCollection(props: Props) {
           <Header
             pageName={index[0]}
             onSelectAll={onSelectAll}
-            isAllSelected={data?.results.length === selected.length}
+            isAllSelected={
+              (data?.results ?? []).length > 0
+                ? data?.results.length === selected.length
+                : false
+            }
             projectId={projectId}
             isMongodb={project.database === "mongodb"}
           />

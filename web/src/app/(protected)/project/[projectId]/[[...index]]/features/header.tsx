@@ -43,12 +43,14 @@ export const Header = (props: Props) => {
         />
       ))}
 
-      <button
-        onClick={() => setIsOpen(true)}
-        className="min-w-[100px] bg-white dark:bg-black p-2 shrink-0 flex items-center justify-center cursor-pointer hover:bg-slate-100 hover:dark:bg-neutral-800 border-y-[1.5px] border-slate-100 dark:border-neutral-800"
-      >
-        <Add />
-      </button>
+      {!isMongodb ? (
+        <button
+          onClick={() => setIsOpen(true)}
+          className="min-w-[100px] bg-white dark:bg-black p-2 shrink-0 flex items-center justify-center cursor-pointer hover:bg-slate-100 hover:dark:bg-neutral-800 border-y-[1.5px] border-slate-100 dark:border-neutral-800"
+        >
+          <Add />
+        </button>
+      ) : null}
     </div>
   );
 };
