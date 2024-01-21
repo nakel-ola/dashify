@@ -6,7 +6,7 @@
 
 ## About
 
-Easily convert your databases into interactive dashboards with this user-friendly web-based platform.
+This full-stack project offers seamless navigation through database intricacies, embracing flexibility. With an intuitive interface, it ensures efficient data administration and a solid foundation for applications.
 This repository contains the code for a web app (NextJs), and server app (Node.js with NestJS).
 
 ## Web
