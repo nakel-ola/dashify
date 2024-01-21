@@ -15,11 +15,10 @@ type Props = {
 export const CollectionsCard = (props: Props) => {
   const { pageName, items, isSelected, updateSelected } = props;
 
-  const collection = useProjectStore((store) => store.getCollection(pageName));
+  const sortedFields = useProjectStore((store) =>
+    store.getFields(pageName)
+  ).map((field) => field.name);
 
-  const sortedFields = collection?.fields
-    .map((field) => field.name)
-    .sort((a, b) => a.localeCompare(b));
 
   const arrangedItems = arrangeValues(items, sortedFields!);
 
