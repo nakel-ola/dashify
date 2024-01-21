@@ -108,6 +108,10 @@ export const FilterCard = (props: Props) => {
     setItems(arr);
   };
 
+  const handleApply = () => {
+
+  }
+
   return (
     <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
       <DropdownMenuTrigger asChild>
@@ -160,7 +164,7 @@ export const FilterCard = (props: Props) => {
             <Add className="h-[20px] w-[20px]" />
             Add filter
           </Button>
-          <Button> Apply filter</Button>
+          <Button onClick={handleApply}> Apply filter</Button>
         </div>
       </DropdownMenuContent>
     </DropdownMenu>

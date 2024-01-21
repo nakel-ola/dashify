@@ -1,13 +1,7 @@
 "use client";
 import { cn } from "@/lib/utils";
-import { Filter, Refresh, Sort, Trash } from "iconsax-react";
+import { Refresh, Trash } from "iconsax-react";
 import { X } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuItem,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { FilterCard } from "./filter-card";
 import { SortCard } from "./sort-card";
 
