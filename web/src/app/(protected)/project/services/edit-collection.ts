@@ -29,18 +29,7 @@ type DropColumn = {
 };
 
 type ModifyColumn = {
-  operations: (
-    | "Rename"
-    | "Type"
-    | "Add Default"
-    | "Remove Default"
-    | "Add Not null"
-    | "Remove Not null"
-    | "Add Foreign key"
-    | "Remove Foreign key"
-    | "Update Foreign key"
-    | "FOREIGN"
-  )[];
+  operations: ModifyOperation;
   name: string;
   type: "modify";
   newName?: string;

@@ -67,18 +67,7 @@ export const formatColumns = (
 };
 
 type ModifyType = {
-  operations: (
-    | "Rename"
-    | "Type"
-    | "Add Default"
-    | "Remove Default"
-    | "Add Not null"
-    | "Remove Not null"
-    | "Add Foreign key"
-    | "Remove Foreign key"
-    | "Update Foreign key"
-    | "FOREIGN"
-  )[];
+  operations: ModifyOperation;
   name: string;
   type: "modify";
   newName?: string;
@@ -107,50 +96,50 @@ const formatModify = (obj1: ArrayType, obj2: ArrayType): ModifyType => {
 
   if (obj1.name !== obj2.name) {
     updateResult({
-      operations: [...result.operations, "Rename"],
+      operations: [...result.operations, "RENAME"],
       newName: obj1.name,
     });
   }
 
   if (obj1.dataType !== obj2.dataType) {
     updateResult({
-      operations: [...result.operations, "Type"],
+      operations: [...result.operations, "TYPE"],
       dataType: obj1.dataType,
     });
   }
 
   if (!obj1.defaultValue) {
     updateResult({
-      operations: [...result.operations, "Remove Default"],
+      operations: [...result.operations, "REMOVE DEFAULT"],
       defaultValue: obj1.defaultValue,
     });
   }
 
   if (obj1.defaultValue && obj1.defaultValue !== obj2.defaultValue) {
     updateResult({
-      operations: [...result.operations, "Add Default"],
+      operations: [...result.operations, "ADD DEFAULT"],
       defaultValue: obj1.defaultValue,
     });
   }
 
   if (!obj1.isNullable && obj1.isNullable !== obj2.isNullable) {
-    updateResult({ operations: [...result.operations, "Add Not null"] });
+    updateResult({ operations: [...result.operations, "ADD NOT NULL"] });
   }
 
   if (obj1.isNullable && obj1.isNullable !== obj2.isNullable) {
-    updateResult({ operations: [...result.operations, "Remove Not null"] });
+    updateResult({ operations: [...result.operations, "REMOVE NOT NULL"] });
   }
 
   if (obj1.references && !obj2.references) {
     updateResult({
-      operations: [...result.operations, "Add Foreign key"],
+      operations: [...result.operations, "ADD FOREIGN KEY"],
       references: obj1.references as Reference,
     });
   }
 
   if (!obj1.references && obj2.references) {
     updateResult({
-      operations: [...result.operations, "Remove Foreign key"],
+      operations: [...result.operations, "REMOVE FOREIGN KEY"],
       references: obj2.references as Reference,
     });
   }
