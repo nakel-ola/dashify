@@ -121,17 +121,21 @@ export class ProjectsController {
     @Param('projectId') projectId: string,
     @Query('database') database: string,
     @Query('collectionName') collectionName: string,
+    @Query('sort') sort: string,
+    @Query('filter') filter: string,
     @Query('offset', ParseIntPipe) offset: number,
     @Query('limit', ParseIntPipe) limit: number,
   ) {
-    return this.projectsService.getCollectionData(
+    return this.projectsService.getCollectionData({
       projectId,
-      req.user.uid,
+      uid: req.user.uid,
       database,
       collectionName,
+      sort,
+      filter,
       offset,
       limit,
-    );
+    });
   }
 
   @ApiOperation({ summary: 'Add a origin to the project' })

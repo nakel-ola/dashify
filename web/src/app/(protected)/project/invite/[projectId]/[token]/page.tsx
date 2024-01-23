@@ -1,5 +1,4 @@
 import Image from "next/image";
-import { fetchProject } from "../../../services/fetch-project";
 import { Navbar } from "./features";
 import { AcceptButton } from "./features/accept-button";
 import { fetchProjectByInvitation } from "../../../services/fetch-project-by-invitation";

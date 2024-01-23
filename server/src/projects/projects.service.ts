@@ -42,6 +42,7 @@ import type {
   Member,
   ProjectType,
 } from './types/project.type';
+import { GetCollectionDataArgs } from './types/service.type';
 
 @Injectable()
 export class ProjectsService {
@@ -185,17 +186,26 @@ export class ProjectsService {
     return this.decryptDatabaseConfig(project.databaseConfig);
   }
 
-  async getCollectionData(
-    projectId: string,
-    uid: string,
-    database: string,
-    collectionName: string,
-    offset: number,
-    limit: number,
-  ) {
+  async getCollectionData(args: GetCollectionDataArgs) {
+    const {
+      projectId,
+      uid,
+      database,
+      collectionName,
+      sort,
+      filter,
+      offset,
+      limit,
+    } = args;
     const dbConfig = await this.getDatabaseCredentials(projectId, uid);
 
-    const collectionArgs = { tableName: collectionName, offset, limit };
+    const collectionArgs = {
+      tableName: collectionName,
+      offset,
+      limit,
+      sort,
+      filter,
+    };
 
     if (database === 'mongodb') {
       const mongodb = new MongoDatabase(dbConfig);
