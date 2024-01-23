@@ -194,10 +194,7 @@ export class PostgresDatabase {
         filter,
       });
 
-      const schemaResult = await this.client.query(schemaQuery, [
-        limit,
-        offset,
-      ]);
+      const schemaResult = await this.client.query(schemaQuery);
       const totalItems = await this.client.query(countQuery);
 
       return {
