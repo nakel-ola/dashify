@@ -1,4 +1,6 @@
 import type { ModifyOperation } from '../../types/operations.type';
+import { Filter, stringToFilter } from '../string-to-filter';
+import { Sort, stringToSort } from '../string-to-sort';
 
 export type DataType = {
   name: string;
@@ -86,50 +88,7 @@ type SelectTableArgs = {
   filter?: string;
 };
 
-type WhereArgs = {
-  name: string;
-  operator: 'eq' | 'neq' | 'gt' | 'lt' | 'gte' | 'lte';
-  value: string;
-};
-
-type OrderByArgs = {
-  name: string;
-  value: 'ASC' | 'DESC';
-};
-
 type ForeignKeyType = Pick<DataType, 'references' | 'name'>;
-
-type Operator = {
-  symbol: '=' | '<>' | '>' | '<' | '>=' | '<=';
-  name: WhereArgs['operator'];
-};
-
-const operators: Operator[] = [
-  {
-    symbol: '=',
-    name: 'eq',
-  },
-  {
-    symbol: '<>',
-    name: 'neq',
-  },
-  {
-    symbol: '>',
-    name: 'gt',
-  },
-  {
-    symbol: '<',
-    name: 'lt',
-  },
-  {
-    symbol: '>=',
-    name: 'gte',
-  },
-  {
-    symbol: '<=',
-    name: 'lte',
-  },
-];
 
 export class PostgresQueryGenerator {
   constructor() {}
@@ -174,12 +133,12 @@ export class PostgresQueryGenerator {
     if (args.offset) query += ` OFFSET ${args.offset}`;
 
     if (args.filter) {
-      const formattedFilter = this.stringToFilter(args.filter);
+      const formattedFilter = stringToFilter(args.filter);
       query += ` ${this.selectWhere(formattedFilter)}`;
     }
 
     if (args.sort) {
-      const formattedSort = this.stringToSort(args.sort);
+      const formattedSort = stringToSort(args.sort);
       query += ` ${this.selectOrderBy(formattedSort)}`;
     }
 
@@ -380,74 +339,19 @@ export class PostgresQueryGenerator {
     else return a.localeCompare(b);
   };
 
-  private stringToFilter(str: string) {
-    const value = str.replaceAll('%2C', ',').replaceAll('%3A', ':');
-
-    const results: WhereArgs[] = [];
-
-    const items = value.split(',');
-
-    for (let i = 0; i < items.length; i++) {
-      const item = items[i];
-
-      const arr = item.split(':');
-
-      const operator = operators.find((operator) => operator.name === arr[1]);
-
-      if (operator) {
-        results.push({
-          name: arr[0],
-          value: arr[2],
-          operator: operator.name,
-        });
-      }
-    }
-
-    return results;
-  }
-
-  private stringToSort(str: string) {
-    const value = str.replaceAll('%2C', ',').replaceAll('%3A', ':');
-
-    const results: OrderByArgs[] = [];
-
-    const items = value.split(',');
-
-    for (let i = 0; i < items.length; i++) {
-      const item = items[i];
-
-      const arr = item.split(':');
-
-      if (arr.length === 2) {
-        results.push({
-          name: arr[0],
-          value: arr[1].toUpperCase() as OrderByArgs['value'],
-        });
-      }
-    }
-
-    return results;
-  }
-
-  private selectWhere(args: WhereArgs[]) {
+  private selectWhere(args: Filter[]) {
     const results: string[] = [];
 
     for (let i = 0; i < args.length; i++) {
       const arg = args[i];
 
-      const symbol = operators.find(
-        (operator) => operator.name === arg.operator,
-      );
-
-      if (symbol) {
-        results.push(`${arg.name} ${symbol} ${arg.value}`);
-      }
+      results.push(`${arg.name} ${arg.operator} ${arg.value}`);
     }
 
     return `WHERE ${results.join(' AND ')}`;
   }
 
-  private selectOrderBy(args: OrderByArgs[]) {
+  private selectOrderBy(args: Sort[]) {
     const results: string[] = [];
 
     for (let i = 0; i < args.length; i++) {
