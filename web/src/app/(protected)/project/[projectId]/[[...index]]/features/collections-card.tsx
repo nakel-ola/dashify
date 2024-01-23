@@ -5,6 +5,8 @@ import { arrangeValues } from "../../../utils/arrange-values";
 import { convertObjectToArray } from "@/utils/convert-object-to-array";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Maximize4 } from "iconsax-react";
+import { useRowUpdateStore } from "../../../store/row-update-store";
+import { useQueries } from "../../../hooks/use-queries";
 
 type Props = {
   pageName: string;
@@ -16,11 +18,15 @@ type Props = {
 export const CollectionsCard = (props: Props) => {
   const { pageName, items, isSelected, updateSelected } = props;
 
-  const sortedFields = useProjectStore((store) =>
-    store.getFields(pageName)
-  ).map((field) => field.name);
+  const { setRow } = useRowUpdateStore();
 
-  const arrangedItems = arrangeValues(items, sortedFields!);
+  const [{ projectId }] = useQueries();
+
+  const sortedFields = useProjectStore((store) => store.getFields(pageName));
+
+  const sortedValues = sortedFields.map((field) => field.name);
+
+  const arrangedItems = arrangeValues(items, sortedValues!) as any[];
 
   return arrangedItems.map((item, index) => (
     <div
@@ -37,6 +43,14 @@ export const CollectionsCard = (props: Props) => {
         <button
           type="button"
           className="rounded-md p-0.5 hover:bg-slate-100 hover:dark:bg-neutral-800 hover:scale-105 active:scale-95 transition-all duration-300"
+          onClick={() =>
+            setRow({
+              values: item,
+              field: sortedFields,
+              tableName: pageName,
+              projectId,
+            })
+          }
         >
           <Maximize4
             size={20}

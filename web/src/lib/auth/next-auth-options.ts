@@ -19,7 +19,7 @@ export const nextAuthOptions: NextAuthOptions = {
         return { ...token, ...user, accessToken };
       }
 
-      if (!isExpired((token as any).accessToken)) {
+      if (!isExpired((token as any)?.accessToken)) {
         return { ...token, ...user };
       } else {
         const accessToken = await refreshToken(token?.refreshToken as any);

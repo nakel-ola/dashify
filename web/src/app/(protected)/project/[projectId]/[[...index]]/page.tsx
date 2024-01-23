@@ -8,6 +8,7 @@ import {
   PaginationCard,
   TabsCard,
   ColumnUpdateCard,
+  RowUpdateCard,
 } from "./features";
 import { useProjectStore } from "../../store/project-store";
 import { useQuery } from "@tanstack/react-query";
@@ -183,6 +184,7 @@ export default function ProjectCollection(props: Props) {
 
       <ColumnUpdateCard />
       <AddColumnCard />
+      <RowUpdateCard />
     </Fragment>
   );
 }
