@@ -8,13 +8,16 @@ import {
   DropdownMenuSeparator,
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useProjectStore } from "../../../store/project-store";
 import { useQueries } from "../../../hooks/use-queries";
 import { X } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { useRouter, useSearchParams } from "next/navigation";
+import { cn } from "@/lib/utils";
+import { usePrevious } from "@/hooks/use-previous";
 
 type Item = {
   name: string;
@@ -27,7 +30,17 @@ export const SortCard = (props: Props) => {
 
   const [items, setItems] = useState<Item[]>([]);
 
-  const [{ pageName }] = useQueries();
+  const [{ pageName, projectId }] = useQueries();
+
+  const searchParams = useSearchParams();
+
+  const router = useRouter();
+
+  const sort = searchParams.get("sort");
+
+  const previousSort = usePrevious(sort);
+
+  const paramsSort = stringToSort(sort ?? "");
 
   const fields = useProjectStore((store) => store.getFields(pageName)!);
 
@@ -47,12 +60,43 @@ export const SortCard = (props: Props) => {
     setItems(arr);
   };
 
+  const handleApply = () => {
+    // Create a new URLSearchParams object based on the current query string.
+    const params = new URLSearchParams(searchParams);
+
+    if (items.length > 0) {
+      params.set("sort", sortToString(items));
+    } else {
+      params.delete("sort");
+    }
+
+    router.push(
+      `/project/${projectId}/${pageName}?` +
+        params.toString().replaceAll("%2C", ",").replaceAll("%3A", ":")
+    );
+  };
+
+  useEffect(() => {
+    if (previousSort !== sort) {
+      setItems(stringToSort(sort ?? ""));
+    }
+  }, [sort, previousSort]);
+
   return (
     <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
       <DropdownMenuTrigger asChild>
-        <button className="p-1.5 px-2 text-black dark:text-white hover:bg-slate-200/60 hover:dark:bg-neutral-800 rounded-lg group flex items-center gap-2">
+        <button
+          className={cn(
+            "py-1.5 px-2 text-black dark:text-white hover:bg-slate-200/60 hover:dark:bg-neutral-800 rounded-lg group flex items-center gap-2 ",
+            paramsSort.length > 0
+              ? "text-indigo-600 bg-indigo-600/10 hover:bg-indigo-600/10 hover:dark:bg-indigo-600/10"
+              : ""
+          )}
+        >
           <Sort className="h-[20px] w-[20px]" />
-          Sort
+          {paramsSort.length > 0
+            ? `Sorted by ${paramsSort.length} rule`
+            : "Sort"}
         </button>
       </DropdownMenuTrigger>
 
@@ -104,7 +148,7 @@ export const SortCard = (props: Props) => {
             </DropdownMenuContent>
           </DropdownMenu>
 
-          <Button> Apply sorting</Button>
+          <Button onClick={handleApply}> Apply sorting</Button>
         </div>
       </DropdownMenuContent>
     </DropdownMenu>
@@ -147,4 +191,38 @@ const Card = (props: CardProps) => {
       </button>
     </div>
   );
+};
+
+const sortToString = (items: Item[]) => {
+  const results: string[] = [];
+  for (let i = 0; i < items.length; i++) {
+    const item = items[i];
+
+    results.push(`${item.name}:${item.ascending ? "asc" : "desc"}`);
+  }
+
+  return results.join(",");
+};
+
+const stringToSort = (str: string) => {
+  const value = str.replaceAll("%2C", ",").replaceAll("%3A", ":");
+
+  const results: Item[] = [];
+
+  const items = value.split(",");
+
+  for (let i = 0; i < items.length; i++) {
+    const item = items[i];
+
+    const arr = item.split(":");
+
+    if (arr.length === 2) {
+      results.push({
+        name: arr[0],
+        ascending: arr[1] === "asc" ? true : false,
+      });
+    }
+  }
+
+  return results;
 };

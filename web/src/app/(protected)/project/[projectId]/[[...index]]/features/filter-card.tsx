@@ -7,7 +7,7 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useProjectStore } from "../../../store/project-store";
 import { useQueries } from "../../../hooks/use-queries";
@@ -20,6 +20,9 @@ import {
 } from "@/components/ui/select";
 import CustomInput from "@/components/custom-input";
 import { X } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { usePrevious } from "@/hooks/use-previous";
+import { cn } from "@/lib/utils";
 
 type Item = {
   name: string;
@@ -72,9 +75,18 @@ export const FilterCard = (props: Props) => {
 
   const [items, setItems] = useState<Item[]>([]);
 
-  const [{ pageName }] = useQueries();
+  const [{ pageName, projectId }] = useQueries();
+
+  const searchParams = useSearchParams();
+  const router = useRouter();
 
   const fields = useProjectStore((store) => store.getFields(pageName)!);
+
+  const filter = searchParams.get("filter");
+
+  const previousFilter = usePrevious(filter);
+
+  const paramsFilter = stringToFilter(filter ?? "");
 
   const onNameChange = (index: number, value: string) => {
     let arr = [...items];
@@ -109,15 +121,42 @@ export const FilterCard = (props: Props) => {
   };
 
   const handleApply = () => {
+    // Create a new URLSearchParams object based on the current query string.
+    const params = new URLSearchParams(searchParams);
 
-  }
+    if (items.length > 0) {
+      params.set("filter", filterToString(items));
+    } else {
+      params.delete("filter");
+    }
+
+    router.push(
+      `/project/${projectId}/${pageName}?` +
+        params.toString().replaceAll("%2C", ",").replaceAll("%3A", ":")
+    );
+  };
+
+  useEffect(() => {
+    if (previousFilter !== filter) {
+      setItems(stringToFilter(filter ?? ""));
+    }
+  }, [filter, previousFilter]);
 
   return (
     <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
       <DropdownMenuTrigger asChild>
-        <button className="p-1.5 px-2 text-black dark:text-white hover:bg-slate-200/60 hover:dark:bg-neutral-800 rounded-lg group flex items-center gap-2">
+        <button
+          className={cn(
+            "py-1.5 px-2 text-black dark:text-white hover:bg-slate-200/60 hover:dark:bg-neutral-800 rounded-lg group flex items-center gap-2 ",
+            paramsFilter.length > 0
+              ? "text-indigo-600 bg-indigo-600/10 hover:bg-indigo-600/10 hover:dark:bg-indigo-600/10"
+              : ""
+          )}
+        >
           <Filter className="h-[20px] w-[20px]" />
-          Filter
+          {paramsFilter.length > 0
+            ? `Filtered by ${paramsFilter.length} rule`
+            : "Filter"}
         </button>
       </DropdownMenuTrigger>
 
@@ -254,4 +293,41 @@ const Card = (props: CardProps) => {
       </button>
     </div>
   );
+};
+
+const filterToString = (items: Item[]) => {
+  const results: string[] = [];
+  for (let i = 0; i < items.length; i++) {
+    const item = items[i];
+
+    results.push(`${item.name}:${item.operator.value}:${item.value}`);
+  }
+
+  return results.join(",");
+};
+
+const stringToFilter = (str: string) => {
+  const value = str.replaceAll("%2C", ",").replaceAll("%3A", ":");
+
+  const results: Item[] = [];
+
+  const items = value.split(",");
+
+  for (let i = 0; i < items.length; i++) {
+    const item = items[i];
+
+    const arr = item.split(":");
+
+    const operator = operators.find((operator) => operator.value === arr[1]);
+
+    if (operator) {
+      results.push({
+        name: arr[0],
+        value: arr[2],
+        operator,
+      });
+    }
+  }
+
+  return results;
 };
