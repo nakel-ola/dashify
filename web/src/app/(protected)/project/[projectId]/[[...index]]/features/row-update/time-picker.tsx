@@ -44,7 +44,7 @@ export const TimePicker = (props: Props) => {
         </div>
       </PopoverTrigger>
 
-      <PopoverContent className="w-[280px] p-0 h-[300px] !bg-white dark:!bg-dark !border-[1.5px] !border-neutral-800 rounded-md">
+      <PopoverContent className="w-[280px] p-0 h-[350px] !bg-white dark:!bg-dark !border-[1.5px] border-slate-100 dark:!border-neutral-800 rounded-md">
         <TimeCard
           onChange={(newValue) =>
             setTime(`${newValue.hours}:${newValue.minutes}:${newValue.seconds}`)
@@ -55,7 +55,7 @@ export const TimePicker = (props: Props) => {
             seconds: Number(seconds),
           }}
         />
-        <div className="flex items-center justify-between p-1 px-2 border-t-[1.5px] border-neutral-800">
+        <div className="flex items-center justify-between p-1 px-2 border-t-[1.5px] border-slate-100 dark:border-neutral-800">
           <Button
             className="ml-auto"
             onClick={() => {

@@ -5,3 +5,4 @@ export * from "./collections-card";
 export * from "./add-column-card";
 export * from "./column-update-card";
 export * from "./row-update";
+export * from "./add-row-card";

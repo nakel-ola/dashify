@@ -1,13 +1,13 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons"
-import { DayPicker } from "react-day-picker"
+import * as React from "react";
+import { ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons";
+import { DayPicker } from "react-day-picker";
 
-import { cn } from "@/lib/utils"
-import { buttonVariants } from "@/components/ui/button"
+import { cn } from "@/lib/utils";
+import { buttonVariants } from "@/components/ui/button";
 
-export type CalendarProps = React.ComponentProps<typeof DayPicker>
+export type CalendarProps = React.ComponentProps<typeof DayPicker>;
 
 function Calendar({
   className,
@@ -43,14 +43,19 @@ function Calendar({
             : "[&:has([aria-selected])]:rounded-md"
         ),
         day: cn(
-          buttonVariants({ variant: "ghost" }),
+          buttonVariants({
+            variant: "ghost",
+            className:
+              "text-black dark:text-white hover:bg-slate-100 hover:dark:bg-neutral-800",
+          }),
           "h-8 w-8 p-0 font-normal aria-selected:opacity-100"
         ),
         day_range_start: "day-range-start",
         day_range_end: "day-range-end",
         day_selected:
-          "bg-slate-900 text-slate-50 hover:bg-slate-900 hover:text-slate-50 focus:bg-slate-900 focus:text-slate-50 dark:bg-slate-50 dark:text-slate-900 dark:hover:bg-slate-50 dark:hover:text-slate-900 dark:focus:bg-slate-50 dark:focus:text-slate-900",
-        day_today: "bg-slate-100 text-slate-900 dark:bg-slate-800 dark:text-slate-50",
+          "bg-slate-900 text-slate-50 hover:bg-slate-900 hover:text-slate-50 focus:bg-slate-900 focus:text-slate-50 dark:bg-white dark:text-black dark:hover:bg-slate-50 dark:hover:text-slate-900 dark:focus:bg-slate-50 dark:focus:text-slate-900",
+        day_today:
+          "bg-slate-100 text-slate-900 dark:bg-slate-800 dark:text-slate-50",
         day_outside:
           "day-outside text-slate-500 opacity-50  aria-selected:bg-slate-100/50 aria-selected:text-slate-500 aria-selected:opacity-30 dark:text-slate-400 dark:aria-selected:bg-slate-800/50 dark:aria-selected:text-slate-400",
         day_disabled: "text-slate-500 opacity-50 dark:text-slate-400",
@@ -65,8 +70,8 @@ function Calendar({
       }}
       {...props}
     />
-  )
+  );
 }
-Calendar.displayName = "Calendar"
+Calendar.displayName = "Calendar";
 
-export { Calendar }
+export { Calendar };

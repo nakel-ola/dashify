@@ -10,22 +10,25 @@ export type TimeValue = {
 type Props = {
   value: TimeValue;
   onChange: (value: TimeValue) => void;
+  classes?: {
+    root?: string;
+  }
 };
 export const TimeCard = (props: Props) => {
-  const { onChange, value } = props;
+  const { onChange, value, classes } = props;
 
   const { hours, minutes, seconds } = value;
   return (
-    <div className="shrink-0">
-      <div className="flex items-center w-full border-b-[1.5px] border-neutral-800 p-1">
+    <div className={cn("shrink-0", classes?.root)}>
+      <div className="flex items-center w-full border-b-[1.5px] border-slate-100 dark:border-neutral-800 p-1">
         <div className="p-2 w-full">
-          <p className="text-center text-white">Hr</p>
+          <p className="text-center text-black dark:text-white">Hr</p>
         </div>
         <div className="p-2 w-full">
-          <p className="text-center text-white">Min</p>
+          <p className="text-center text-black dark:text-white">Min</p>
         </div>
         <div className="p-2 w-full">
-          <p className="text-center text-white">Sec</p>
+          <p className="text-center text-black dark:text-white">Sec</p>
         </div>
       </div>
       <div className="flex items-center w-full h-[250px] p-2">
@@ -65,7 +68,7 @@ const ListCard = (props: ListCardProps) => {
     <div
       className={cn(
         "flex flex-col w-full space-y-1 h-full overflow-y-scroll scrollbar-hide hover:scrollbar-default  hover:pl-[5px] px-[5px]",
-        showBorder ? "border-x-[1.5px] border-neutral-800" : ""
+        showBorder ? "border-x-[1.5px] border-slate-100 dark:border-neutral-800" : ""
       )}
     >
       {generateArray(length).map((num, index) => (
@@ -73,10 +76,10 @@ const ListCard = (props: ListCardProps) => {
           key={num}
           onClick={() => onClick?.(Number(num))}
           className={cn(
-            " p-2 rounded-md shrink-0",
+            " p-2 rounded-md shrink-0 transition-all duration-300",
             Number(value) === Number(num)
-              ? "bg-primary/20 text-primary"
-              : "hover:bg-neutral-800 text-white"
+              ? "bg-indigo-600 text-white"
+              : "hover:bg-slate-100 hover:dark:bg-neutral-800 text-black dark:text-white "
           )}
         >
           {num}

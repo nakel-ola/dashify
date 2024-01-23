@@ -20,6 +20,8 @@ export const RowUpdateCard = (props: Props) => {
 
   const handleClose = () => {
     setRow(null);
+
+    setData({});
   };
 
   useEffect(() => {

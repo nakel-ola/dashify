@@ -83,6 +83,9 @@ export const DatetimePicker = (props: Props) => {
               minutes: date.getMinutes(),
               seconds: date.getSeconds(),
             }}
+            classes={{
+              root: "w-[230px]"
+            }}
           />
         </div>
 
