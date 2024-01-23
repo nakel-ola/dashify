@@ -27,6 +27,8 @@ type GetTableArgs = {
   tableName: string;
   offset: number;
   limit: number;
+  sort?: string;
+  filter?: string;
 };
 
 type EditModifyTable = AlterModifyType & {
@@ -143,14 +145,25 @@ export class MySQLDatabase {
   }
 
   public async getTable(args: GetTableArgs) {
-    const { tableName, limit, offset } = args;
+    const { tableName, limit, offset, sort, filter } = args;
 
     try {
       const escapeTableName = mysql.escapeId(tableName);
       const escapeLimit = mysql.escape(parseInt(limit.toString()) || 10);
       const escapeOffset = mysql.escape(parseInt(offset.toString()) || 10);
-      const query = `SELECT * FROM ${escapeTableName} LIMIT ${escapeLimit} OFFSET ${escapeOffset}`;
-      const countQuery = `SELECT COUNT(*) AS totalCount FROM ${escapeTableName};`;
+
+      const query = this.queryGen.selectTable(escapeTableName, {
+        limit: Number(escapeLimit),
+        offset: Number(escapeOffset),
+        sort,
+        filter,
+      });
+
+      const countQuery = this.queryGen.countTable(escapeTableName, {
+        sort,
+        filter,
+      });
+
       const [rows] = await this.connection.execute(query);
       const data = await this.connection.query(countQuery);
       return { results: rows, totalItems: (data[0] as any).totalCount };

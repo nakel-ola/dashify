@@ -1,6 +1,8 @@
 import type { ModifyOperation } from '../../types/operations.type';
-import { Filter, stringToFilter } from '../string-to-filter';
-import { Sort, stringToSort } from '../string-to-sort';
+import { selectOrderBy } from '../select-order-by';
+import { selectWhere } from '../select-where';
+import { stringToFilter } from '../string-to-filter';
+import { stringToSort } from '../string-to-sort';
 
 export type DataType = {
   name: string;
@@ -134,12 +136,31 @@ export class PostgresQueryGenerator {
 
     if (args.filter) {
       const formattedFilter = stringToFilter(args.filter);
-      query += ` ${this.selectWhere(formattedFilter)}`;
+      query += ` ${selectWhere(formattedFilter)}`;
     }
 
     if (args.sort) {
       const formattedSort = stringToSort(args.sort);
-      query += ` ${this.selectOrderBy(formattedSort)}`;
+      query += ` ${selectOrderBy(formattedSort)}`;
+    }
+
+    return query;
+  }
+
+  public countTable(
+    tableName: string,
+    args: Omit<SelectTableArgs, 'limit' | 'offset'>,
+  ) {
+    let query = `SELECT COUNT(*) FROM ${tableName}`;
+
+    if (args.filter) {
+      const formattedFilter = stringToFilter(args.filter);
+      query += ` ${selectWhere(formattedFilter)}`;
+    }
+
+    if (args.sort) {
+      const formattedSort = stringToSort(args.sort);
+      query += ` ${selectOrderBy(formattedSort)}`;
     }
 
     return query;
@@ -338,28 +359,4 @@ export class PostgresQueryGenerator {
     else if (b === 'RENAME') return -1;
     else return a.localeCompare(b);
   };
-
-  private selectWhere(args: Filter[]) {
-    const results: string[] = [];
-
-    for (let i = 0; i < args.length; i++) {
-      const arg = args[i];
-
-      results.push(`${arg.name} ${arg.operator} ${arg.value}`);
-    }
-
-    return `WHERE ${results.join(' AND ')}`;
-  }
-
-  private selectOrderBy(args: Sort[]) {
-    const results: string[] = [];
-
-    for (let i = 0; i < args.length; i++) {
-      const arg = args[i];
-
-      results.push(`${arg.name} ${arg.value}`);
-    }
-
-    return results;
-  }
 }

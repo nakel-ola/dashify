@@ -39,6 +39,8 @@ type GetTableArgs = {
   tableName: string;
   offset: number;
   limit: number;
+  filter?: string;
+  sort?: string;
 };
 
 type EditModifyTable = AlterModifyType & {
@@ -176,12 +178,21 @@ export class PostgresDatabase {
   }
 
   public async getTable(args: GetTableArgs) {
-    const { tableName, limit, offset } = args;
+    const { tableName, limit, offset, sort, filter } = args;
     try {
       const escapeTableName = this.client.escapeIdentifier(tableName);
 
-      const schemaQuery = `SELECT * FROM ${escapeTableName} LIMIT $1 OFFSET $2`;
-      const countQuery = `SELECT COUNT(*) FROM ${escapeTableName};`;
+      const schemaQuery = this.queryGen.selectTable(escapeTableName, {
+        limit,
+        offset,
+        sort,
+        filter,
+      });
+
+      const countQuery = this.queryGen.countTable(escapeTableName, {
+        sort,
+        filter,
+      });
 
       const schemaResult = await this.client.query(schemaQuery, [
         limit,

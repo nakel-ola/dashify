@@ -1,4 +1,8 @@
 import { ModifyOperation } from '../../types/operations.type';
+import { selectOrderBy } from '../select-order-by';
+import { selectWhere } from '../select-where';
+import { stringToFilter } from '../string-to-filter';
+import { stringToSort } from '../string-to-sort';
 
 export type DataType = {
   name: string;
@@ -76,6 +80,13 @@ type ContraintNameType = {
   fieldName: string;
 };
 
+type SelectTableArgs = {
+  limit?: number;
+  offset?: number;
+  sort?: string;
+  filter?: string;
+};
+
 const dataTypes: Record<DataType['dataType'], string> = {
   int: 'INT',
   tinyint: 'TINYINT',
@@ -143,6 +154,44 @@ export class MySqlQueryGenerator {
         ? results.join(', ')
         : ['id INT AUTO_INCREMENT PRIMARY KEY'].join(', ')
     });`;
+
+    return query;
+  }
+
+  public selectTable(tableName: string, args: SelectTableArgs) {
+    let query = `SELECT * FROM ${tableName}`;
+
+    if (args.limit) query += ` LIMIT ${args.limit}`;
+    if (args.offset) query += ` OFFSET ${args.offset}`;
+
+    if (args.filter) {
+      const formattedFilter = stringToFilter(args.filter);
+      query += ` ${selectWhere(formattedFilter)}`;
+    }
+
+    if (args.sort) {
+      const formattedSort = stringToSort(args.sort);
+      query += ` ${selectOrderBy(formattedSort)}`;
+    }
+
+    return query;
+  }
+
+  public countTable(
+    tableName: string,
+    args: Omit<SelectTableArgs, 'limit' | 'offset'>,
+  ) {
+    let query = `SELECT COUNT(*) AS totalCount FROM ${tableName}`;
+
+    if (args.filter) {
+      const formattedFilter = stringToFilter(args.filter);
+      query += ` ${selectWhere(formattedFilter)}`;
+    }
+
+    if (args.sort) {
+      const formattedSort = stringToSort(args.sort);
+      query += ` ${selectOrderBy(formattedSort)}`;
+    }
 
     return query;
   }
