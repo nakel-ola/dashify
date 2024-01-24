@@ -19,6 +19,14 @@ type GetCollectionArgs = {
   sort?: string;
 };
 
+type CreateDocumentArgs = {
+  collectionName: string;
+  data: {
+    name: string;
+    value: any;
+  }[];
+};
+
 type ChangeCollectionNameArgs = {
   collectionName: string;
   newCollectionName: string;
@@ -188,8 +196,9 @@ export class MongoDatabase {
     try {
       const db = this.client.db();
 
-      const results = await db
-        .collection(collectionName)
+      const collection = db.collection(collectionName);
+
+      const results = await collection
         .find(mongodbQuery(filter), {
           limit,
           skip: offset,
@@ -198,11 +207,33 @@ export class MongoDatabase {
         .project({})
         .toArray();
 
-      const totalItems = await db.collection(collectionName).countDocuments();
+      const totalItems = await collection.countDocuments();
 
       return { results, totalItems };
     } catch (error) {
       console.error(`Error getting collection '${collectionName}':`, error);
+      throw error;
+    }
+  }
+
+  public async createDocument(args: CreateDocumentArgs) {
+    const { collectionName, data } = args;
+
+    try {
+      const db = this.client.db();
+
+      const collection = db.collection(collectionName);
+
+      const dataObject = data.reduce((acc, obj) => {
+        acc[obj.name] = obj.value;
+        return acc;
+      }, {});
+
+      await collection.insertOne(dataObject);
+
+      return { message: `Documents added to '${collectionName}'` };
+    } catch (error) {
+      console.error(`Error creating document:`, error);
       throw error;
     }
   }
