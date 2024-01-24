@@ -2,6 +2,7 @@ import { MongoClient, Collection as MongodbCollection } from 'mongodb';
 import { getMongodbArrayType, getMongodbObjectFieldType } from './utils';
 import { Collection, Fields } from '../types/project.type';
 import { v4 } from 'uuid';
+import { mongodbQuery, mongodbSort } from './mongodb-query';
 
 type ConnectionOption = {
   name: string;
@@ -14,6 +15,8 @@ type GetCollectionArgs = {
   collectionName: string;
   offset: number;
   limit: number;
+  filter?: string;
+  sort?: string;
 };
 
 type ChangeCollectionNameArgs = {
@@ -181,19 +184,17 @@ export class MongoDatabase {
   }
 
   public async getCollection(args: GetCollectionArgs) {
-    const { collectionName, limit, offset } = args;
+    const { collectionName, limit, offset, sort, filter } = args;
     try {
       const db = this.client.db();
 
       const results = await db
         .collection(collectionName)
-        .find(
-          {},
-          {
-            limit,
-            skip: offset,
-          },
-        )
+        .find(mongodbQuery(filter), {
+          limit,
+          skip: offset,
+          sort: mongodbSort(sort),
+        })
         .project({})
         .toArray();
 
