@@ -27,6 +27,18 @@ type CreateDocumentArgs = {
   }[];
 };
 
+type UpdateDocumentArgs = {
+  collectionName: string;
+  set: {
+    name: string;
+    value: string;
+  }[];
+  where: {
+    name: string;
+    value: string;
+  };
+};
+
 type ChangeCollectionNameArgs = {
   collectionName: string;
   newCollectionName: string;
@@ -232,6 +244,31 @@ export class MongoDatabase {
       await collection.insertOne(dataObject);
 
       return { message: `Documents added to '${collectionName}'` };
+    } catch (error) {
+      console.error(`Error creating document:`, error);
+      throw error;
+    }
+  }
+
+  public async updateDocument(args: UpdateDocumentArgs) {
+    const { collectionName, set, where } = args;
+
+    try {
+      const db = this.client.db();
+
+      const collection = db.collection(collectionName);
+
+      const updateObject = set.reduce((acc, obj) => {
+        acc[obj.name] = obj.value;
+        return acc;
+      }, {});
+
+      await collection.updateOne(
+        { [where.name]: where.value },
+        { $set: updateObject },
+      );
+
+      return { message: `Documents updated` };
     } catch (error) {
       console.error(`Error creating document:`, error);
       throw error;
