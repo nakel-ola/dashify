@@ -87,6 +87,17 @@ type SelectTableArgs = {
   filter?: string;
 };
 
+type UpdateTableRowArgs = {
+  set: {
+    name: string;
+    value: string;
+  }[];
+  where: {
+    name: string;
+    value: string;
+  };
+};
+
 const dataTypes: Record<DataType['dataType'], string> = {
   int: 'INT',
   tinyint: 'TINYINT',
@@ -261,6 +272,22 @@ export class MySqlQueryGenerator {
     const columnsValue = items.map((item) => item.value);
     const query = `INSERT INTO ${tableName} (${columnsName.join(', ')})
     VALUES (${columnsValue.join(', ')})`;
+
+    return query;
+  }
+
+  public updateTableRow(tableName: string, data: UpdateTableRowArgs) {
+    let query = `UPDATE ${tableName}`;
+
+    const set = data.set
+      .map((value) => `${value.name} = ${value.value}`)
+      .join(', ');
+
+    query += ` SET ${set}`;
+
+    const where = selectWhere([{ ...data.where, operator: '=' }]);
+
+    query += ` ${where}`;
 
     return query;
   }
