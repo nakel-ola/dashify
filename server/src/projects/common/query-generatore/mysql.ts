@@ -98,6 +98,14 @@ type UpdateTableRowArgs = {
   };
 };
 
+type DeleteFromTableArgs = {
+  deleteAll?: boolean;
+  where?: {
+    name: string;
+    value: string;
+  };
+};
+
 const dataTypes: Record<DataType['dataType'], string> = {
   int: 'INT',
   tinyint: 'TINYINT',
@@ -288,6 +296,17 @@ export class MySqlQueryGenerator {
     const where = selectWhere([{ ...data.where, operator: '=' }]);
 
     query += ` ${where}`;
+
+    return query;
+  }
+
+  public deleteFromTable(tableName: string, data: DeleteFromTableArgs) {
+    let query = `DELETE FROM ${tableName}`;
+
+    if (!data.deleteAll && data.where) {
+      const where = selectWhere([{ ...data.where, operator: '=' }]);
+      query += ` ${where}`;
+    }
 
     return query;
   }
