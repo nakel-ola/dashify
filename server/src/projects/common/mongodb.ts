@@ -39,6 +39,15 @@ type UpdateDocumentArgs = {
   };
 };
 
+type DeleteDocumentArgs = {
+  collectionName: string;
+  deleteAll?: boolean;
+  where?: {
+    name: string;
+    value: string;
+  };
+};
+
 type ChangeCollectionNameArgs = {
   collectionName: string;
   newCollectionName: string;
@@ -271,6 +280,28 @@ export class MongoDatabase {
       return { message: `Documents updated` };
     } catch (error) {
       console.error(`Error creating document:`, error);
+      throw error;
+    }
+  }
+
+  public async deleteDocument(args: DeleteDocumentArgs) {
+    const { collectionName, deleteAll, where } = args;
+    try {
+      const db = this.client.db();
+
+      const collection = db.collection(collectionName);
+
+      if (deleteAll) {
+        await collection.deleteMany({});
+      } else {
+        await collection.deleteOne({ [where.name]: where.value });
+      }
+
+      return {
+        message: deleteAll ? 'All documents deleted' : `Documents updated`,
+      };
+    } catch (error) {
+      console.error(`Error deleting document:`, error);
       throw error;
     }
   }
