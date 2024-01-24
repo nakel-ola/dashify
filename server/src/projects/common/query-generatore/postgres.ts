@@ -92,6 +92,25 @@ type SelectTableArgs = {
 
 type ForeignKeyType = Pick<DataType, 'references' | 'name'>;
 
+type DeleteFromTableArgs = {
+  deleteAll?: boolean;
+  where?: {
+    name: string;
+    value: string;
+  };
+};
+
+type UpdateTableRowArgs = {
+  set: {
+    name: string;
+    value: string;
+  }[];
+  where: {
+    name: string;
+    value: string;
+  };
+};
+
 export class PostgresQueryGenerator {
   constructor() {}
 
@@ -247,6 +266,33 @@ export class PostgresQueryGenerator {
 
     const query = `INSERT INTO ${tableName} (${columnsName.join(', ')})
     VALUES ${columnsValues.join(', ')}`;
+
+    return query;
+  }
+
+  public updateTableRow(tableName: string, data: UpdateTableRowArgs) {
+    let query = `UPDATE ${tableName}`;
+
+    const set = data.set
+      .map((value) => `${value.name} = ${value.value}`)
+      .join(', ');
+
+    query += ` SET ${set}`;
+
+    const where = selectWhere([{ ...data.where, operator: '=' }]);
+
+    query += ` ${where}`;
+
+    return query;
+  }
+
+  public deleteFromTable(tableName: string, data: DeleteFromTableArgs) {
+    let query = `DELETE FROM ${tableName}`;
+
+    if (!data.deleteAll && data.where) {
+      const where = selectWhere([{ ...data.where, operator: '=' }]);
+      query += ` ${where}`;
+    }
 
     return query;
   }
