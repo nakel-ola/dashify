@@ -43,6 +43,14 @@ type GetTableArgs = {
   sort?: string;
 };
 
+type InsertRowArgs = {
+  tableName: string;
+  data: {
+    names: string[];
+    values: (string | number)[][];
+  };
+};
+
 type EditModifyTable = AlterModifyType & {
   type: 'modify';
 };
@@ -203,6 +211,22 @@ export class PostgresDatabase {
       };
     } catch (error: any) {
       console.error(`Error getting table '${tableName}':`, error);
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+
+  public async insertRow(args: InsertRowArgs) {
+    const { tableName, data } = args;
+
+    try {
+      const escapeTableName = this.client.escapeIdentifier(tableName);
+      const query = this.queryGen.insertIntoTable(escapeTableName, data);
+
+      await this.client.query(query);
+
+      return { message: 'Row inserted successfully' };
+    } catch (error) {
+      console.error(`Error creating row:`, error);
       throw new InternalServerErrorException(error.message);
     }
   }
