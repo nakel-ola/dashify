@@ -23,6 +23,7 @@ import {
   AddNewDocumentDto,
   AddTokenDto,
   CreateNewCollectionDto,
+  DeleteDocumentDto,
   EditCollectionDto,
   InviteMemberDto,
   UpdateDocumentDto,
@@ -551,6 +552,62 @@ export class ProjectsService {
     }
 
     return { message: 'Document updated successfully' };
+  }
+
+  async deleteDocument(projectId: string, uid: string, dto: DeleteDocumentDto) {
+    const { collectionName, deleteAll, where } = dto;
+
+    const project = await this.findOne(projectId, uid);
+
+    const isViewer = this.isMemberViewer(project.members, uid);
+
+    if (isViewer) throw new UnauthorizedException('Permission denied');
+
+    const dbConfig = project.databaseConfig;
+
+    const database = dbConfig.dbType;
+
+    const collectionArgs = {
+      tableName: collectionName,
+      deleteAll,
+      where,
+    };
+
+    if (database === 'mongodb') {
+      const mongodb = new MongoDatabase(dbConfig);
+
+      await mongodb.deleteDocument({ collectionName, deleteAll, where });
+
+      await mongodb.close();
+    }
+
+    if (database === 'cockroachdb') {
+      const cockroachdb = new CockroachDatabase(dbConfig);
+
+      await cockroachdb.deleteRow(collectionArgs);
+
+      await cockroachdb.close();
+    }
+
+    if (database === 'postgres') {
+      const postgres = new PostgresDatabase(dbConfig);
+
+      await postgres.deleteRow(collectionArgs);
+
+      await postgres.close();
+    }
+
+    if (database === 'mysql') {
+      const mysql = new MySQLDatabase();
+
+      await mysql.connect(dbConfig);
+
+      await mysql.deleteRow(collectionArgs);
+
+      await mysql.close();
+    }
+
+    return { message: 'Document deleted successfully' };
   }
 
   async addCorsOrigin(

@@ -9,3 +9,4 @@ export * from './create-new-collection.dto';
 export * from './edit-collection.dto';
 export * from './add-new-document.dto';
 export * from './update-document.dto';
+export * from './delete-document.dto';
