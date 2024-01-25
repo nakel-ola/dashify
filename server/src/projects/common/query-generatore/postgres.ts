@@ -59,8 +59,8 @@ const dataType: Record<DataType['dataType'], string> = {
 };
 
 type InsetType = {
-  names: string[];
-  values: (string | number)[][];
+  name: string;
+  value: string | number;
 };
 
 type ContraintNameType = {
@@ -259,13 +259,12 @@ export class PostgresQueryGenerator {
     return results;
   }
 
-  public insertIntoTable(tableName: string, data: InsetType) {
-    const columnsName = data.names;
-
-    const columnsValues = data.values.map((value) => `(${value.join(', ')})`);
+  public insertIntoTable(tableName: string, items: InsetType[]) {
+    const columnsName = items.map((item) => item.name);
+    const columnsValue = items.map((item) => item.value);
 
     const query = `INSERT INTO ${tableName} (${columnsName.join(', ')})
-    VALUES ${columnsValues.join(', ')}`;
+    VALUES (${columnsValue.join(', ')});`;
 
     return query;
   }
