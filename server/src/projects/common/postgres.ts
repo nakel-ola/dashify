@@ -46,9 +46,9 @@ type GetTableArgs = {
 type InsertRowArgs = {
   tableName: string;
   data: {
-    names: string[];
-    values: (string | number)[][];
-  };
+    name: string;
+    value: string | number;
+  }[];
 };
 
 type UpdateRowArgs = {
