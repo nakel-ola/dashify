@@ -28,6 +28,7 @@ import {
   AddTokenDto,
   CreateNewCollectionDto,
   CreateProjectDto,
+  DeleteDocumentDto,
   EditCollectionDto,
   InviteMemberDto,
   UpdateDocumentDto,
@@ -220,6 +221,21 @@ export class ProjectsController {
       projectId,
       req.user.uid,
       updateDocumentDto,
+    );
+  }
+
+  @ApiOperation({ summary: 'Delete document from collection' })
+  @Post(':projectId/delete-document')
+  @ApiParam({ name: 'projectId', example: 'finance-tracker-78493' })
+  deleteDocument(
+    @Request() req,
+    @Param('projectId') projectId: string,
+    @Body() deleteDocumentDto: DeleteDocumentDto,
+  ) {
+    return this.projectsService.deleteDocument(
+      projectId,
+      req.user.uid,
+      deleteDocumentDto,
     );
   }
 
