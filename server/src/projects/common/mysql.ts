@@ -39,6 +39,18 @@ type InsertRowArgs = {
   }[];
 };
 
+type UpdateRowArgs = {
+  tableName: string;
+  set: {
+    name: string;
+    value: string;
+  }[];
+  where: {
+    name: string;
+    value: string;
+  };
+};
+
 type EditModifyTable = AlterModifyType & {
   type: 'modify';
 };
@@ -193,6 +205,26 @@ export class MySQLDatabase {
       return { message: 'Row inserted successfully' };
     } catch (error) {
       console.error(`Error creating row:`, error);
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+
+  public async updateRow(args: UpdateRowArgs) {
+    const { tableName, set, where } = args;
+
+    try {
+      const escapeTableName = mysql.escapeId(tableName);
+
+      const query = this.queryGen.updateTableRow(escapeTableName, {
+        set,
+        where,
+      });
+
+      await this.connection.query(query);
+
+      return { message: 'Row updated successfully' };
+    } catch (error) {
+      console.error(`Error updating row:`, error);
       throw new InternalServerErrorException(error.message);
     }
   }
