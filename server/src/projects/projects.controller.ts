@@ -24,6 +24,7 @@ import { AuthGuard } from '../auth/guard/auth.guard';
 import {
   AcceptMemberInviteDto,
   AddCorsOriginDto,
+  AddNewDocumentDto,
   AddTokenDto,
   CreateNewCollectionDto,
   CreateProjectDto,
@@ -188,6 +189,21 @@ export class ProjectsController {
       projectId,
       req.user.uid,
       editCollectionDto,
+    );
+  }
+
+  @ApiOperation({ summary: 'Add new document to a collection' })
+  @Post(':projectId/add-new-document')
+  @ApiParam({ name: 'projectId', example: 'finance-tracker-78493' })
+  addNewDocument(
+    @Request() req,
+    @Param('projectId') projectId: string,
+    @Body() addNewDocumentDto: AddNewDocumentDto,
+  ) {
+    return this.projectsService.addNewDocument(
+      projectId,
+      req.user.uid,
+      addNewDocumentDto,
     );
   }
 
