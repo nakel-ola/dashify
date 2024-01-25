@@ -20,6 +20,7 @@ import { Project } from './entities';
 import {
   AcceptMemberInviteDto,
   AddCorsOriginDto,
+  AddNewDocumentDto,
   AddTokenDto,
   CreateNewCollectionDto,
   EditCollectionDto,
@@ -438,6 +439,61 @@ export class ProjectsService {
     await this.projectRepository.update({ projectId }, { collections });
 
     return collections;
+  }
+
+  async addNewDocument(projectId: string, uid: string, dto: AddNewDocumentDto) {
+    const { collectionName, document } = dto;
+
+    const project = await this.findOne(projectId, uid);
+
+    const isViewer = this.isMemberViewer(project.members, uid);
+
+    if (isViewer) throw new UnauthorizedException('Permission denied');
+
+    const dbConfig = project.databaseConfig;
+
+    const database = dbConfig.dbType;
+
+    const collectionArgs = {
+      tableName: collectionName,
+      data: document,
+    };
+
+    if (database === 'mongodb') {
+      const mongodb = new MongoDatabase(dbConfig);
+
+      await mongodb.createDocument({ collectionName, data: document });
+
+      await mongodb.close();
+    }
+
+    if (database === 'cockroachdb') {
+      const cockroachdb = new CockroachDatabase(dbConfig);
+
+      await cockroachdb.insertRow(collectionArgs);
+
+      await cockroachdb.close();
+    }
+
+    if (database === 'postgres') {
+      const postgres = new PostgresDatabase(dbConfig);
+
+      await postgres.insertRow(collectionArgs);
+
+      await postgres.close();
+    }
+
+    if (database === 'mysql') {
+      const mysql = new MySQLDatabase();
+
+      await mysql.connect(dbConfig);
+
+      await mysql.insertRow(collectionArgs);
+
+      await mysql.close();
+    }
+
+    return { message: 'Document added successfully' };
   }
 
   async addCorsOrigin(

@@ -138,6 +138,59 @@ export class ProjectsController {
     });
   }
 
+  @ApiOperation({ summary: 'Create new collection or table' })
+  @Post(':projectId/create-new-collection')
+  @ApiParam({ name: 'projectId', example: 'finance-tracker-78493' })
+  createNewCollection(
+    @Request() req,
+    @Param('projectId') projectId: string,
+    @Body() createNewCollectionDto: CreateNewCollectionDto,
+  ) {
+    return this.projectsService.createNewCollection(
+      projectId,
+      req.user.uid,
+      createNewCollectionDto,
+    );
+  }
+
+  @ApiOperation({ summary: 'Delete collection or table' })
+  @Delete(':projectId/delete-collection/:collectionName')
+  @ApiParam({ name: 'projectId', example: 'finance-tracker-78493' })
+  @ApiParam({ name: 'collectionName', example: 'users' })
+  deleteCollection(
+    @Request() req,
+    @Param('projectId') projectId: string,
+    @Param('collectionName') collectionName: string,
+  ) {
+    return this.projectsService.deleteCollection(
+      projectId,
+      req.user.uid,
+      collectionName,
+    );
+  }
+
+  @ApiOperation({ summary: 'Refetch collections or tables' })
+  @Get(':projectId/refetch-collections')
+  @ApiParam({ name: 'projectId', example: 'finance-tracker-78493' })
+  refetchCollections(@Request() req, @Param('projectId') projectId: string) {
+    return this.projectsService.refetchCollections(projectId, req.user.uid);
+  }
+
+  @ApiOperation({ summary: 'Edit collections or tables' })
+  @Put(':projectId/edit-collection/')
+  @ApiParam({ name: 'projectId', example: 'finance-tracker-78493' })
+  editCollection(
+    @Request() req,
+    @Param('projectId') projectId: string,
+    @Body() editCollectionDto: EditCollectionDto,
+  ) {
+    return this.projectsService.editCollection(
+      projectId,
+      req.user.uid,
+      editCollectionDto,
+    );
+  }
+
   @ApiOperation({ summary: 'Add a origin to the project' })
   @Post(':projectId/add-cors-origin')
   @ApiParam({ name: 'projectId', example: 'finance-tracker-78493' })
@@ -271,58 +324,5 @@ export class ProjectsController {
     @Param('memberId') memberId: string,
   ) {
     return this.projectsService.removeMember(projectId, req.user.uid, memberId);
-  }
-
-  @ApiOperation({ summary: 'Create new collection or table' })
-  @Post(':projectId/create-new-collection')
-  @ApiParam({ name: 'projectId', example: 'finance-tracker-78493' })
-  createNewCollection(
-    @Request() req,
-    @Param('projectId') projectId: string,
-    @Body() createNewCollectionDto: CreateNewCollectionDto,
-  ) {
-    return this.projectsService.createNewCollection(
-      projectId,
-      req.user.uid,
-      createNewCollectionDto,
-    );
-  }
-
-  @ApiOperation({ summary: 'Delete collection or table' })
-  @Delete(':projectId/delete-collection/:collectionName')
-  @ApiParam({ name: 'projectId', example: 'finance-tracker-78493' })
-  @ApiParam({ name: 'collectionName', example: 'users' })
-  deleteCollection(
-    @Request() req,
-    @Param('projectId') projectId: string,
-    @Param('collectionName') collectionName: string,
-  ) {
-    return this.projectsService.deleteCollection(
-      projectId,
-      req.user.uid,
-      collectionName,
-    );
-  }
-
-  @ApiOperation({ summary: 'Refetch collections or tables' })
-  @Get(':projectId/refetch-collections')
-  @ApiParam({ name: 'projectId', example: 'finance-tracker-78493' })
-  refetchCollections(@Request() req, @Param('projectId') projectId: string) {
-    return this.projectsService.refetchCollections(projectId, req.user.uid);
-  }
-
-  @ApiOperation({ summary: 'Edit collections or tables' })
-  @Put(':projectId/edit-collection/')
-  @ApiParam({ name: 'projectId', example: 'finance-tracker-78493' })
-  editCollection(
-    @Request() req,
-    @Param('projectId') projectId: string,
-    @Body() editCollectionDto: EditCollectionDto,
-  ) {
-    return this.projectsService.editCollection(
-      projectId,
-      req.user.uid,
-      editCollectionDto,
-    );
   }
 }
