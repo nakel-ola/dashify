@@ -51,6 +51,15 @@ type UpdateRowArgs = {
   };
 };
 
+type DeleteRowArgs = {
+  tableName: string;
+  deleteAll?: boolean;
+  where?: {
+    name: string;
+    value: string;
+  };
+};
+
 type EditModifyTable = AlterModifyType & {
   type: 'modify';
 };
@@ -225,6 +234,24 @@ export class MySQLDatabase {
       return { message: 'Row updated successfully' };
     } catch (error) {
       console.error(`Error updating row:`, error);
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+
+  public async deleteRow(args: DeleteRowArgs) {
+    const { tableName, deleteAll, where } = args;
+
+    try {
+      const escapeTableName = mysql.escapeId(tableName);
+
+      const query = this.queryGen.deleteFromTable(escapeTableName, {
+        deleteAll,
+        where,
+      });
+
+      await this.connection.query(query);
+    } catch (error) {
+      console.error(`Error deleting row:`, error);
       throw new InternalServerErrorException(error.message);
     }
   }
