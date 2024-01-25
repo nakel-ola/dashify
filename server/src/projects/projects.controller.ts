@@ -30,6 +30,7 @@ import {
   CreateProjectDto,
   EditCollectionDto,
   InviteMemberDto,
+  UpdateDocumentDto,
   UpdateProjectDto,
 } from './dto';
 import { ProjectsService } from './projects.service';
@@ -204,6 +205,21 @@ export class ProjectsController {
       projectId,
       req.user.uid,
       addNewDocumentDto,
+    );
+  }
+
+  @ApiOperation({ summary: 'Update document in a collection' })
+  @Post(':projectId/update-document')
+  @ApiParam({ name: 'projectId', example: 'finance-tracker-78493' })
+  updateDocument(
+    @Request() req,
+    @Param('projectId') projectId: string,
+    @Body() updateDocumentDto: UpdateDocumentDto,
+  ) {
+    return this.projectsService.updateDocument(
+      projectId,
+      req.user.uid,
+      updateDocumentDto,
     );
   }
 
