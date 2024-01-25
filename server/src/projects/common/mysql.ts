@@ -31,6 +31,14 @@ type GetTableArgs = {
   filter?: string;
 };
 
+type InsertRowArgs = {
+  tableName: string;
+  data: {
+    name: string;
+    value: string | number;
+  }[];
+};
+
 type EditModifyTable = AlterModifyType & {
   type: 'modify';
 };
@@ -169,6 +177,22 @@ export class MySQLDatabase {
       return { results: rows, totalItems: (data[0] as any).totalCount };
     } catch (error) {
       console.error(`Error getting table '${tableName}':`, error);
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+
+  public async insertRow(args: InsertRowArgs) {
+    const { tableName, data } = args;
+
+    try {
+      const escapeTableName = mysql.escapeId(tableName);
+      const query = this.queryGen.insetIntoTable(escapeTableName, data);
+
+      await this.connection.query(query);
+
+      return { message: 'Row inserted successfully' };
+    } catch (error) {
+      console.error(`Error creating row:`, error);
       throw new InternalServerErrorException(error.message);
     }
   }
