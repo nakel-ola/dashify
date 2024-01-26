@@ -23,10 +23,12 @@ export const TabsCard = (props: Props) => {
     totalItems,
     removeSelected,
   } = props;
+
+  console.log(totalSelected, totalItems);
   return (
     <div className="flex items-center justify-between gap-2 bg-slate-100/60 dark:bg-neutral-800/30 py-1 px-3">
       {isAnySelected ? (
-        <>
+        <div className="flex items-center gap-2">
           <div className="p-1.5 px-2 flex items-center gap-2">
             <button
               type="button"
@@ -41,15 +43,17 @@ export const TabsCard = (props: Props) => {
             </p>
           </div>
 
-          <button className="p-1.5 px-2 text-indigo-600 hover:bg-indigo-600/10 rounded-lg group flex items-center gap-2">
-            Select all {totalItems} rows
-          </button>
+          {totalSelected !== totalItems ? (
+            <button className="p-1.5 px-2 text-indigo-600 hover:bg-indigo-600/10 rounded-lg group flex items-center gap-2">
+              Select all {totalItems} rows
+            </button>
+          ) : null}
 
           <button className="p-1.5 px-2 text-black dark:text-white hover:bg-slate-200/60 hover:dark:bg-neutral-800 rounded-lg group flex items-center gap-2">
             <Trash className="h-[20px] w-[20px]" />
             Delete {totalSelected} rows
           </button>
-        </>
+        </div>
       ) : (
         <>
           <div className="flex items-center gap-2">

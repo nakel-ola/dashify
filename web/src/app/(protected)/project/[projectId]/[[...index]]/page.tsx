@@ -136,7 +136,7 @@ export default function ProjectCollection(props: Props) {
         <TabsCard
           isAnySelected={selected.length > 0}
           totalSelected={selected.length}
-          totalItems={data?.totalItems ?? 0}
+          totalItems={Number(data?.totalItems ?? 0)}
           onRefresh={() => refetch()}
           isRefreshing={isLoading}
           removeSelected={() => setSelected([])}
