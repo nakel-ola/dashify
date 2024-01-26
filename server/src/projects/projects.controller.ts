@@ -224,15 +224,15 @@ export class ProjectsController {
     );
   }
 
-  @ApiOperation({ summary: 'Delete document from collection' })
-  @Post(':projectId/delete-document')
+  @ApiOperation({ summary: 'Delete documents from collection' })
+  @Post(':projectId/delete-documents')
   @ApiParam({ name: 'projectId', example: 'finance-tracker-78493' })
-  deleteDocument(
+  deleteDocuments(
     @Request() req,
     @Param('projectId') projectId: string,
     @Body() deleteDocumentDto: DeleteDocumentDto,
   ) {
-    return this.projectsService.deleteDocument(
+    return this.projectsService.deleteDocuments(
       projectId,
       req.user.uid,
       deleteDocumentDto,

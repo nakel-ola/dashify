@@ -30,7 +30,7 @@ export class DeleteDocumentDto {
     type: [String],
   })
   @IsOptional()
-  where: Where;
+  where?: Where[];
 
   @ApiProperty({
     description: 'Delete all document',

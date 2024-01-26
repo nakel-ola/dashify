@@ -554,7 +554,11 @@ export class ProjectsService {
     return { message: 'Document updated successfully' };
   }
 
-  async deleteDocument(projectId: string, uid: string, dto: DeleteDocumentDto) {
+  async deleteDocuments(
+    projectId: string,
+    uid: string,
+    dto: DeleteDocumentDto,
+  ) {
     const { collectionName, deleteAll, where } = dto;
 
     const project = await this.findOne(projectId, uid);
@@ -576,7 +580,7 @@ export class ProjectsService {
     if (database === 'mongodb') {
       const mongodb = new MongoDatabase(dbConfig);
 
-      await mongodb.deleteDocument({ collectionName, deleteAll, where });
+      await mongodb.deleteDocuments({ collectionName, deleteAll, where });
 
       await mongodb.close();
     }

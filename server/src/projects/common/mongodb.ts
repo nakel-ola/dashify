@@ -45,7 +45,7 @@ type DeleteDocumentArgs = {
   where?: {
     name: string;
     value: string;
-  };
+  }[];
 };
 
 type ChangeCollectionNameArgs = {
@@ -284,7 +284,7 @@ export class MongoDatabase {
     }
   }
 
-  public async deleteDocument(args: DeleteDocumentArgs) {
+  public async deleteDocuments(args: DeleteDocumentArgs) {
     const { collectionName, deleteAll, where } = args;
     try {
       const db = this.client.db();
@@ -294,7 +294,11 @@ export class MongoDatabase {
       if (deleteAll) {
         await collection.deleteMany({});
       } else {
-        await collection.deleteOne({ [where.name]: where.value });
+        for (let i = 0; i < where.length; i++) {
+          const data = where[i];
+
+          await collection.deleteOne({ [data.name]: data.value });
+        }
       }
 
       return {
