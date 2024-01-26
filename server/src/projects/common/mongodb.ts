@@ -2,7 +2,7 @@ import { MongoClient, Collection as MongodbCollection } from 'mongodb';
 import { getMongodbArrayType, getMongodbObjectFieldType } from './utils';
 import { Collection, Fields } from '../types/project.type';
 import { v4 } from 'uuid';
-import { mongodbQuery, mongodbSort } from './mongodb-query';
+import { mongodbFilter, mongodbSort } from './mongodb-query';
 
 type ConnectionOption = {
   name: string;
@@ -41,7 +41,7 @@ type UpdateDocumentArgs = {
 
 type DeleteDocumentArgs = {
   collectionName: string;
-  deleteAll?: boolean;
+  deleteAll?: boolean | string;
   where?: {
     name: string;
     value: string;
@@ -220,7 +220,7 @@ export class MongoDatabase {
       const collection = db.collection(collectionName);
 
       const results = await collection
-        .find(mongodbQuery(filter), {
+        .find(mongodbFilter(filter), {
           limit,
           skip: offset,
           sort: mongodbSort(sort),
@@ -292,7 +292,9 @@ export class MongoDatabase {
       const collection = db.collection(collectionName);
 
       if (deleteAll) {
-        await collection.deleteMany({});
+        await collection.deleteMany(
+          typeof deleteAll === 'boolean' ? {} : mongodbFilter(deleteAll),
+        );
       } else {
         for (let i = 0; i < where.length; i++) {
           const data = where[i];

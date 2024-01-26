@@ -23,8 +23,6 @@ export const TabsCard = (props: Props) => {
     totalItems,
     removeSelected,
   } = props;
-
-  console.log(totalSelected, totalItems);
   return (
     <div className="flex items-center justify-between gap-2 bg-slate-100/60 dark:bg-neutral-800/30 py-1 px-3">
       {isAnySelected ? (

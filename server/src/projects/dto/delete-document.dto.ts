@@ -34,8 +34,8 @@ export class DeleteDocumentDto {
 
   @ApiProperty({
     description: 'Delete all document',
-    type: [Boolean],
+    type: [Boolean, String],
   })
   @IsOptional()
-  deleteAll?: boolean;
+  deleteAll?: boolean | string;
 }

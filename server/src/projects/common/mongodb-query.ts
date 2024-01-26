@@ -1,7 +1,7 @@
 import { Filter, stringToFilter } from './string-to-filter';
 import { stringToSort } from './string-to-sort';
 
-export const mongodbQuery = (str: string) => {
+export const mongodbFilter = (str: string) => {
   const items = stringToFilter(str);
 
   const query = {};

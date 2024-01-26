@@ -65,7 +65,7 @@ type UpdateRowArgs = {
 
 type DeleteRowArgs = {
   tableName: string;
-  deleteAll?: boolean;
+  deleteAll?: boolean | string;
   where?: {
     name: string;
     value: string;

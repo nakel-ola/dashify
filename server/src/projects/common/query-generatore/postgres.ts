@@ -93,7 +93,7 @@ type SelectTableArgs = {
 type ForeignKeyType = Pick<DataType, 'references' | 'name'>;
 
 type DeleteFromTableArgs = {
-  deleteAll?: boolean;
+  deleteAll?: boolean | string;
   where?: {
     name: string;
     value: string;
@@ -286,6 +286,11 @@ export class PostgresQueryGenerator {
     if (!data.deleteAll && data.where) {
       const where = selectWhere([{ ...data.where, operator: '=' }]);
       query += ` ${where}`;
+    }
+
+    if (data.deleteAll && typeof data.deleteAll === 'string') {
+      const formattedFilter = stringToFilter(data.deleteAll);
+      query += ` ${selectWhere(formattedFilter)}`;
     }
 
     return query;
