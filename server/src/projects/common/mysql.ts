@@ -57,7 +57,7 @@ type DeleteRowArgs = {
   where?: {
     name: string;
     value: string;
-  };
+  }[];
 };
 
 type EditModifyTable = AlterModifyType & {
@@ -237,18 +237,26 @@ export class MySQLDatabase {
     }
   }
 
-  public async deleteRow(args: DeleteRowArgs) {
+  public async deleteRows(args: DeleteRowArgs) {
     const { tableName, deleteAll, where } = args;
 
     try {
       const escapeTableName = mysql.escapeId(tableName);
 
-      const query = this.queryGen.deleteFromTable(escapeTableName, {
-        deleteAll,
-        where,
-      });
+      const queries = [];
 
-      await this.connection.query(query);
+      for (let i = 0; i < where.length; i++) {
+        const query = this.queryGen.deleteFromTable(escapeTableName, {
+          deleteAll,
+          where: where[i],
+        });
+
+        queries.push(query);
+      }
+
+      await this.runMultipleQueries(queries);
+
+      return { message: 'Rows deleted successfully' };
     } catch (error) {
       console.error(`Error deleting row:`, error);
       throw new InternalServerErrorException(error.message);

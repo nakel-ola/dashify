@@ -588,7 +588,7 @@ export class ProjectsService {
     if (database === 'cockroachdb') {
       const cockroachdb = new CockroachDatabase(dbConfig);
 
-      await cockroachdb.deleteRow(collectionArgs);
+      await cockroachdb.deleteRows(collectionArgs);
 
       await cockroachdb.close();
     }
@@ -596,7 +596,7 @@ export class ProjectsService {
     if (database === 'postgres') {
       const postgres = new PostgresDatabase(dbConfig);
 
-      await postgres.deleteRow(collectionArgs);
+      await postgres.deleteRows(collectionArgs);
 
       await postgres.close();
     }
@@ -606,7 +606,7 @@ export class ProjectsService {
 
       await mysql.connect(dbConfig);
 
-      await mysql.deleteRow(collectionArgs);
+      await mysql.deleteRows(collectionArgs);
 
       await mysql.close();
     }

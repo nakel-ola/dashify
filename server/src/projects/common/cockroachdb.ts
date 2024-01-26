@@ -57,7 +57,7 @@ type DeleteRowArgs = {
   where?: {
     name: string;
     value: string;
-  };
+  }[];
 };
 
 type EditModifyTable = AlterModifyType & {
@@ -276,18 +276,26 @@ export class CockroachDatabase {
     }
   }
 
-  public async deleteRow(args: DeleteRowArgs) {
+  public async deleteRows(args: DeleteRowArgs) {
     const { tableName, deleteAll, where } = args;
 
     try {
       const escapeTableName = this.client.escapeIdentifier(tableName);
 
-      const query = this.queryGen.deleteFromTable(escapeTableName, {
-        deleteAll,
-        where,
-      });
+      const queries = [];
 
-      await this.client.query(query);
+      for (let i = 0; i < where.length; i++) {
+        const query = this.queryGen.deleteFromTable(escapeTableName, {
+          deleteAll,
+          where: where[i],
+        });
+
+        queries.push(query);
+      }
+
+      await this.runMultipleQueries(queries);
+
+      return { message: 'Rows deleted successfully' };
     } catch (error) {
       console.error(`Error deleting row:`, error);
       throw new InternalServerErrorException(error.message);
@@ -325,9 +333,9 @@ export class CockroachDatabase {
         );
       }
 
-      const results = await this.runMultipleQueries(queries);
+      await this.runMultipleQueries(queries);
 
-      return results;
+      return { message: 'Table updated successfully' };
     } catch (error) {
       console.error(`Error updating table '${tableName}':`, error);
       throw new InternalServerErrorException(error.message);
