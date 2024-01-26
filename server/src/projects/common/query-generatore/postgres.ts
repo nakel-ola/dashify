@@ -150,9 +150,6 @@ export class PostgresQueryGenerator {
   public selectTable(tableName: string, args: SelectTableArgs) {
     let query = `SELECT * FROM ${tableName}`;
 
-    if (args.limit) query += ` LIMIT ${args.limit}`;
-    if (args.offset) query += ` OFFSET ${args.offset}`;
-
     if (args.filter) {
       const formattedFilter = stringToFilter(args.filter);
       query += ` ${selectWhere(formattedFilter)}`;
@@ -163,23 +160,21 @@ export class PostgresQueryGenerator {
       query += ` ${selectOrderBy(formattedSort)}`;
     }
 
-    return query;
+    if (args.limit) query += ` LIMIT ${args.limit}`;
+    if (args.offset) query += ` OFFSET ${args.offset}`;
+
+    return `${query};`;
   }
 
   public countTable(
     tableName: string,
-    args: Omit<SelectTableArgs, 'limit' | 'offset'>,
+    args: Omit<SelectTableArgs, 'limit' | 'offset' | 'sort'>,
   ) {
     let query = `SELECT COUNT(*) FROM ${tableName}`;
 
     if (args.filter) {
       const formattedFilter = stringToFilter(args.filter);
       query += ` ${selectWhere(formattedFilter)}`;
-    }
-
-    if (args.sort) {
-      const formattedSort = stringToSort(args.sort);
-      query += ` ${selectOrderBy(formattedSort)}`;
     }
 
     return query;

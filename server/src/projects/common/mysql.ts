@@ -179,7 +179,7 @@ export class MySQLDatabase {
     try {
       const escapeTableName = mysql.escapeId(tableName);
       const escapeLimit = mysql.escape(parseInt(limit.toString()) || 10);
-      const escapeOffset = mysql.escape(parseInt(offset.toString()) || 10);
+      const escapeOffset = mysql.escape(parseInt(offset.toString()) || 0);
 
       const query = this.queryGen.selectTable(escapeTableName, {
         limit: Number(escapeLimit),
@@ -189,7 +189,6 @@ export class MySQLDatabase {
       });
 
       const countQuery = this.queryGen.countTable(escapeTableName, {
-        sort,
         filter,
       });
 

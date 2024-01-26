@@ -22,7 +22,7 @@ export const InsertCard = (props: Props) => {
           })
         }
       >
-        Insert new row
+        Insert
       </Button>
     </div>
   );

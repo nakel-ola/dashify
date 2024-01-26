@@ -219,7 +219,6 @@ export class PostgresDatabase {
       });
 
       const countQuery = this.queryGen.countTable(escapeTableName, {
-        sort,
         filter,
       });
 

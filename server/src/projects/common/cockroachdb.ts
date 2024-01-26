@@ -224,7 +224,6 @@ export class CockroachDatabase {
       });
 
       const countQuery = this.queryGen.countTable(escapeTableName, {
-        sort,
         filter,
       });
 

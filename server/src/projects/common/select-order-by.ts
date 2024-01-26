@@ -9,5 +9,5 @@ export const selectOrderBy = (args: Sort[]) => {
     results.push(`${arg.name} ${arg.value}`);
   }
 
-  return results;
+  return `ORDER BY ${results.join(' , ')}`;
 };

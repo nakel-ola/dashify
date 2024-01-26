@@ -22,12 +22,16 @@ type Props = {
   params: {
     index: string[];
   };
-  searchParams: {};
+  searchParams: {
+    sort: string;
+    filter: string;
+  };
 };
 
 export default function ProjectCollection(props: Props) {
   const {
     params: { index },
+    searchParams: { sort = "", filter = "" },
   } = props;
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -44,7 +48,14 @@ export default function ProjectCollection(props: Props) {
   const name = collection?.name;
 
   const { data, refetch, isPending, isFetching, isRefetching } = useQuery({
-    queryKey: ["projects-collection", projectId, name, currentPage],
+    queryKey: [
+      "projects-collection",
+      projectId,
+      name,
+      currentPage,
+      sort,
+      filter,
+    ],
     queryFn: async () => {
       const offset = Number(limit) * (currentPage - 1);
 
@@ -54,6 +65,8 @@ export default function ProjectCollection(props: Props) {
         projectId,
         limit: Number(limit),
         offset,
+        sort,
+        filter,
       });
 
       return res;
