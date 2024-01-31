@@ -225,7 +225,7 @@ export class ProjectsController {
   }
 
   @ApiOperation({ summary: 'Delete documents from collection' })
-  @Post(':projectId/delete-documents')
+  @Delete(':projectId/delete-documents')
   @ApiParam({ name: 'projectId', example: 'finance-tracker-78493' })
   deleteDocuments(
     @Request() req,

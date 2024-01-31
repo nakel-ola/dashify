@@ -6,19 +6,32 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
 import { HeaderCard } from "./header-card";
 import { useAddColumnStore } from "../../../store/add-column-store";
+import { useSelectedRowStore } from "../../../store/selected-row-store";
 
 type Props = {
   pageName: string;
   projectId: string;
-  onSelectAll: () => void;
-  isAllSelected: boolean;
+  currentPage: number;
+  totalItems: number;
+  limit: number;
   isMongodb: boolean;
 };
 export const Header = (props: Props) => {
-  const { pageName, onSelectAll, isAllSelected, projectId, isMongodb } = props;
+  const {
+    pageName,
+    projectId,
+    isMongodb,
+    limit,
+    totalItems,
+    currentPage,
+  } = props;
 
   const sortedFields = useProjectStore((store) => store.getFields(pageName));
   const { setIsOpen } = useAddColumnStore();
+  const { onSelectAll, selectedRows } = useSelectedRowStore();
+
+  const isAllSelected =
+    totalItems > 0 ? totalItems === selectedRows.length : false;
 
   return (
     <div
@@ -29,7 +42,9 @@ export const Header = (props: Props) => {
       <div className="min-w-[100px] p-2 py-2.5 shrink-0 border-y-[1.5px] border-slate-100 dark:border-neutral-800 flex items-center justify-start px-5">
         <Checkbox
           checked={isAllSelected}
-          onCheckedChange={() => onSelectAll()}
+          onCheckedChange={() =>
+            onSelectAll({ currentPage, limit, totalItems })
+          }
           className="w-[20px] h-[20px] rounded-md"
         />
       </div>

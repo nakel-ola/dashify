@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { useQueries } from "../../../hooks/use-queries";
 import { useProjectStore } from "../../../store/project-store";
 import { useRowAddStore } from "../../../store/row-add-store";
+import { Add } from "iconsax-react";
 
 type Props = {};
 export const InsertCard = (props: Props) => {
@@ -22,6 +23,7 @@ export const InsertCard = (props: Props) => {
           })
         }
       >
+        <Add className="mr-2" />
         Insert
       </Button>
     </div>

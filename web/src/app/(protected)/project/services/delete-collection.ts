@@ -7,7 +7,7 @@ type Args = {
   name: string;
 };
 
-type CreateResponse = {
+type DeleteResponse = {
   message: string;
 };
 
@@ -17,7 +17,7 @@ export async function deleteCollection(args: Args) {
   try {
     const url = `/projects/${projectId}/delete-collection/${name}`;
 
-    const { data } = await axios.delete<CreateResponse>(url);
+    const { data } = await axios.delete<DeleteResponse>(url);
 
     return data;
   } catch (error: any) {

@@ -16,7 +16,7 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchCollection } from "../../services/fetch-collection";
 import { cn } from "@/lib/utils";
 import { SpinnerCircular } from "spinners-react";
-import { generateNumbers } from "../../utils/generate-numbers";
+import { DeleteAlertCard } from "./features/delete-alert-card";
 
 type Props = {
   params: {
@@ -37,8 +37,6 @@ export default function ProjectCollection(props: Props) {
   const [currentPage, setCurrentPage] = useState(1);
   const [limit, setLimit] = useState<"100" | "500" | "1000">("100");
 
-  const [selected, setSelected] = useState<number[]>([]);
-
   const project = useProjectStore((store) => store.project!);
 
   const collection = useProjectStore((store) => store.getCollection(index[0]));
@@ -47,15 +45,17 @@ export default function ProjectCollection(props: Props) {
 
   const name = collection?.name;
 
+  const queryKey = [
+    "projects-collection",
+    projectId,
+    name,
+    currentPage,
+    sort,
+    filter,
+  ];
+
   const { data, refetch, isPending, isFetching, isRefetching } = useQuery({
-    queryKey: [
-      "projects-collection",
-      projectId,
-      name,
-      currentPage,
-      sort,
-      filter,
-    ],
+    queryKey,
     queryFn: async () => {
       const offset = Number(limit) * (currentPage - 1);
 
@@ -77,6 +77,9 @@ export default function ProjectCollection(props: Props) {
 
   const isLoading = isRefetching || isPending || isFetching;
 
+  const showSelectAll =
+    Number(data?.totalItems ?? 0) > Number(data?.results?.length);
+
   const onPageChange = (value: "next" | "previous" | number) => {
     if (value === "next" && pageCount > currentPage) {
       setCurrentPage(currentPage + 1);
@@ -90,56 +93,14 @@ export default function ProjectCollection(props: Props) {
     }
   };
 
-  const getValue = (value: number) => {
-    const startNumber = (currentPage - 1) * Number(limit);
-
-    return startNumber + value;
-  };
-
-  const updateSelected = (value: number) => {
-    const currentValue = getValue(value);
-
-    const arr = [...selected];
-
-    const inx = arr.indexOf(currentValue);
-
-    if (inx === -1) arr.push(currentValue);
-    else arr.splice(inx, 1);
-
-    setSelected(arr);
-  };
-
-  const isSelected = (value: number) => {
-    const currentValue = getValue(value);
-
-    return selected.indexOf(currentValue) !== -1;
-  };
-
-  const onSelectAll = () => {
-    if (!data) return;
-
-    if (data.results.length === selected.length) {
-      setSelected([]);
-    } else {
-      const startNumber = getValue(0);
-      const endNumber = getValue(data.results.length) - 1;
-
-      const numbers = generateNumbers(startNumber, endNumber);
-
-      setSelected(numbers);
-    }
-  };
-
   return (
     <Fragment>
       <div className="overflow-y-hidden h-full">
         <TabsCard
-          isAnySelected={selected.length > 0}
-          totalSelected={selected.length}
           totalItems={Number(data?.totalItems ?? 0)}
           onRefresh={() => refetch()}
           isRefreshing={isLoading}
-          removeSelected={() => setSelected([])}
+          showSelectAll={showSelectAll}
         />
 
         <div
@@ -152,12 +113,9 @@ export default function ProjectCollection(props: Props) {
         >
           <Header
             pageName={index[0]}
-            onSelectAll={onSelectAll}
-            isAllSelected={
-              (data?.results ?? []).length > 0
-                ? data?.results.length === selected.length
-                : false
-            }
+            currentPage={currentPage}
+            limit={Number(limit)}
+            totalItems={data?.results?.length ?? 0}
             projectId={projectId}
             isMongodb={project.database === "mongodb"}
           />
@@ -166,8 +124,8 @@ export default function ProjectCollection(props: Props) {
             <CollectionsCard
               pageName={index[0]}
               items={data.results}
-              isSelected={isSelected}
-              updateSelected={updateSelected}
+              currentPage={currentPage}
+              limit={Number(limit)}
             />
           ) : null}
 
@@ -195,6 +153,15 @@ export default function ProjectCollection(props: Props) {
           />
         ) : null}
       </div>
+
+      <DeleteAlertCard
+        filter={filter}
+        pageName={index[0]}
+        totalItems={data?.results?.length ?? 0}
+        items={data?.results ?? []}
+        projectId={projectId}
+        queryKey={queryKey}
+      />
 
       <ColumnUpdateCard />
       <AddColumnCard />

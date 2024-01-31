@@ -7,22 +7,25 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Maximize4 } from "iconsax-react";
 import { useRowUpdateStore } from "../../../store/row-update-store";
 import { useQueries } from "../../../hooks/use-queries";
+import { useSelectedRowStore } from "../../../store/selected-row-store";
 
 type Props = {
   pageName: string;
   items: any[];
-  isSelected: (value: number) => boolean;
-  updateSelected: (value: number) => void;
+  currentPage: number;
+  limit: number;
 };
 
 export const CollectionsCard = (props: Props) => {
-  const { pageName, items, isSelected, updateSelected } = props;
+  const { pageName, items, currentPage, limit } = props;
 
   const { setRow } = useRowUpdateStore();
 
   const [{ projectId }] = useQueries();
 
   const sortedFields = useProjectStore((store) => store.getFields(pageName));
+
+  const { isSelected, setSelectedRow } = useSelectedRowStore();
 
   const sortedValues = sortedFields.map((field) => field.name);
 
@@ -35,8 +38,14 @@ export const CollectionsCard = (props: Props) => {
     >
       <div className="min-w-[100px] h-[42.67px] p-2 py-2.5 shrink-0 border-b-[1.5px] border-slate-100 dark:border-neutral-800 flex items-center justify-between px-5">
         <Checkbox
-          checked={isSelected(index)}
-          onCheckedChange={(checked) => updateSelected(index)}
+          checked={isSelected({
+            currentPage,
+            limit,
+            value: index,
+          })}
+          onCheckedChange={(checked) =>
+            setSelectedRow({ currentPage, limit, value: index })
+          }
           className="w-[20px] h-[20px] rounded-md"
         />
 
