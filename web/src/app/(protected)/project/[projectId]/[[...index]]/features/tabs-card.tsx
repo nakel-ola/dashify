@@ -43,14 +43,14 @@ export const TabsCard = (props: Props) => {
             </div>
 
             {showSelectAll && totalSelected !== totalItems ? (
-              <button className="p-1.5 px-2 text-indigo-600 hover:bg-indigo-600/10 rounded-lg group flex items-center gap-2">
+              <button className="p-1.5 px-2 text-indigo-600 hover:bg-indigo-600/10 rounded-lg group flex items-center gap-2 hover:scale-105 active:scale-95 transition-all duration-300">
                 Select all {totalItems} rows
               </button>
             ) : null}
 
             <button
               onClick={() => setIsDeleteOpen(true)}
-              className="p-1.5 px-2 text-black dark:text-white hover:bg-slate-200/60 hover:dark:bg-neutral-800 rounded-lg group flex items-center gap-2"
+              className="p-1.5 px-2 text-black dark:text-white hover:bg-slate-200/60 hover:dark:bg-neutral-800 rounded-lg group flex items-center gap-2 hover:scale-105 active:scale-95 transition-all duration-300"
             >
               <Trash className="h-[20px] w-[20px]" />
               Delete {totalSelected} rows
@@ -62,7 +62,7 @@ export const TabsCard = (props: Props) => {
               <button
                 onClick={onRefresh}
                 disabled={isRefreshing}
-                className="p-1.5 px-2 text-black dark:text-white hover:bg-slate-200/60 hover:dark:bg-neutral-800 rounded-lg group flex items-center gap-2 disabled:hover:bg-transparent disabled:hover:dark:bg-transparent disabled:opacity-60"
+                className="p-1.5 px-2 text-black dark:text-white hover:bg-slate-200/60 hover:dark:bg-neutral-800 rounded-lg group flex items-center gap-2 disabled:hover:bg-transparent disabled:hover:dark:bg-transparent disabled:opacity-60 hover:scale-105 active:scale-95 transition-all duration-300"
               >
                 <Refresh
                   className={cn(

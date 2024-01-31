@@ -147,7 +147,7 @@ export const FilterCard = (props: Props) => {
       <DropdownMenuTrigger asChild>
         <button
           className={cn(
-            "py-1.5 px-2 text-black dark:text-white hover:bg-slate-200/60 hover:dark:bg-neutral-800 rounded-lg group flex items-center gap-2 ",
+            "py-1.5 px-2 text-black dark:text-white hover:bg-slate-200/60 hover:dark:bg-neutral-800 rounded-lg group flex items-center gap-2 hover:scale-105 active:scale-95 transition-all duration-300",
             paramsFilter.length > 0
               ? "text-indigo-600 bg-indigo-600/10 hover:bg-indigo-600/10 hover:dark:bg-indigo-600/10"
               : ""
