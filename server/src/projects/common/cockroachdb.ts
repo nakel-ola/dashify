@@ -284,13 +284,20 @@ export class CockroachDatabase {
 
       const queries = [];
 
-      for (let i = 0; i < where.length; i++) {
+      if (deleteAll && typeof deleteAll === 'string') {
         const query = this.queryGen.deleteFromTable(escapeTableName, {
           deleteAll,
-          where: where[i],
         });
 
         queries.push(query);
+      } else {
+        for (let i = 0; i < where.length; i++) {
+          const query = this.queryGen.deleteFromTable(escapeTableName, {
+            where: where[i],
+          });
+
+          queries.push(query);
+        }
       }
 
       await this.runMultipleQueries(queries);
