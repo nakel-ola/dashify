@@ -15,10 +15,11 @@ import { useState } from "react";
 type Props = {
   Icon: Icon;
   name: string;
+  href: string;
   showMoreIcon?: boolean;
 };
 export const MenuCard = (props: Props) => {
-  const { Icon, name, showMoreIcon = true } = props;
+  const { Icon, name, href, showMoreIcon = true } = props;
   const pathname = usePathname();
   const router = useRouter();
   const [{ projectId }] = useQueries();
@@ -26,7 +27,7 @@ export const MenuCard = (props: Props) => {
 
   const [isOpen, setIsOpen] = useState(false);
 
-  const basePath = `/project/${projectId}/${name}`;
+  const basePath = `/project/${projectId}/${href}`;
 
   const isActive = pathname.startsWith(basePath);
 

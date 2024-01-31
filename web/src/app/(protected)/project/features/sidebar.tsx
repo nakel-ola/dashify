@@ -141,11 +141,16 @@ const Content = () => {
       </div>
       <div className="pt-5">
         {items.map(({ name }, index) => (
-          <MenuCard key={index} Icon={Settings} name={name} />
+          <MenuCard key={index} Icon={Settings} name={name} href={name} />
         ))}
       </div>
 
-      <MenuCard name="Settings" showMoreIcon={false} Icon={Setting} />
+      <MenuCard
+        name="Settings"
+        href="settings"
+        showMoreIcon={false}
+        Icon={Setting}
+      />
     </div>
   );
 };
