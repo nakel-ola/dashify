@@ -18,6 +18,7 @@ import { sortByIsPrimary } from "../../../utils/sort-by-is-primary";
 import { findChangedObjects } from "./utils/find-changed-objects";
 import { formatColumns } from "./utils/format-columns";
 import { findDeletedObjects } from "./utils/find-deleted-objects";
+import { ForeignSheet } from "../../create/features/foreign-sheet";
 
 type Props = {
   params: { name: string };
@@ -206,6 +207,8 @@ export default function ProjectEdit(props: Props) {
             </Button>
           </div>
         </form>
+
+        <ForeignSheet updateColumn={updateColumn} />
       </div>
     </div>
   );

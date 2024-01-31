@@ -12,7 +12,6 @@ import { createCollection } from "../../services/create-collection";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
 
 const mySqlColumnsDefault = [
   {
