@@ -10,6 +10,7 @@ import {
   ColumnUpdateCard,
   RowUpdateCard,
   AddRowCard,
+  AddNewRowCard,
 } from "./features";
 import { useProjectStore } from "../../store/project-store";
 import { useQuery } from "@tanstack/react-query";
@@ -121,12 +122,16 @@ export default function ProjectCollection(props: Props) {
           />
 
           {data ? (
-            <CollectionsCard
-              pageName={index[0]}
-              items={data.results}
-              currentPage={currentPage}
-              limit={Number(limit)}
-            />
+            data.results.length > 0 ? (
+              <CollectionsCard
+                pageName={index[0]}
+                items={data.results}
+                currentPage={currentPage}
+                limit={Number(limit)}
+              />
+            ) : (
+              <AddNewRowCard />
+            )
           ) : null}
 
           {isPending ? (
