@@ -55,7 +55,6 @@ export class UploadService {
         await file.setMetadata({
           metadata: object,
         });
-        console.log(publicUrl);
 
         resolve({ url: publicUrl });
       });
