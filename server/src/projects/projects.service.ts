@@ -173,10 +173,13 @@ export class ProjectsService {
   }
 
   async remove(projectId: string, uid: string) {
-    await this.projectRepository.delete({
-      projectId,
-      members: { $elemMatch: { uid, role: 'administrator' } } as any,
-    });
+    const project = await this.findOne(projectId, uid);
+
+    const isAdministrator = this.isMemberAdministrator(project.members, uid);
+
+    if (!isAdministrator) throw new UnauthorizedException('Permission denied');
+
+    await this.projectRepository.delete({ projectId });
     return { message: 'Project deleted successfully' };
   }
 
