@@ -3,6 +3,7 @@ import { getMongodbArrayType, getMongodbObjectFieldType } from './utils';
 import { Collection, Fields } from '../types/project.type';
 import { v4 } from 'uuid';
 import { mongodbFilter, mongodbSort } from './mongodb-query';
+import { InternalServerErrorException } from '@nestjs/common';
 
 type ConnectionOption = {
   name: string;
@@ -75,7 +76,7 @@ export class MongoDatabase {
       await this.client.connect();
     } catch (error) {
       console.error('Error connecting to MongoDB:', error);
-      throw error;
+      throw new InternalServerErrorException(error.message);
     }
   }
 
@@ -89,7 +90,7 @@ export class MongoDatabase {
       return { message: 'Collection created successfull' };
     } catch (error) {
       console.error(`Error creating collection '${collectionName}':`, error);
-      throw error;
+      throw new InternalServerErrorException(error.message);
     }
   }
 
@@ -208,7 +209,7 @@ export class MongoDatabase {
       return results;
     } catch (error) {
       console.error(`Error getting collections:`, error);
-      throw error;
+      throw new InternalServerErrorException(error.message);
     }
   }
 
@@ -233,7 +234,7 @@ export class MongoDatabase {
       return { results, totalItems };
     } catch (error) {
       console.error(`Error getting collection '${collectionName}':`, error);
-      throw error;
+      throw new InternalServerErrorException(error.message);
     }
   }
 
@@ -255,7 +256,7 @@ export class MongoDatabase {
       return { message: `Documents added to '${collectionName}'` };
     } catch (error) {
       console.error(`Error creating document:`, error);
-      throw error;
+      throw new InternalServerErrorException(error.message);
     }
   }
 
@@ -280,7 +281,7 @@ export class MongoDatabase {
       return { message: `Documents updated` };
     } catch (error) {
       console.error(`Error creating document:`, error);
-      throw error;
+      throw new InternalServerErrorException(error.message);
     }
   }
 
@@ -308,7 +309,7 @@ export class MongoDatabase {
       };
     } catch (error) {
       console.error(`Error deleting document:`, error);
-      throw error;
+      throw new InternalServerErrorException(error.message);
     }
   }
 
@@ -329,7 +330,7 @@ export class MongoDatabase {
         `Error changing collection name '${collectionName}':`,
         error,
       );
-      throw error;
+      throw new InternalServerErrorException(error.message);
     }
   }
 
@@ -357,7 +358,7 @@ export class MongoDatabase {
         `Error duplicating collection '${collectionName}' to '${duplicateName}':`,
         error,
       );
-      throw error;
+      throw new InternalServerErrorException(error.message);
     }
   }
 
@@ -372,7 +373,7 @@ export class MongoDatabase {
       return { message: `Deleting collection ${collectionName} failed` };
     } catch (error) {
       console.error(`Error deleting collection '${collectionName}':`, error);
-      throw error;
+      throw new InternalServerErrorException(error.message);
     }
   }
 
@@ -381,7 +382,7 @@ export class MongoDatabase {
       await this.client.close();
     } catch (error) {
       console.error('Error closing connection to MongoDB:', error);
-      throw error;
+      throw new InternalServerErrorException(error.message);
     }
   }
 }
