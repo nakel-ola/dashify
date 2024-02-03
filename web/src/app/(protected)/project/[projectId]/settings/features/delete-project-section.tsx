@@ -7,6 +7,9 @@ import { useProjectStore } from "../../../store/project-store";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Warning2 } from "iconsax-react";
 import { MoonLoader } from "react-spinners";
+import { useRouter } from "next/navigation";
+import { deleteProject } from "../../../services/delete-project";
+import { toast } from "sonner";
 
 type Props = {};
 export const DeleteProjectSection = (props: Props) => {
@@ -15,23 +18,22 @@ export const DeleteProjectSection = (props: Props) => {
 
   const { project } = useProjectStore();
 
+  const router = useRouter();
+
   if (!project) return <Fragment />;
 
   const handleDelete = async () => {
     setIsLoading(true);
 
-    // await deleteAccount()
-    //   .then(async () => {
-    //     await signOut({ callbackUrl: "/", redirect: true });
-    //     toast({
-    //       variant: "default",
-    //       title: "Account deleted successfully",
-    //     });
-    //   })
-    //   .catch((err) => {
-    //     toast.error(err.message);
-    //   })
-    //   .finally(() => setIsLoading(false));
+    await deleteProject({ projectId: project.projectId })
+      .then(() => {
+        router.push("/dashboard");
+        toast("Project deleted successfully");
+      })
+      .catch((err) => {
+        toast.error(err.message);
+      })
+      .finally(() => setIsLoading(false));
   };
   return (
     <Fragment>
@@ -63,7 +65,7 @@ export const DeleteProjectSection = (props: Props) => {
         </div>
       </TitleSection>
 
-      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <Dialog open={isOpen} onOpenChange={() => (isLoading ? {} : setIsOpen(false))}>
         <DialogContent>
           <div className="flex items-center gap-3">
             <div className="h-[45px] w-[45px] rounded-full bg-red-500 flex items-center justify-center">
@@ -80,6 +82,7 @@ export const DeleteProjectSection = (props: Props) => {
           <div className="flex items-center gap-5 mt-4">
             <Button
               onClick={() => setIsOpen(false)}
+              disabled={isLoading}
               className="ml-auto border-slate-100 dark:border-neutral-800 text-black dark:text-white hover:bg-slate-100 dark:hover:bg-neutral-800"
               variant="outline"
             >
@@ -87,6 +90,7 @@ export const DeleteProjectSection = (props: Props) => {
             </Button>
             <Button
               onClick={handleDelete}
+              disabled={isLoading}
               className="bg-red-500 hover:bg-red-500/90"
             >
               Delete
