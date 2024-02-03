@@ -11,17 +11,51 @@ import {
 import { FieldCard } from "./row-update/field-card";
 import { Button } from "@/components/ui/button";
 import { MoonLoader } from "react-spinners";
+import { addNewDocuments } from "../../../services/add-new-documents";
+import { useQueries } from "../../../hooks/use-queries";
+import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
-type Props = {};
+type Props = {
+  queryKey: any[];
+};
 export const AddRowCard = (props: Props) => {
+  const { queryKey } = props;
   const { row, setRow } = useRowAddStore();
 
+  const [{ projectId, pageName }] = useQueries();
+
+  const [isLoading, setIsLoading] = useState(false);
+
   const [data, setData] = useState<{ [key: string]: any }>({});
+
+  const queryClient = useQueryClient();
 
   const handleClose = () => {
     setRow(null);
 
     setData({});
+  };
+
+  const handleSubmit = () => {
+    setIsLoading(true);
+
+    const documents = Object.entries(data).map(([key, value]) => ({
+      name: key,
+      value: value,
+    }));
+
+    addNewDocuments({ projectId, collectionName: pageName, documents })
+      .then(async () => {
+        toast.success(`Row added successfully`);
+        await queryClient.invalidateQueries({ queryKey });
+
+        handleClose();
+      })
+      .catch((err: any) => {
+        toast.error(err.message);
+      })
+      .finally(() => setIsLoading(false));
   };
 
   useEffect(() => {
@@ -75,6 +109,7 @@ export const AddRowCard = (props: Props) => {
               <Button
                 type="submit"
                 // disabled={!isValid || isDisabled()}
+                onClick={handleSubmit}
                 className=""
               >
                 Save
@@ -82,7 +117,7 @@ export const AddRowCard = (props: Props) => {
                   size={20}
                   color="white"
                   className="ml-2 text-white"
-                  loading={false}
+                  loading={isLoading}
                 />
               </Button>
             </div>

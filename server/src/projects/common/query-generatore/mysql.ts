@@ -271,8 +271,14 @@ export class MySqlQueryGenerator {
   }
 
   public insetIntoTable(tableName: string, items: InsetType[]) {
-    const columnsName = items.map((item) => item.name);
-    const columnsValue = items.map((item) => item.value);
+    const columnsName = items
+      .map((item) => (item.value ? item.name : ''))
+      .filter((value) => value !== '');
+    const columnsValue = items
+      .map((item) =>
+        typeof item.value === 'string' ? `'${item.value}'` : item.value,
+      )
+      .filter((value) => value !== null);
     const query = `INSERT INTO ${tableName} (${columnsName.join(', ')})
     VALUES (${columnsValue.join(', ')})`;
 

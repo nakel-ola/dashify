@@ -6,7 +6,7 @@
 
 ## About
 
-This full-stack project offers seamless navigation through database intricacies, embracing flexibility. With an intuitive interface, it ensures efficient data administration and a solid foundation for applications.
+This full-stack project offers seamless navigation through database, embracing flexibility. With an intuitive interface, it ensures efficient data administration and a solid foundation for applications.
 This repository contains the code for a web app (NextJs), and server app (Node.js with NestJS).
 
 ## Web

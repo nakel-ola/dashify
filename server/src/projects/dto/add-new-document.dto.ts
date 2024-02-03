@@ -29,5 +29,5 @@ export class AddNewDocumentDto {
     type: [String],
   })
   @IsOptional()
-  document: Document[];
+  documents: Document[];
 }

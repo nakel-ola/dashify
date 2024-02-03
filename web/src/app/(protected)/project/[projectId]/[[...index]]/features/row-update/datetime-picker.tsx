@@ -6,11 +6,12 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { CalendarIcon } from "lucide-react";
-import { format } from "date-fns";
+import format from "date-fns/format";
 import { Calendar } from "@/components/ui/calendar";
 import { TimeCard, type TimeValue } from "./time-card";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
+import { useEffectOnce } from "usehooks-ts";
 
 type Props = {
   value?: Date;
@@ -23,10 +24,10 @@ export const DatetimePicker = (props: Props) => {
 
   const [isOpen, setIsOpen] = useState(false);
 
-  const [date, setDate] = useState<Date>(new Date());
+  const [date, setDate] = useState<Date>();
 
   const updateDate = (value: Date) => {
-    const newDate = new Date(date);
+    const newDate = new Date(date!);
 
     newDate.setFullYear(value.getFullYear());
     newDate.setMonth(value.getMonth());
@@ -36,13 +37,18 @@ export const DatetimePicker = (props: Props) => {
   };
 
   const updateTime = (time: TimeValue) => {
-    const newDate = new Date(date);
-    newDate.setHours(time.hours);
-    newDate.setMinutes(time.minutes);
-    newDate.setSeconds(time.seconds);
+    const newDate = new Date(date!);
+
+    const hours = formatHoursByPeriod(newDate, Number(time.hours), time.period);
+    newDate.setHours(hours);
+    newDate.setMinutes(Number(time.minutes));
 
     setDate(newDate);
   };
+
+  useEffectOnce(() => {
+    if (value) setDate(new Date(value));
+  });
 
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
@@ -50,12 +56,12 @@ export const DatetimePicker = (props: Props) => {
         <div
           className={cn(
             "w-full items-center text-left font-normal border-[1.5px] border-slate-100 dark:border-neutral-800 rounded-md cursor-pointer flex justify-between",
-            !value && "text-muted-foreground"
+            !date && "text-muted-foreground"
           )}
         >
           <p className="text-black dark:text-white py-2 px-3">
-            {value ? (
-              format(value, "PPP")
+            {date ? (
+              format(date, "PPPp")
             ) : (
               <span className="text-[#8b8b8b]">Pick a date</span>
             )}
@@ -79,12 +85,11 @@ export const DatetimePicker = (props: Props) => {
           <TimeCard
             onChange={updateTime}
             value={{
-              hours: date.getHours(),
-              minutes: date.getMinutes(),
-              seconds: date.getSeconds(),
+              minutes: formatNumber(date?.getMinutes() ?? 0),
+              ...convert24to12(date?.getHours() ?? 0),
             }}
             classes={{
-              root: "w-[230px]"
+              root: "w-[230px]",
             }}
           />
         </div>
@@ -104,3 +109,40 @@ export const DatetimePicker = (props: Props) => {
     </Popover>
   );
 };
+
+const formatNumber = (num: number) => (num < 10 ? `0${num}` : `${num}`);
+
+function formatHoursByPeriod(
+  date: Date,
+  newHours: number,
+  period: "AM" | "PM"
+): number {
+  // Ensure newHours is within the valid range (0-23)
+  newHours = Math.max(0, Math.min(23, newHours));
+
+  // Get the current hours
+  let currentHours = date.getHours();
+
+  // Convert newHours to a 24-hour format if period is "PM" and currentHours is not already in the afternoon
+  if (period === "PM" && currentHours < 12) {
+    newHours += 12;
+  }
+
+  return newHours;
+}
+
+function convert24to12(hours24: number): {
+  hours: string;
+  period: "AM" | "PM";
+} {
+  // Ensure hours24 is within the valid range (0-23)
+  const newHours24 = Math.max(0, Math.min(23, hours24));
+
+  // Determine the period (AM or PM)
+  const period: "AM" | "PM" = newHours24 >= 12 ? "PM" : "AM";
+
+  // Convert to 12-hour format
+  const hours = newHours24 % 12 || 12;
+
+  return { hours: formatNumber(hours), period };
+}

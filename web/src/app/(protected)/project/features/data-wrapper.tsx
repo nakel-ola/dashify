@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment, PropsWithChildren, useEffect } from "react";
+import { Fragment, PropsWithChildren, memo, useEffect } from "react";
 import { useProjectStore } from "../store/project-store";
 import { useQuery } from "@tanstack/react-query";
 import { fetchProject } from "../services/fetch-project";
@@ -9,7 +9,7 @@ import { PageLoader } from "./page-loader";
 type Props = {
   projectId: string;
 };
-export const DataWrapper = (props: PropsWithChildren<Props>) => {
+export const DataWrapper = memo((props: PropsWithChildren<Props>) => {
   const { projectId, children } = props;
   const { setProject, project } = useProjectStore();
 
@@ -30,4 +30,6 @@ export const DataWrapper = (props: PropsWithChildren<Props>) => {
   if (data && project) return children;
 
   return <Fragment />;
-};
+});
+
+DataWrapper.displayName = "DataWrapper";

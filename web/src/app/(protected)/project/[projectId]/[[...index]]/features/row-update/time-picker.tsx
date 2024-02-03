@@ -8,8 +8,10 @@ import {
 import { cn } from "@/lib/utils";
 import { ClockIcon } from "lucide-react";
 import { useState } from "react";
-import { type Time, TimeCard } from "./time-card";
+import { TimeCard } from "./time-card";
 import { Button } from "@/components/ui/button";
+
+type Time = `${string}:${string}:${string}`;
 
 type Props = {
   value?: Time;
@@ -20,9 +22,9 @@ export const TimePicker = (props: Props) => {
 
   const [isOpen, setIsOpen] = useState(false);
 
-  const [time, setTime] = useState<Time>("00:00:00");
+  const [time, setTime] = useState<Time>("00:00:00 AM");
 
-  const { hours, minutes, seconds } = getTime(time);
+  const { hours, minutes, period } = getTime(time);
 
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen} modal>
@@ -47,19 +49,21 @@ export const TimePicker = (props: Props) => {
       <PopoverContent className="w-[280px] p-0 h-[350px] !bg-white dark:!bg-dark !border-[1.5px] border-slate-100 dark:!border-neutral-800 rounded-md">
         <TimeCard
           onChange={(newValue) =>
-            setTime(`${newValue.hours}:${newValue.minutes}:${newValue.seconds}`)
+            setTime(
+              `${newValue.hours}:${newValue.minutes}:00 ${newValue.period}`
+            )
           }
           value={{
-            hours: Number(hours),
-            minutes: Number(minutes),
-            seconds: Number(seconds),
+            hours,
+            minutes,
+            period,
           }}
         />
         <div className="flex items-center justify-between p-1 px-2 border-t-[1.5px] border-slate-100 dark:border-neutral-800">
           <Button
             className="ml-auto"
             onClick={() => {
-              onChange?.(time);
+              onChange?.(convertTo24HourFormat(time));
               setIsOpen(false);
             }}
           >
@@ -71,12 +75,45 @@ export const TimePicker = (props: Props) => {
   );
 };
 
-const getTime = (value: Time) => {
-  const arr = value.split(":");
+const getTime = (timeString: string) => {
+  const match = timeString.match(/^(\d{2}):(\d{2}):(\d{2})\s(AM|PM)$/);
 
-  return {
-    hours: arr[0] ?? "00",
-    minutes: arr[1] ?? "00",
-    seconds: arr[2] ?? "00",
-  };
+  if (!match)
+    return {
+      hours: "00",
+      minutes: "00",
+      seconds: "00",
+      period: "AM" as const,
+    };
+
+  const hours = formatNumber(parseInt(match[1], 10));
+  const minutes = match[2];
+  const seconds = match[3];
+  const period = match[4] as "AM" | "PM";
+
+  return { hours, minutes, seconds, period };
 };
+
+function convertTo24HourFormat(timeString: string): Time {
+  const match = timeString.match(/^(\d{2}):(\d{2}):(\d{2})\s(AM|PM)$/);
+
+  if (!match) return "00:00:00";
+
+  let hours = parseInt(match[1], 10);
+  const minutes = match[2];
+  const seconds = match[3];
+  const period = match[4];
+
+  if (period === "PM" && hours < 12) {
+    hours += 12;
+  } else if (period === "AM" && hours === 12) {
+    hours = 0;
+  }
+
+  // Convert to string with leading zeros
+  const formattedHours = hours.toString().padStart(2, "0");
+
+  return `${formattedHours}:${minutes}:${seconds}`;
+}
+
+const formatNumber = (num: number) => (num < 10 ? `0${num}` : `${num}`);

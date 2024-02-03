@@ -256,7 +256,9 @@ export class PostgresQueryGenerator {
 
   public insertIntoTable(tableName: string, items: InsetType[]) {
     const columnsName = items.map((item) => item.name);
-    const columnsValue = items.map((item) => item.value);
+    const columnsValue = items.map((item) =>
+      typeof item.value === 'string' ? `'${item.value}'` : item.value,
+    );
 
     const query = `INSERT INTO ${tableName} (${columnsName.join(', ')})
     VALUES (${columnsValue.join(', ')});`;

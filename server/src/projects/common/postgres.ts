@@ -242,6 +242,8 @@ export class PostgresDatabase {
       const escapeTableName = this.client.escapeIdentifier(tableName);
       const query = this.queryGen.insertIntoTable(escapeTableName, data);
 
+      console.log(query);
+
       await this.client.query(query);
 
       return { message: 'Row inserted successfully' };
@@ -279,7 +281,7 @@ export class PostgresDatabase {
 
       const queries = [];
 
-      if (deleteAll && typeof deleteAll === 'string') {
+      if (deleteAll || typeof deleteAll === 'string') {
         const query = this.queryGen.deleteFromTable(escapeTableName, {
           deleteAll,
         });

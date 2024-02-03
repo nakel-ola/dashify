@@ -1,4 +1,3 @@
-import { redirect } from "next/navigation";
 import { PropsWithChildren } from "react";
 import { CreateCard } from "./features/create-card";
 

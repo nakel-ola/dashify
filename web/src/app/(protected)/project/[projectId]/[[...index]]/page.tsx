@@ -171,7 +171,7 @@ export default function ProjectCollection(props: Props) {
       <ColumnUpdateCard />
       <AddColumnCard />
       <RowUpdateCard />
-      <AddRowCard />
+      <AddRowCard queryKey={queryKey} />
     </Fragment>
   );
 }

@@ -57,7 +57,6 @@ export const FieldCard = (props: Props) => {
     value: value,
     onChange: (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
       onChange(e.target.value),
-    disabled: isIdentify,
     isNullable,
     placeholder: isNullable ? "NULL" : "",
   };
@@ -94,12 +93,14 @@ export const FieldCard = (props: Props) => {
         ) : null}
         {isDateTime ? (
           <DatetimePicker
-            value={new Date(value)}
+            value={value}
             onChange={onChange}
             disabled={isIdentify}
           />
         ) : null}
-        {isTime ? <TimePicker /> : null}
+        {isTime ? (
+          <TimePicker value={value ?? "00:00:00"} onChange={onChange} />
+        ) : null}
         {isDate ? (
           <DatePicker
             value={new Date(value)}

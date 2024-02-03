@@ -245,7 +245,7 @@ export class MySQLDatabase {
 
       const queries = [];
 
-      if (deleteAll && typeof deleteAll === 'string') {
+      if (deleteAll || typeof deleteAll === 'string') {
         const query = this.queryGen.deleteFromTable(escapeTableName, {
           deleteAll,
         });

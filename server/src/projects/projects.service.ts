@@ -446,8 +446,12 @@ export class ProjectsService {
     return collections;
   }
 
-  async addNewDocument(projectId: string, uid: string, dto: AddNewDocumentDto) {
-    const { collectionName, document } = dto;
+  async addNewDocuments(
+    projectId: string,
+    uid: string,
+    dto: AddNewDocumentDto,
+  ) {
+    const { collectionName, documents } = dto;
 
     const project = await this.findOne(projectId, uid);
 
@@ -461,13 +465,13 @@ export class ProjectsService {
 
     const collectionArgs = {
       tableName: collectionName,
-      data: document,
+      data: documents,
     };
 
     if (database === 'mongodb') {
       const mongodb = new MongoDatabase(dbConfig);
 
-      await mongodb.createDocument({ collectionName, data: document });
+      await mongodb.createDocument({ collectionName, data: documents });
 
       await mongodb.close();
     }
