@@ -19,7 +19,7 @@ export default function TanstackProvider({ children }: PropsWithChildren) {
   );
   return (
     <QueryClientProvider client={client}>
-      <ReactQueryDevtools initialIsOpen={false} />
+      {/* <ReactQueryDevtools initialIsOpen={false} /> */}
       {children}
     </QueryClientProvider>
   );
