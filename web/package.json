@@ -33,7 +33,6 @@
     "axios": "^1.6.2",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
-    "csv-parser": "^3.0.0",
     "date-fns": "^2.30.0",
     "formik": "^2.4.5",
     "framer-motion": "^10.16.5",
@@ -44,6 +43,7 @@
     "next-auth": "^4.24.5",
     "next-themes": "^0.2.1",
     "nextjs-toploader": "^1.6.4",
+    "papaparse": "^5.4.1",
     "react": "^18",
     "react-day-picker": "^8.10.0",
     "react-dom": "^18",
@@ -67,6 +67,7 @@
   "devDependencies": {
     "@types/date-fns": "^2.6.0",
     "@types/node": "^20.9.5",
+    "@types/papaparse": "^5.3.14",
     "@types/react": "^18.2.38",
     "@types/react-dom": "^18.2.17",
     "@types/uuid": "^9.0.7",

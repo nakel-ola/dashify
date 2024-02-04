@@ -11,6 +11,7 @@ import {
   RowUpdateCard,
   AddRowCard,
   AddNewRowCard,
+  CSVAddRowsCard,
 } from "./features";
 import { useProjectStore } from "../../store/project-store";
 import { useQuery } from "@tanstack/react-query";
@@ -172,6 +173,7 @@ export default function ProjectCollection(props: Props) {
       <AddColumnCard />
       <RowUpdateCard />
       <AddRowCard queryKey={queryKey} />
+      <CSVAddRowsCard />
     </Fragment>
   );
 }

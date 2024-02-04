@@ -1,20 +1,22 @@
 "use server";
+import Papa from "papaparse";
 
-import fs from "fs";
-import csv from "csv-parser";
-
-interface CSVObject {
+interface CSVData {
   [key: string]: string;
 }
 
-export async function parseCSV(filePath: string): Promise<CSVObject[]> {
+export async function parseCSV(csvText: string): Promise<CSVData[]> {
   return new Promise((resolve, reject) => {
-    const results: CSVObject[] = [];
-
-    fs.createReadStream(filePath)
-      .pipe(csv())
-      .on("data", (data) => results.push(data))
-      .on("end", () => resolve(results))
-      .on("error", (error) => reject(error));
+    Papa.parse(csvText, {
+      header: true,
+      dynamicTyping: true,
+      skipEmptyLines: true,
+      complete: (result) => {
+        if (result.data) {
+          resolve(result.data as any);
+        }
+      },
+      error: (error: any) => reject(error),
+    });
   });
 }

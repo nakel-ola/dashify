@@ -5,8 +5,7 @@ import { X } from "lucide-react";
 import { FilterCard } from "./filter-card";
 import { SortCard } from "./sort-card";
 import { InsertCard } from "./insert-card";
-import { Fragment, useState } from "react";
-import { DeleteAlertCard } from "./delete-alert-card";
+import { Fragment } from "react";
 import { useSelectedRowStore } from "../../../store/selected-row-store";
 
 type Props = {
@@ -83,13 +82,6 @@ export const TabsCard = (props: Props) => {
         )}
       </div>
 
-      {/* <DeleteAlertCard
-        isOpen={isOpen}
-        setIsOpen={setIsOpen}
-        selectedCount={totalSelected}
-        isLoading={false}
-        onDelete={() => {}}
-      /> */}
     </Fragment>
   );
 };

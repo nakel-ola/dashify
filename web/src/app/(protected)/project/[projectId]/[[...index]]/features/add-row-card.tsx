@@ -68,7 +68,7 @@ export const AddRowCard = (props: Props) => {
   }, [row]);
 
   return (
-    <Sheet open={!!row} onOpenChange={() => handleClose()}>
+    <Sheet open={row?.type === "single"} onOpenChange={() => handleClose()}>
       <SheetContent className="sm:!w-[700px] sm:max-w-md !p-0">
         <SheetHeader className="p-6 border-b-[1.5px] border-slate-100 dark:border-neutral-800">
           <SheetTitle>
