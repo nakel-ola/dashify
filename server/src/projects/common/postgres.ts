@@ -102,6 +102,7 @@ export class PostgresDatabase {
 
     this.client = new Client({
       connectionString: databaseUrl,
+      ssl: true,
     });
 
     this.connect();
