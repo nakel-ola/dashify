@@ -2,7 +2,9 @@ type Where = {
   name: string;
   value: string;
 };
-export const formatDeleteWhere = (fields: Fields[], data: any[]): Where[] => {
+export const formatDeleteWhere = (fields: Fields[], items: any[]): Where[] => {
+  const results: Where[] = [];
+
   const pickableFields = fields.filter(
     (field) => field.isUnique || field.isIdentify
   );
@@ -10,19 +12,38 @@ export const formatDeleteWhere = (fields: Fields[], data: any[]): Where[] => {
   const fieldName =
     pickableFields.length === 0 ? fields[0].name : pickableFields[0].name;
 
-  return generateWhere(fieldName, data);
-};
+  for (let i = 0; i < items.length; i++) {
+    const item = items[i];
 
-const generateWhere = (key: string, data: any[]): Where[] => {
-  const results: Where[] = [];
-  for (let i = 0; i < data.length; i++) {
-    const obj = data[i];
+    const validFields = cleanField(item);
 
-    results.push({
-      name: key,
-      value: obj[key],
-    });
+    const itemEntries = Object.entries(validFields);
+
+    if (itemEntries.length > 0) {
+      results.push({
+        name: itemEntries[0][0],
+        value: itemEntries[0][1] as any,
+      });
+    } else {
+      results.push({
+        name: fieldName,
+        value: item[fieldName],
+      });
+    }
   }
 
   return results;
+};
+
+const cleanField = <T = any>(obj: any): T => {
+  for (const propName in obj) {
+    if (
+      obj[propName] === null ||
+      obj[propName] === undefined ||
+      obj[propName] === ""
+    ) {
+      delete obj[propName];
+    }
+  }
+  return obj;
 };

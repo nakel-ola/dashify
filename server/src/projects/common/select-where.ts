@@ -6,7 +6,9 @@ export const selectWhere = (args: Filter[]) => {
   for (let i = 0; i < args.length; i++) {
     const arg = args[i];
 
-    results.push(`${arg.name} ${arg.operator} ${arg.value}`);
+    const value = typeof arg.value === 'string' ? `'${arg.value}'` : arg.value;
+
+    results.push(`${arg.name} ${arg.operator} ${value}`);
   }
 
   return `WHERE ${results.join(' AND ')}`;

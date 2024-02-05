@@ -99,11 +99,10 @@ export class PostgresDatabase {
   constructor(connectionOption: ConnectionOption) {
     const { host, name, username, port, password, ssl } = connectionOption;
 
-    const databaseUrl = `postgres://${username}:${password}@${host}:${port}/${name}`;
+    const databaseUrl = `postgres://${username}:${password}@${host}:${port}/${name}?=ssl=${ssl}`;
 
     this.client = new Client({
       connectionString: databaseUrl,
-      ssl,
     });
 
     this.connect();
