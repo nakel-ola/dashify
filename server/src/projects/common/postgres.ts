@@ -12,6 +12,7 @@ import { InternalServerErrorException } from '@nestjs/common';
 interface ConnectionOption {
   name: string;
   host: string;
+  ssl: boolean;
   port: number;
   username: string;
   password: string;
@@ -96,13 +97,13 @@ export class PostgresDatabase {
   private queryGen = new PostgresQueryGenerator();
 
   constructor(connectionOption: ConnectionOption) {
-    const { host, name, username, port, password } = connectionOption;
+    const { host, name, username, port, password, ssl } = connectionOption;
 
     const databaseUrl = `postgres://${username}:${password}@${host}:${port}/${name}`;
 
     this.client = new Client({
       connectionString: databaseUrl,
-      ssl: true,
+      ssl,
     });
 
     this.connect();

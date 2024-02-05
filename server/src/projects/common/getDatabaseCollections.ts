@@ -10,11 +10,12 @@ type Args = {
   password: string;
   database: string;
   port: number;
+  ssl: boolean;
 };
 export const getDatabaseCollections = async (args: Args) => {
-  const { database, name, host, password, username, port } = args;
+  const { database, name, host, password, username, port, ssl } = args;
 
-  const databaseConfig = { name, host, password, username, port };
+  const databaseConfig = { name, host, password, username, port, ssl };
 
   if (database === 'mongodb') {
     const mongodb = new MongoDatabase(databaseConfig);

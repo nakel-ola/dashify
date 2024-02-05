@@ -31,6 +31,9 @@ class DatabaseConfig {
   @Column({ nullable: false })
   port: number;
 
+  @Column({ nullable: false })
+  ssl: boolean;
+
   @Column({ type: 'enum', enum: DatabaseType, nullable: false })
   dbType: 'mongodb' | 'postgres' | 'mysql' | 'cockroachdb';
 

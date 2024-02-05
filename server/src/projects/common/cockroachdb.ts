@@ -12,6 +12,7 @@ import { InternalServerErrorException } from '@nestjs/common';
 interface ConnectionOption {
   name: string;
   host: string;
+  ssl: boolean;
   port: number;
   username: string;
   password: string;
@@ -95,7 +96,7 @@ export class CockroachDatabase {
   }
 
   private async connect(connectionOption: ConnectionOption) {
-    const { host, name, username, port, password } = connectionOption;
+    const { host, name, username, port, password, ssl } = connectionOption;
     try {
       this.client = new Client({
         user: username,
@@ -103,7 +104,7 @@ export class CockroachDatabase {
         database: name,
         password,
         port,
-        ssl: true,
+        ssl,
       });
 
       this.client.connect();

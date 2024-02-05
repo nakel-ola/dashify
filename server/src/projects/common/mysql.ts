@@ -13,6 +13,7 @@ interface ConnectionOption {
   name: string;
   host: string;
   port: number;
+  ssl: boolean;
   username: string;
   password: string;
 }
@@ -100,6 +101,7 @@ export class MySQLDatabase {
         password,
         database: name,
         port,
+        // ssl,
       });
       await this.connection.connect();
     } catch (error) {

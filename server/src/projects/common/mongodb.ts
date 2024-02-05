@@ -8,6 +8,7 @@ import { InternalServerErrorException } from '@nestjs/common';
 type ConnectionOption = {
   name: string;
   host: string;
+  ssl: boolean;
   username: string;
   password: string;
 };
@@ -64,15 +65,15 @@ export class MongoDatabase {
   private client: MongoClient;
 
   constructor(connectionOption: ConnectionOption) {
-    const { host, name, username, password } = connectionOption;
+    const { host, name, username, password, ssl } = connectionOption;
     const url = `mongodb+srv://${username}:${password}@${host}/${name}?retryWrites=true&w=majority`;
 
-    this.connect(url);
+    this.connect(url, ssl);
   }
 
-  private async connect(connectionString: string): Promise<void> {
+  private async connect(connectionString: string, ssl: boolean): Promise<void> {
     try {
-      this.client = new MongoClient(connectionString);
+      this.client = new MongoClient(connectionString, { ssl });
       await this.client.connect();
     } catch (error) {
       console.error('Error connecting to MongoDB:', error);

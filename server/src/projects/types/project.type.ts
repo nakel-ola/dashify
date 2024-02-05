@@ -28,6 +28,7 @@ export type DatabaseConfig = {
   name: string;
   host: string;
   port: number;
+  ssl: boolean;
   dbType: 'mongodb' | 'postgres' | 'mysql' | 'cockroachdb';
   username: string;
   password: string;

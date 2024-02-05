@@ -40,6 +40,14 @@ class DatabaseConfig {
   port: number;
 
   @ApiProperty({
+    description: 'Is database ssl',
+    example: false,
+    type: Boolean,
+  })
+  @IsPort()
+  ssl: boolean;
+
+  @ApiProperty({
     description: 'Database username',
     example: 'olamilekan',
     type: String,
