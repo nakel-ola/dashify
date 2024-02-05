@@ -8,6 +8,8 @@ import { TickCircle } from "iconsax-react";
 import Image from "next/image";
 import React, { Fragment } from "react";
 import { CreateProjectForm } from "./type";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Switch } from "@/components/ui/switch";
 
 type Props = {
   isLoading: boolean;
@@ -25,9 +27,15 @@ type Props = {
   };
   values: CreateProjectForm;
   errors: FormikErrors<CreateProjectForm>;
+  setFieldValue: (
+    field: string,
+    value: any,
+    shouldValidate?: boolean | undefined
+  ) => Promise<void> | Promise<FormikErrors<CreateProjectForm>>;
 };
 export const FormStepTwo = (props: Props) => {
-  const { handleBlur, handleChange, values, errors, isLoading } = props;
+  const { handleBlur, handleChange, values, errors, isLoading, setFieldValue } =
+    props;
 
   const dbImage = databases.find(
     (d) => d.name.toLowerCase() === values.database.toLowerCase()
@@ -131,6 +139,22 @@ export const FormStepTwo = (props: Props) => {
             : undefined
         }
       />
+
+      {!["mongodb", "mysql"].includes(values.database) ? (
+        <div className="flex items-center space-x-2">
+          <Switch
+            id="ssl"
+            checked={values.ssl}
+            onCheckedChange={() => setFieldValue("ssl", !values.ssl)}
+          />
+          <label
+            htmlFor="ssl"
+            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          >
+            SSL
+          </label>
+        </div>
+      ) : null}
     </Fragment>
   );
 };

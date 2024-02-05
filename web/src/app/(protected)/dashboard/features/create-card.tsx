@@ -35,6 +35,7 @@ const Schema = Yup.object().shape({
   databaseName: Yup.string().min(3).required(),
   host: Yup.string().min(3).required(),
   port: Yup.number(),
+  ssl: Yup.boolean().required().default(false),
   username: Yup.string().min(3).required(),
   password: Yup.string().min(8).required(),
 });
@@ -66,6 +67,7 @@ export const CreateCard = (props: Props) => {
       database: "",
       host: "",
       port: "",
+      ssl: false,
       databaseName: "",
       username: "",
       password: "",
@@ -166,6 +168,7 @@ export const CreateCard = (props: Props) => {
               handleChange={handleChange}
               isLoading={isSubmitting}
               values={values}
+              setFieldValue={setFieldValue}
             />
           )}
 

@@ -4,6 +4,7 @@ export type CreateProjectForm = {
   database: string;
   host: string;
   port: string;
+  ssl: boolean;
   databaseName: string;
   username: string;
   password: string;

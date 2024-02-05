@@ -65,15 +65,15 @@ export class MongoDatabase {
   private client: MongoClient;
 
   constructor(connectionOption: ConnectionOption) {
-    const { host, name, username, password, ssl } = connectionOption;
+    const { host, name, username, password } = connectionOption;
     const url = `mongodb+srv://${username}:${password}@${host}/${name}?retryWrites=true&w=majority`;
 
-    this.connect(url, ssl);
+    this.connect(url);
   }
 
-  private async connect(connectionString: string, ssl: boolean): Promise<void> {
+  private async connect(connectionString: string): Promise<void> {
     try {
-      this.client = new MongoClient(connectionString, { ssl });
+      this.client = new MongoClient(connectionString);
       await this.client.connect();
     } catch (error) {
       console.error('Error connecting to MongoDB:', error);

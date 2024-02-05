@@ -87,6 +87,7 @@ export class ProjectsService {
         name: cryptr.encrypt(databaseConfig.name),
         host: cryptr.encrypt(databaseConfig.host),
         dbType: database,
+        ssl: databaseConfig.ssl,
         port: cryptr.encrypt(`${databaseConfig.port}`),
         username: cryptr.encrypt(databaseConfig.username),
         password: cryptr.encrypt(databaseConfig.password),
@@ -953,6 +954,7 @@ export class ProjectsService {
       host: cryptr.decrypt(databaseConfig.host) as string,
       port: Number(cryptr.decrypt(`${databaseConfig.port}`)),
       dbType: databaseConfig.dbType,
+      ssl: databaseConfig.ssl,
       username: cryptr.decrypt(databaseConfig.username) as string,
       password: cryptr.decrypt(databaseConfig.password) as string,
     };
