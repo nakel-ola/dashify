@@ -225,6 +225,7 @@ export class PostgresDatabase {
       });
 
       const schemaResult = await this.client.query(schemaQuery);
+
       const totalItems = await this.client.query(countQuery);
 
       return {

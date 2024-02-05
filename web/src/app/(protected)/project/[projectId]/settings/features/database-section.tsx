@@ -153,7 +153,7 @@ export const DatabaseSection = (props: Props) => {
             }
           />
 
-          {!["mongodb", "mysql"].includes(config.dbType) ? (
+          {!["mongodb", "mysql", "cockroachdb"].includes(config.dbType) ? (
             <div className="flex items-center space-x-2 cursor-not-allowed">
               <Switch id="ssl" checked={config.ssl} disabled />
               <label

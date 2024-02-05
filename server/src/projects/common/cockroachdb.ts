@@ -103,7 +103,10 @@ export class CockroachDatabase {
         host,
         database: name,
         password,
-        port
+        port,
+        ssl: {
+          rejectUnauthorized: false,
+        },
       });
 
       this.client.connect();

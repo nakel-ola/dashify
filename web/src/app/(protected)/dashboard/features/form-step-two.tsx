@@ -139,7 +139,7 @@ export const FormStepTwo = (props: Props) => {
         }
       />
 
-      {!["mongodb", "mysql"].includes(values.database) ? (
+      {!["mongodb", "mysql", "cockroachdb"].includes(values.database) ? (
         <div className="flex items-center space-x-2">
           <Switch
             id="ssl"
