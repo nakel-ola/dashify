@@ -97,13 +97,15 @@ export class PostgresDatabase {
   private queryGen = new PostgresQueryGenerator();
 
   constructor(connectionOption: ConnectionOption) {
-    const { host, name, username, port, password, ssl } = connectionOption;
+    const { host, name, username, port, password } = connectionOption;
 
     const databaseUrl = `postgres://${username}:${password}@${host}:${port}/${name}`;
 
     this.client = new Client({
       connectionString: databaseUrl,
-      ssl,
+      ssl: {
+        rejectUnauthorized: false,
+      },
     });
 
     this.connect();
