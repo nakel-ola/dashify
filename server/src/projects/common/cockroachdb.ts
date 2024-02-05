@@ -96,15 +96,14 @@ export class CockroachDatabase {
   }
 
   private async connect(connectionOption: ConnectionOption) {
-    const { host, name, username, port, password, ssl } = connectionOption;
+    const { host, name, username, port, password } = connectionOption;
     try {
       this.client = new Client({
         user: username,
         host,
         database: name,
         password,
-        port,
-        ssl,
+        port
       });
 
       this.client.connect();
