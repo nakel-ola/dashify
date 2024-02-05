@@ -51,6 +51,7 @@ type DatabaseConfig = {
   dbType: "mongodb" | "postgres" | "mysql" | "cockroachdb";
   password: string;
   port: number;
+  ssl: boolean;
   username: string;
 };
 

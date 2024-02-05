@@ -8,7 +8,6 @@ import { TickCircle } from "iconsax-react";
 import Image from "next/image";
 import React, { Fragment } from "react";
 import { CreateProjectForm } from "./type";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Switch } from "@/components/ui/switch";
 
 type Props = {

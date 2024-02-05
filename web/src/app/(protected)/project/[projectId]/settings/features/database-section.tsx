@@ -10,19 +10,17 @@ import { useProjectStore } from "../../../store/project-store";
 import Image from "next/image";
 import CustomInput from "@/components/custom-input";
 import { PasswordEye } from "@/components/password-eye";
+import { Switch } from "@/components/ui/switch";
 
-
-type Keys = keyof DatabaseConfig;
+type Keys = keyof Omit<DatabaseConfig, "ssl">;
 
 type Props = {};
 export const DatabaseSection = (props: Props) => {
-  const { project, setProject } = useProjectStore();
+  const { project } = useProjectStore();
 
   const config = project?.databaseConfig!;
 
   const [isVisible, setIsVisible] = useState<Keys[]>([]);
-
-  console.log(project);
 
   const dbImage = databases.find(
     (d) => d.name.toLowerCase() === project?.database.toLowerCase()
@@ -154,6 +152,18 @@ export const DatabaseSection = (props: Props) => {
               />
             }
           />
+
+          {!["mongodb", "mysql"].includes(config.dbType) ? (
+            <div className="flex items-center space-x-2 cursor-not-allowed">
+              <Switch id="ssl" checked={config.ssl} disabled />
+              <label
+                htmlFor="ssl"
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              >
+                SSL
+              </label>
+            </div>
+          ) : null}
         </form>
       </TitleSection>
     </Fragment>
