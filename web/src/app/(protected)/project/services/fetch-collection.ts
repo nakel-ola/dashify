@@ -13,7 +13,7 @@ type Args = {
 };
 
 type CollectionsResponse = {
-  results: any[];
+  results: { [key: string]: any }[];
   totalItems: number;
 };
 

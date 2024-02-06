@@ -4,7 +4,7 @@ import { create } from "zustand";
 type Row = {
   tableName: string;
   projectId: string;
-  type: "single" | "csv" | "json";
+  type: "single" | "csv";
   field: Fields[];
 };
 

@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { useQueries } from "../../../hooks/use-queries";
 import { useProjectStore } from "../../../store/project-store";
 import { useRowAddStore } from "../../../store/row-add-store";
@@ -23,7 +23,7 @@ export const InsertCard = (props: Props) => {
 
   const sortedFields = useProjectStore((store) => store.getFields(pageName));
 
-  const onClick = (type: "single" | "csv" | "json") => {
+  const onClick = (type: "single" | "csv") => {
     setRow({
       field: sortedFields,
       tableName: pageName,
@@ -35,11 +35,9 @@ export const InsertCard = (props: Props) => {
   return (
     <div className="">
       <Popover>
-        <PopoverTrigger>
-          <Button className="rounded-md">
-            Insert
-            <ArrowDown2 className="ml-2" />
-          </Button>
+        <PopoverTrigger className={buttonVariants({ className: "rounded-md" })}>
+          Insert
+          <ArrowDown2 className="ml-2" />
         </PopoverTrigger>
         <PopoverContent className="p-1">
           <div
@@ -58,14 +56,6 @@ export const InsertCard = (props: Props) => {
 
             <p className="text-sm">Import data from csv</p>
           </div>
-          {/* <div
-            onClick={() => onClick("json")}
-            className="flex items-center gap-2 p-2 hover:bg-slate-100 hover:dark:bg-neutral-800 rounded-md cursor-pointer transition-all duration-300"
-          >
-            <DocumentCode size={20} />
-
-            <p className="text-sm">Import data from json</p>
-          </div> */}
         </PopoverContent>
       </Popover>
     </div>

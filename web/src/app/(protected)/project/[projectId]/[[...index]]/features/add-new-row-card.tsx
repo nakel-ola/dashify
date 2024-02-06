@@ -5,7 +5,13 @@ export const AddNewRowCard = (props: Props) => {
   return (
     <div className="grid place-items-center h-[calc(100%-50px)]">
       <div className="text-center">
-        <Image src="/empty.svg" alt="" width={200} height={200} />
+        <Image
+          src="/empty.svg"
+          alt=""
+          width={200}
+          height={200}
+          className="w-auto h-[200px] object-contain"
+        />
         <p className="">This table is empty</p>
       </div>
     </div>

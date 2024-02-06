@@ -4,12 +4,13 @@
 
 * {
   @apply p-0 m-0;
-  scrollbar-width: thin;
-  scrollbar-color: transparent transparent;
+  /* scrollbar-width: thin;
+  scrollbar-color: transparent transparent; */
+  
 }
 
 *::-webkit-scrollbar {
-  @apply w-[5px] h-[5px];
+  @apply w-[5px] max-h-[5px];
 }
 
 *::-webkit-scrollbar-thumb {
@@ -17,7 +18,7 @@
 }
 
 *::-webkit-scrollbar-track {
-  @apply bg-transparent relative top-0 right-0;
+  @apply bg-transparent;
 }
 
 *::-webkit-scrollbar-track-piece {
