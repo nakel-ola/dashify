@@ -195,14 +195,14 @@ export class ProjectsController {
   }
 
   @ApiOperation({ summary: 'Add new document to a collection' })
-  @Post(':projectId/add-new-documents')
+  @Post(':projectId/add-new-document')
   @ApiParam({ name: 'projectId', example: 'finance-tracker-78493' })
-  addNewDocuments(
+  addNewDocument(
     @Request() req,
     @Param('projectId') projectId: string,
     @Body() addNewDocumentDto: AddNewDocumentDto,
   ) {
-    return this.projectsService.addNewDocuments(
+    return this.projectsService.addNewDocument(
       projectId,
       req.user.uid,
       addNewDocumentDto,

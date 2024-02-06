@@ -16,11 +16,11 @@ type Message = {
   message: string;
 };
 
-export async function addNewDocuments(args: Args) {
+export async function addNewDocument(args: Args) {
   const { projectId, collectionName, documents } = args;
 
   try {
-    const url = `/projects/${projectId}/add-new-documents`;
+    const url = `/projects/${projectId}/add-new-document`;
 
     const { data } = await axios.post<Message>(url, {
       collectionName,

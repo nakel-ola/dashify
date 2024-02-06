@@ -447,11 +447,7 @@ export class ProjectsService {
     return collections;
   }
 
-  async addNewDocuments(
-    projectId: string,
-    uid: string,
-    dto: AddNewDocumentDto,
-  ) {
+  async addNewDocument(projectId: string, uid: string, dto: AddNewDocumentDto) {
     const { collectionName, documents } = dto;
 
     const project = await this.findOne(projectId, uid);

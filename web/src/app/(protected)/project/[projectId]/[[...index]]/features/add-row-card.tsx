@@ -11,7 +11,7 @@ import {
 import { FieldCard } from "./row-update/field-card";
 import { Button } from "@/components/ui/button";
 import { MoonLoader } from "react-spinners";
-import { addNewDocuments } from "../../../services/add-new-documents";
+import { addNewDocument } from "../../../services/add-new-document";
 import { useQueries } from "../../../hooks/use-queries";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -45,7 +45,7 @@ export const AddRowCard = (props: Props) => {
       value: value,
     }));
 
-    addNewDocuments({ projectId, collectionName: pageName, documents })
+    addNewDocument({ projectId, collectionName: pageName, documents })
       .then(async () => {
         toast.success(`Row added successfully`);
         await queryClient.invalidateQueries({ queryKey });

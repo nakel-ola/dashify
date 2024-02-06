@@ -11,7 +11,6 @@ import { Fragment, useState } from "react";
 import { PreviewTable } from "./preview-table";
 import { Separator } from "@/components/ui/separator";
 import { CsvUploadCard, type UploadType } from "./csv-upload-card";
-import { arraysContainSameContent } from "../utils/arrays-contain-same-content";
 import { findDifferentValue } from "../utils/find-different-value";
 
 type Props = {};
@@ -44,11 +43,10 @@ export const CSVAddRowsCard = (props: Props) => {
       )} are not present in your table`;
       results.push(message);
     }
-
-    // results
-
     return results;
   };
+
+  const handleSubmit = () => {};
   return (
     <Sheet open={row?.type === "csv"} onOpenChange={() => handleClose()}>
       <SheetContent className="sm:!w-[700px] sm:max-w-md !p-0">
@@ -104,8 +102,8 @@ export const CSVAddRowsCard = (props: Props) => {
 
             <Button
               type="submit"
-              // disabled={!isValid || isDisabled()}
-              // onClick={handleSubmit}
+              disabled={getErrors().length > 0 || upload.json.length === 0}
+              onClick={handleSubmit}
               className=""
             >
               Import data
