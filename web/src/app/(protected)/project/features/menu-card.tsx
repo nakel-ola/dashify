@@ -11,6 +11,7 @@ import {
 import { More, Edit, Trash, Icon } from "iconsax-react";
 import { DeleteCollectionCard } from "./delete-collection-card";
 import { useState } from "react";
+import truncate from "@/lib/truncate";
 
 type Props = {
   Icon: Icon;
@@ -48,6 +49,7 @@ export const MenuCard = (props: Props) => {
           variant={isActive ? "Bold" : "Outline"}
           size={20}
           className={cn(
+            "shrink-0",
             isActive
               ? "text-black dark:text-white"
               : "text-gray-dark dark:text-gray-light"
@@ -55,21 +57,21 @@ export const MenuCard = (props: Props) => {
         />
         <p
           className={cn(
-            "pl-2",
+            "pl-2 whitespace-nowrap overflow-ellipsis overflow-hidden text-sm",
             isActive
               ? "text-black dark:text-white"
               : "text-gray-dark dark:text-gray-light"
           )}
         >
-          {name}
+          {truncate(name, 22)}
         </p>
       </div>
 
       {showMoreIcon ? (
         <>
           <DropdownMenu>
-            <DropdownMenuTrigger>
-              <div className="w-9 h-full ml-auto rotate-90 flex items-center justify-center">
+            <DropdownMenuTrigger className="shrink-0">
+              <div className="w-5 h-full ml-auto rotate-90 flex items-center justify-center shrink-0">
                 <More size={20} />
               </div>
             </DropdownMenuTrigger>
