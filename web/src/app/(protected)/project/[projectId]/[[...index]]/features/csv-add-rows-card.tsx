@@ -12,10 +12,19 @@ import { PreviewTable } from "./preview-table";
 import { Separator } from "@/components/ui/separator";
 import { CsvUploadCard, type UploadType } from "./csv-upload-card";
 import { findDifferentValue } from "../utils/find-different-value";
+import { addNewDocuments } from "../../../services/add-new-documents";
+import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+import { arrangeValues } from "../../../utils/arrange-values";
 
-type Props = {};
+type Props = {
+  queryKey: any[];
+};
 export const CSVAddRowsCard = (props: Props) => {
+  const { queryKey } = props;
   const { row, setRow } = useRowAddStore();
+
+  const [isLoading, setIsLoading] = useState(false);
 
   const [upload, setUpload] = useState<UploadType>({
     text: "",
@@ -24,8 +33,28 @@ export const CSVAddRowsCard = (props: Props) => {
     file: null,
   });
 
+  const queryClient = useQueryClient();
+
   const handleClose = () => {
+    if (isLoading) return;
     setRow(null);
+    setUpload({
+      text: "",
+      json: [],
+      header: [],
+      file: null,
+    });
+  };
+
+  const updateSelected = (index: number) => {
+    let header = [...upload.header];
+
+    header[index].selected = !header[index].selected;
+
+    setUpload({
+      ...upload,
+      header,
+    });
   };
 
   const getErrors = () => {
@@ -35,7 +64,10 @@ export const CSVAddRowsCard = (props: Props) => {
 
     const fieldsName = row.field.map((value) => value.name);
 
-    const notFound = findDifferentValue(fieldsName, upload.header);
+    const notFound = findDifferentValue(
+      fieldsName,
+      upload.header.map((h) => h.name)
+    );
 
     if (notFound.length > 0) {
       const message = `This CSV cannot be imported  into your able due to incompatible headers: \nThe column ${notFound.join(
@@ -46,7 +78,38 @@ export const CSVAddRowsCard = (props: Props) => {
     return results;
   };
 
-  const handleSubmit = () => {};
+  const handleSubmit = () => {
+    if (!row || !upload.file) return;
+    setIsLoading(true);
+
+    const fieldNames = upload.header
+      .map(({ name, selected }) => (selected ? name : null))
+      .filter((value) => value !== null) as string[];
+
+    const arrangedItems = arrangeValues(upload.json, fieldNames);
+
+    const values = arrangedItems.map((arrangedItem) =>
+      Object.values(arrangedItem)
+    );
+
+    addNewDocuments({
+      projectId: row.projectId,
+      collectionName: row.tableName,
+      fieldNames,
+      values,
+    })
+      .then(async () => {
+        toast.success(`Rows added successfully`);
+        await queryClient.invalidateQueries({ queryKey });
+
+        handleClose();
+      })
+      .catch((err: any) => {
+        toast.error(err.message);
+      })
+      .finally(() => setIsLoading(false));
+  };
+
   return (
     <Sheet open={row?.type === "csv"} onOpenChange={() => handleClose()}>
       <SheetContent className="sm:!w-[700px] sm:max-w-md !p-0">
@@ -74,7 +137,11 @@ export const CSVAddRowsCard = (props: Props) => {
             </div>
 
             <div className="mt-5 px-6 pr-3">
-              <CsvUploadCard onUploadChange={setUpload} upload={upload} />
+              <CsvUploadCard
+                onUploadChange={setUpload}
+                upload={upload}
+                disabled={isLoading}
+              />
             </div>
 
             {upload.file ? (
@@ -85,6 +152,7 @@ export const CSVAddRowsCard = (props: Props) => {
                   header={upload.header}
                   tableName={row?.tableName!}
                   errors={getErrors()}
+                  updateSelected={updateSelected}
                 />
               </Fragment>
             ) : null}
@@ -102,7 +170,9 @@ export const CSVAddRowsCard = (props: Props) => {
 
             <Button
               type="submit"
-              disabled={getErrors().length > 0 || upload.json.length === 0}
+              disabled={
+                getErrors().length > 0 || upload.json.length === 0 || isLoading
+              }
               onClick={handleSubmit}
               className=""
             >
@@ -111,7 +181,7 @@ export const CSVAddRowsCard = (props: Props) => {
                 size={20}
                 color="white"
                 className="ml-2 text-white"
-                loading={false}
+                loading={isLoading}
               />
             </Button>
           </div>

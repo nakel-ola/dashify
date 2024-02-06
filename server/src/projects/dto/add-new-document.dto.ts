@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsOptional } from 'class-validator';
+import { IsString, IsOptional, IsDefined } from 'class-validator';
 
 class Document {
   @ApiProperty({
@@ -13,8 +13,8 @@ class Document {
     description: 'Column value',
     type: [String],
   })
-  @IsString()
-  value: string;
+  @IsDefined()
+  value: any;
 }
 export class AddNewDocumentDto {
   @ApiProperty({

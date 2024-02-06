@@ -11,11 +11,20 @@ import { ChangeEvent } from "react";
 type Props = Fields & {
   value: any;
   onChange: (value: any) => void;
+  disabled?: boolean;
 };
 
 export const FieldCard = (props: Props) => {
-  const { name, udtName, isArray, isNullable, isIdentify, value, onChange } =
-    props;
+  const {
+    name,
+    udtName,
+    isArray,
+    isNullable,
+    isIdentify,
+    value,
+    onChange,
+    disabled,
+  } = props;
 
   const isNumber =
     [
@@ -59,6 +68,7 @@ export const FieldCard = (props: Props) => {
       onChange(e.target.value),
     isNullable,
     placeholder: isNullable ? "NULL" : "",
+    disabled,
   };
 
   return (
@@ -88,24 +98,28 @@ export const FieldCard = (props: Props) => {
           <BoolSelectCard
             value={value}
             onChange={onChange}
-            disabled={isIdentify}
+            disabled={isIdentify || disabled}
           />
         ) : null}
         {isDateTime ? (
           <DatetimePicker
             value={value}
             onChange={onChange}
-            disabled={isIdentify}
+            disabled={isIdentify || disabled}
           />
         ) : null}
         {isTime ? (
-          <TimePicker value={value ?? "00:00:00"} onChange={onChange} />
+          <TimePicker
+            value={value ?? "00:00:00 AM"}
+            onChange={onChange}
+            disabled={disabled}
+          />
         ) : null}
         {isDate ? (
           <DatePicker
             value={new Date(value)}
             onChange={onChange}
-            disabled={isIdentify}
+            disabled={isIdentify || disabled}
           />
         ) : null}
         {isNone ? (

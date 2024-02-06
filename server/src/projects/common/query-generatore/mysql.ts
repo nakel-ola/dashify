@@ -3,6 +3,7 @@ import { selectOrderBy } from '../select-order-by';
 import { selectWhere } from '../select-where';
 import { stringToFilter } from '../string-to-filter';
 import { stringToSort } from '../string-to-sort';
+import * as SqlString from './sqlstring';
 
 export type DataType = {
   name: string;
@@ -53,9 +54,13 @@ export type DataType = {
   };
 };
 
-type InsetType = {
+type InsertType = {
   name: string;
   value: string | number;
+};
+type InsertRowsArgs = {
+  fieldNames: string[];
+  values: any[][];
 };
 
 export type AlterModifyType = {
@@ -270,7 +275,7 @@ export class MySqlQueryGenerator {
     return results;
   }
 
-  public insetIntoTable(tableName: string, items: InsetType[]) {
+  public insertIntoTable(tableName: string, items: InsertType[]) {
     const columnsName = items
       .map((item) => (item.value ? item.name : ''))
       .filter((value) => value !== '');
@@ -281,6 +286,20 @@ export class MySqlQueryGenerator {
       .filter((value) => value !== null);
     const query = `INSERT INTO ${tableName} (${columnsName.join(', ')})
     VALUES (${columnsValue.join(', ')})`;
+
+    return query;
+  }
+
+  public insertRowsIntoTable(tableName: string, args: InsertRowsArgs) {
+    const { fieldNames, values } = args;
+
+    const columnsValue = values.map(
+      (innerValues) =>
+        `(${innerValues.map((value) => SqlString.escape(value)).join(', ')})`,
+    );
+
+    const query = `INSERT INTO ${tableName} (${fieldNames.join(', ')})
+    VALUES ${columnsValue.join(', ')};`;
 
     return query;
   }

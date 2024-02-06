@@ -52,6 +52,12 @@ type InsertRowArgs = {
   }[];
 };
 
+type InsertRowsArgs = {
+  tableName: string;
+  fieldNames: string[];
+  values: any[][];
+};
+
 type UpdateRowArgs = {
   tableName: string;
   set: {
@@ -247,7 +253,24 @@ export class PostgresDatabase {
       const escapeTableName = this.client.escapeIdentifier(tableName);
       const query = this.queryGen.insertIntoTable(escapeTableName, data);
 
-      console.log(query);
+      await this.client.query(query);
+
+      return { message: 'Row inserted successfully' };
+    } catch (error) {
+      console.error(`Error creating row:`, error);
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+
+  public async insertRows(args: InsertRowsArgs) {
+    const { tableName, fieldNames, values } = args;
+
+    try {
+      const escapeTableName = this.client.escapeIdentifier(tableName);
+      const query = this.queryGen.insertRowsIntoTable(escapeTableName, {
+        fieldNames,
+        values,
+      });
 
       await this.client.query(query);
 

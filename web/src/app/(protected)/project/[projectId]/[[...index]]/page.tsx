@@ -171,9 +171,10 @@ export default function ProjectCollection(props: Props) {
 
       <ColumnUpdateCard />
       <AddColumnCard />
+      {/* TODO: Work on row update */}
       <RowUpdateCard />
       <AddRowCard queryKey={queryKey} />
-      <CSVAddRowsCard />
+      <CSVAddRowsCard queryKey={queryKey} />
     </Fragment>
   );
 }

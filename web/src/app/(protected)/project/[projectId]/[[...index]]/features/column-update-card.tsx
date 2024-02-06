@@ -58,7 +58,6 @@ export const ColumnUpdateCard = (props: Props) => {
     resetForm,
     isValid,
     isSubmitting,
-    setSubmitting,
     setValues,
   } = useFormik<ColumnType>({
     initialValues: {
@@ -155,6 +154,7 @@ export const ColumnUpdateCard = (props: Props) => {
   ];
 
   const handleClose = () => {
+    if (isSubmitting) return;
     setColumn(null);
     resetForm();
   };
@@ -200,6 +200,7 @@ export const ColumnUpdateCard = (props: Props) => {
                 type="string"
                 required
                 readOnly={isSubmitting}
+                disabled={isSubmitting}
                 value={values.name}
                 onChange={handleChange}
                 onBlur={handleBlur}
@@ -266,6 +267,7 @@ export const ColumnUpdateCard = (props: Props) => {
                     <div className="flex items-center gap-3">
                       <button
                         type="button"
+                        disabled={isSubmitting}
                         onClick={() =>
                           setForeignColumn({ ...values, index: 0 })
                         }
@@ -276,6 +278,7 @@ export const ColumnUpdateCard = (props: Props) => {
                       <button
                         type="button"
                         onClick={() => setFieldValue("references", null)}
+                        disabled={isSubmitting}
                         className="border dark:border-neutral-700 bg-slate-100 dark:bg-neutral-800 rounded-md flex items-center justify-center mt-5 text-sm px-2.5 py-1 hover:scale-105 active:scale-95 transition-transform"
                       >
                         Remove
@@ -286,6 +289,7 @@ export const ColumnUpdateCard = (props: Props) => {
                   <Button
                     type="button"
                     variant="outline"
+                    disabled={isSubmitting}
                     onClick={() => setForeignColumn({ ...values, index: 0 })}
                     className="border-transparent dark:border-transparent text-gray-dark dark:text-gray-light hover:bg-slate-100 hover:dark:bg-neutral-800 ml-auto rounded-md bg-slate-100 dark:bg-neutral-800 w-full mt-1"
                   >
@@ -308,7 +312,7 @@ export const ColumnUpdateCard = (props: Props) => {
                 <Select
                   value={values.dataType}
                   onValueChange={(value) => setFieldValue("dataType", value)}
-                  disabled={!!values.references}
+                  disabled={!!values.references || isSubmitting}
                 >
                   <SelectTrigger className="w-full !h-[38px]">
                     <SelectValue
@@ -337,6 +341,7 @@ export const ColumnUpdateCard = (props: Props) => {
                           id={"data-type-ption-" + index}
                           className="w-[20px] h-[20px] rounded-md mt-1"
                           checked={checked}
+                          disabled={isSubmitting}
                           onCheckedChange={() => setFieldValue(key, !checked)}
                         />
 
@@ -363,7 +368,7 @@ export const ColumnUpdateCard = (props: Props) => {
                 type="string"
                 required={!!values.isIdentify}
                 readOnly={values.isIdentify || isSubmitting}
-                disabled={values.isIdentify}
+                disabled={values.isIdentify || isSubmitting}
                 value={values.defaultValue === null ? "" : values.defaultValue}
                 onChange={handleChange}
                 onBlur={handleBlur}
@@ -395,6 +400,7 @@ export const ColumnUpdateCard = (props: Props) => {
                         <Switch
                           id={"data-type-ption-" + index}
                           className="mt-1"
+                          disabled={isSubmitting}
                           checked={checked}
                           onCheckedChange={() => setFieldValue(key, !checked)}
                         />
@@ -422,6 +428,7 @@ export const ColumnUpdateCard = (props: Props) => {
                 type="button"
                 variant="outline"
                 onClick={handleClose}
+                disabled={isSubmitting}
                 className="border-slate-200 dark:border-neutral-800 text-gray-dark dark:text-gray-light hover:bg-slate-100 hover:dark:bg-neutral-800 ml-auto"
               >
                 Cancel

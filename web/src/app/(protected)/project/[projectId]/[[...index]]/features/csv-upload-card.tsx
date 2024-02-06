@@ -6,7 +6,7 @@ import { toast } from "sonner";
 
 export type UploadType = {
   text: string;
-  header: string[];
+  header: { name: string; selected: boolean }[];
   json: { [key: string]: any }[];
   file: File | null;
 };
@@ -14,10 +14,11 @@ export type UploadType = {
 type Props = {
   onUploadChange(value: UploadType): void;
   upload: UploadType;
+  disabled?: boolean;
 };
 
 export const CsvUploadCard = (props: Props) => {
-  const { onUploadChange, upload } = props;
+  const { onUploadChange, upload, disabled } = props;
   const [isHovering, setIsHovering] = useState(false);
 
   const { text, file } = upload;
@@ -65,7 +66,10 @@ export const CsvUploadCard = (props: Props) => {
             file,
             text: csvText,
             json: csvData.results,
-            header: csvData.header,
+            header: csvData.header.map((key) => ({
+              name: key,
+              selected: true,
+            })),
           });
         }
       } catch (error) {
@@ -91,6 +95,7 @@ export const CsvUploadCard = (props: Props) => {
         className="hidden"
         multiple={false}
         onChange={handleChange}
+        disabled={disabled}
       />
 
       {text && file ? (
@@ -101,6 +106,7 @@ export const CsvUploadCard = (props: Props) => {
           </div>
 
           <button
+            disabled={disabled}
             onClick={() =>
               onUploadChange({ text: "", json: [], file: null, header: [] })
             }

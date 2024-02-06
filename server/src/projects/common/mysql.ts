@@ -40,6 +40,12 @@ type InsertRowArgs = {
   }[];
 };
 
+type InsertRowsArgs = {
+  tableName: string;
+  fieldNames: string[];
+  values: any[][];
+};
+
 type UpdateRowArgs = {
   tableName: string;
   set: {
@@ -208,7 +214,26 @@ export class MySQLDatabase {
 
     try {
       const escapeTableName = mysql.escapeId(tableName);
-      const query = this.queryGen.insetIntoTable(escapeTableName, data);
+      const query = this.queryGen.insertIntoTable(escapeTableName, data);
+
+      await this.connection.query(query);
+
+      return { message: 'Row inserted successfully' };
+    } catch (error) {
+      console.error(`Error creating row:`, error);
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+
+  public async insertRows(args: InsertRowsArgs) {
+    const { tableName, fieldNames, values } = args;
+
+    try {
+      const escapeTableName = mysql.escapeId(tableName);
+      const query = this.queryGen.insertRowsIntoTable(escapeTableName, {
+        fieldNames,
+        values,
+      });
 
       await this.connection.query(query);
 

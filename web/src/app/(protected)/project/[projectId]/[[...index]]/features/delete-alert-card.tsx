@@ -74,11 +74,14 @@ export const DeleteAlertCard = (props: Props) => {
       .finally(() => setIsLoading(false));
   };
 
+  const onClose = () => {
+    if (isLoading) return;
+
+    setIsDeleteOpen(false);
+  };
+
   return (
-    <AlertDialog
-      open={isDeleteOpen}
-      onOpenChange={() => setIsDeleteOpen(false)}
-    >
+    <AlertDialog open={isDeleteOpen} onOpenChange={() => onClose()} >
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>
@@ -92,12 +95,16 @@ export const DeleteAlertCard = (props: Props) => {
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel className="bg-slate-100 dark:bg-neutral-800 text-black dark:text-white hover:bg-slate-100 hover:dark:bg-neutral-800">
+          <AlertDialogCancel
+            disabled={isLoading}
+            className="bg-slate-100 dark:bg-neutral-800 text-black dark:text-white hover:bg-slate-100 hover:dark:bg-neutral-800"
+          >
             Cancel
           </AlertDialogCancel>
 
           <Button
             onClick={handleDelete}
+            disabled={isLoading}
             className="bg-red-500 hover:bg-red-500"
           >
             Delete

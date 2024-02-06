@@ -8,33 +8,19 @@ import { InfoCircle } from "iconsax-react";
 type Props = {
   tableName: string;
   items: { [key: string]: any }[];
-  header: string[];
+  header: { name: string; selected: boolean }[];
   errors: string[];
+  updateSelected: (value: number) => void;
 };
 export const PreviewTable = (props: Props) => {
-  const { items, tableName, header, errors } = props;
-
-  const [columnsName, setColumnsName] = useState(
-    header.map((key) => ({
-      name: key,
-      selected: true,
-    }))
-  );
+  const { items, tableName, header, errors, updateSelected } = props;
 
   const arrangedItems = arrangeValues(
     items.slice(0, 20),
-    columnsName
+    header
       .map(({ name, selected }) => (selected ? name : null))
       .filter((value) => value !== null) as string[]
   );
-
-  const updateColumnName = (index: number) => {
-    let arr = [...columnsName];
-
-    arr[index].selected = !arr[index].selected;
-
-    setColumnsName(arr);
-  };
 
   return (
     <div className="">
@@ -48,7 +34,7 @@ export const PreviewTable = (props: Props) => {
         </p>
 
         <div className="flex gap-2 items-center mt-2 overflow-x-scroll">
-          {columnsName.map((value, index) => (
+          {header.map((value, index) => (
             <button
               key={value.name}
               className={cn(
@@ -57,7 +43,7 @@ export const PreviewTable = (props: Props) => {
                   ? "bg-indigo-600 text-white"
                   : "text-black dark:text-white"
               )}
-              onClick={() => updateColumnName(index)}
+              onClick={() => updateSelected(index)}
             >
               {value.name}
             </button>
@@ -87,7 +73,7 @@ export const PreviewTable = (props: Props) => {
         {items.length > 0 ? (
           <div className="overflow-scroll w-full h-full max-h-[360px] border-[1.5px] border-slate-100 dark:border-neutral-800 rounded-md ">
             <div className="flex sticky top-0">
-              {columnsName.map(({ name, selected }, index) =>
+              {header.map(({ name, selected }, index) =>
                 selected ? (
                   <div
                     key={index}
@@ -120,21 +106,23 @@ export const PreviewTable = (props: Props) => {
           </div>
         )}
 
-        <div className="mt-5 space-y-2">
-          <p className="font-medium text-sm text-black dark:text-white">
-            Issues found in the the csv file
-          </p>
+        {errors.length > 0 ? (
+          <div className="mt-5 space-y-2">
+            <p className="font-medium text-sm text-black dark:text-white">
+              Issues found in the the csv file
+            </p>
 
-          {errors.map((error, index) => (
-            <div key={index} className="flex items-center gap-2">
-              <span className="h-[1.5px] w-[1.5px] shrink-0 rounded-full bg-gray-dark dark:bg-gray-light"></span>
+            {errors.map((error, index) => (
+              <div key={index} className="flex items-center gap-2">
+                <span className="h-[1.5px] w-[1.5px] shrink-0 rounded-full bg-gray-dark dark:bg-gray-light"></span>
 
-              <p className="text-gray-dark dark:text-gray-light text-sm">
-                {error}
-              </p>
-            </div>
-          ))}
-        </div>
+                <p className="text-gray-dark dark:text-gray-light text-sm">
+                  {error}
+                </p>
+              </div>
+            ))}
+          </div>
+        ) : null}
       </div>
     </div>
   );

@@ -16,9 +16,10 @@ type Time = `${string}:${string}:${string}`;
 type Props = {
   value?: Time;
   onChange?: (value?: Time) => void;
+  disabled?: boolean;
 };
 export const TimePicker = (props: Props) => {
-  const { onChange, value = "00:00:00" } = props;
+  const { onChange, value = "00:00:00 AM", disabled } = props;
 
   const [isOpen, setIsOpen] = useState(false);
 
@@ -28,7 +29,7 @@ export const TimePicker = (props: Props) => {
 
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen} modal>
-      <PopoverTrigger asChild className="">
+      <PopoverTrigger asChild className="" disabled={disabled}>
         <div
           className={cn(
             "w-full items-center text-left font-normal border-[1.5px] border-slate-100 dark:border-neutral-800 rounded-md cursor-pointer flex justify-between",

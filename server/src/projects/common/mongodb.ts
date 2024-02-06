@@ -29,6 +29,12 @@ type CreateDocumentArgs = {
   }[];
 };
 
+type CreateDocumentsArgs = {
+  collectionName: string;
+  fieldNames: string[];
+  values: any[][];
+};
+
 type UpdateDocumentArgs = {
   collectionName: string;
   set: {
@@ -253,6 +259,29 @@ export class MongoDatabase {
       }, {});
 
       await collection.insertOne(dataObject);
+
+      return { message: `Documents added to '${collectionName}'` };
+    } catch (error) {
+      console.error(`Error creating document:`, error);
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+
+  public async createDocuments(args: CreateDocumentsArgs) {
+    const { collectionName, fieldNames, values } = args;
+
+    try {
+      const db = this.client.db();
+
+      const collection = db.collection(collectionName);
+
+      const items = values.flatMap((innerValues) =>
+        innerValues.map((value, index) => ({
+          [fieldNames[index]]: value,
+        })),
+      );
+
+      await collection.insertMany(items);
 
       return { message: `Documents added to '${collectionName}'` };
     } catch (error) {

@@ -32,6 +32,7 @@ export const AddRowCard = (props: Props) => {
   const queryClient = useQueryClient();
 
   const handleClose = () => {
+    if (!isLoading) return;
     setRow(null);
 
     setData({});
@@ -87,6 +88,7 @@ export const AddRowCard = (props: Props) => {
                   key={index}
                   {...f}
                   value={data[f.name]}
+                  disabled={isLoading}
                   onChange={(value) => {
                     setData({
                       ...data,
@@ -101,6 +103,7 @@ export const AddRowCard = (props: Props) => {
                 type="button"
                 variant="outline"
                 onClick={handleClose}
+                disabled={isLoading}
                 className="border-slate-200 dark:border-neutral-800 text-gray-dark dark:text-gray-light hover:bg-slate-100 hover:dark:bg-neutral-800 ml-auto"
               >
                 Cancel
@@ -108,7 +111,7 @@ export const AddRowCard = (props: Props) => {
 
               <Button
                 type="submit"
-                // disabled={!isValid || isDisabled()}
+                disabled={!isLoading}
                 onClick={handleSubmit}
                 className=""
               >

@@ -25,6 +25,7 @@ import {
   AcceptMemberInviteDto,
   AddCorsOriginDto,
   AddNewDocumentDto,
+  AddNewDocumentsDto,
   AddTokenDto,
   CreateNewCollectionDto,
   CreateProjectDto,
@@ -206,6 +207,21 @@ export class ProjectsController {
       projectId,
       req.user.uid,
       addNewDocumentDto,
+    );
+  }
+
+  @ApiOperation({ summary: 'Add new documents to a collection' })
+  @Post(':projectId/add-new-documents')
+  @ApiParam({ name: 'projectId', example: 'finance-tracker-78493' })
+  addNewDocuments(
+    @Request() req,
+    @Param('projectId') projectId: string,
+    @Body() addNewDocumentsDto: AddNewDocumentsDto,
+  ) {
+    return this.projectsService.addNewDocuments(
+      projectId,
+      req.user.uid,
+      addNewDocumentsDto,
     );
   }
 
