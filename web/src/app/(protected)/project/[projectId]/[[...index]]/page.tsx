@@ -173,8 +173,10 @@ export default function ProjectCollection(props: Props) {
 
       <ColumnUpdateCard />
       <AddColumnCard />
-      {/* TODO: Work on row update */}
-      <RowUpdateCard isMongodb={project.database === "mongodb"} />
+      <RowUpdateCard
+        isMongodb={project.database === "mongodb"}
+        queryKey={queryKey}
+      />
       <AddRowCard queryKey={queryKey} />
       <CSVAddRowsCard
         queryKey={queryKey}

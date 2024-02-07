@@ -7,39 +7,95 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { Fragment, useState, useEffect } from "react";
+import { Fragment, useState, useEffect, useCallback } from "react";
 import { FieldCard } from "./field-card";
 import { Button } from "@/components/ui/button";
 import { MoonLoader } from "react-spinners";
+import { clean } from "@/utils/clean";
+import { formatDeleteWhere } from "../../utils/format-delete-where";
+import { useQueryClient } from "@tanstack/react-query";
+import { updateDocument } from "@/app/(protected)/project/services/update-document";
+import { toast } from "sonner";
 
 type Props = {
   isMongodb: boolean;
+  queryKey: any[];
 };
 export const RowUpdateCard = (props: Props) => {
-  const { isMongodb } = props;
+  const { isMongodb, queryKey } = props;
   const { row, setRow } = useRowUpdateStore();
+
+  const [isLoading, setIsLoading] = useState(false);
 
   const [data, setData] = useState<{ [key: string]: any }>({});
 
+  const queryClient = useQueryClient();
+
   const handleClose = () => {
+    if (isLoading) return;
     setRow(null);
 
     setData({});
   };
 
-  useEffect(() => {
+  const handleSubmit = async () => {
     if (!row) return;
+    setIsLoading(true);
 
+    const fields = formatField();
+
+    const where = formatDeleteWhere(row?.field, [fields])[0];
+
+    const changeValues = getDifferentProperties(fields, data);
+
+    const set = Object.entries(changeValues).map(([name, value]) => ({
+      name,
+      value,
+    }));
+
+    updateDocument({
+      projectId: row.projectId,
+      collectionName: row.tableName,
+      where,
+      set,
+    })
+      .then(async () => {
+        toast.success(`Row updated successfully`);
+        await queryClient.invalidateQueries({ queryKey });
+
+        handleClose();
+      })
+      .catch((err: any) => {
+        toast.error(err.message);
+      })
+      .finally(() => setIsLoading(false));
+  };
+
+  const formatField = useCallback(() => {
+    if (!row) return {};
+
+    let results: { [key: string]: any } = {};
     for (let i = 0; i < row.field.length; i++) {
       const field = row.field[i];
 
-      if (isMongodb && field.name === "_id") continue;
-      setData((value) => ({
-        ...value,
-        [field.name]: row.values[field.name],
-      }));
+      results[field.name] = row.values[field.name];
     }
-  }, [row, isMongodb]);
+
+    return results;
+  }, [row]);
+
+  useEffect(() => {
+    if (!row) return;
+
+    const fields = formatField();
+
+    setData(
+      clean({
+        ...fields,
+        _id: isMongodb ? null : fields?._id,
+      })
+    );
+  }, [formatField, row, isMongodb]);
 
   return (
     <Fragment>
@@ -87,8 +143,9 @@ export const RowUpdateCard = (props: Props) => {
                 </Button>
 
                 <Button
-                  type="submit"
-                  // disabled={!isValid || isDisabled()}
+                  type="button"
+                  onClick={handleSubmit}
+                  disabled={isLoading}
                   className=""
                 >
                   Save
@@ -96,7 +153,7 @@ export const RowUpdateCard = (props: Props) => {
                     size={20}
                     color="white"
                     className="ml-2 text-white"
-                    loading={false}
+                    loading={isLoading}
                   />
                 </Button>
               </div>
@@ -107,3 +164,15 @@ export const RowUpdateCard = (props: Props) => {
     </Fragment>
   );
 };
+
+function getDifferentProperties(obj1: any, obj2: any): any {
+  const result: any = {};
+
+  for (const prop in obj1) {
+    if (obj2.hasOwnProperty(prop) && obj1[prop] !== obj2[prop]) {
+      result[prop] = obj2[prop];
+    }
+  }
+
+  return result;
+}

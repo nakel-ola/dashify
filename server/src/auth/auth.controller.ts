@@ -60,7 +60,7 @@ export class AuthController {
   @UseGuards(AuthGuard)
   @Post('/resend-email-verification')
   resendEmailVerification(@Request() req) {
-    return this.authService.resendEmailVerification(req.user.uid);
+    return this.authService.resendEmailVerification(req.user);
   }
 
   @ApiOperation({ summary: 'Reset Password' })
@@ -114,7 +114,7 @@ export class AuthController {
   @ApiHeader({ name: 'x-access-token', required: true, example: 'Bearer ...' })
   @UseGuards(AuthGuard)
   @Post('/delete-account')
-  deleteAccount(@Request() req, args: DeleteAccountDto) {
+  deleteAccount(@Request() req, @Body() args: DeleteAccountDto) {
     return this.authService.deleteAccount(req.user, args);
   }
 }

@@ -309,7 +309,10 @@ export class MongoDatabase {
       }, {});
 
       await collection.updateOne(
-        { [where.name]: where.value },
+        {
+          [where.name]:
+            where.name === '_id' ? new ObjectId(where.value) : where.value,
+        },
         { $set: updateObject },
       );
 

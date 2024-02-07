@@ -1,3 +1,4 @@
+import { ObjectId } from 'mongodb';
 import { Filter, stringToFilter } from './string-to-filter';
 import { stringToSort } from './string-to-sort';
 
@@ -39,9 +40,9 @@ const formatValue = (value: string): number | string => {
 };
 
 const filter = (args: Filter) => {
-  const { operator, value } = args;
+  const { operator, value, name } = args;
 
-  const newValue = formatValue(value);
+  const newValue = name === '_id' ? new ObjectId(value) : formatValue(value);
 
   if (operator === '=') return { $eq: newValue };
   if (operator === '>') return { $gt: newValue };
