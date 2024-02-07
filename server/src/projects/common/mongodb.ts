@@ -1,8 +1,16 @@
-import { MongoClient, Collection as MongodbCollection } from 'mongodb';
+import {
+  MongoClient,
+  Collection as MongodbCollection,
+  ObjectId,
+} from 'mongodb';
 import { getMongodbArrayType, getMongodbObjectFieldType } from './utils';
 import { Collection, Fields } from '../types/project.type';
 import { v4 } from 'uuid';
-import { mongodbFilter, mongodbSort } from './mongodb-query';
+import {
+  convertArraysToObjects,
+  mongodbFilter,
+  mongodbSort,
+} from './mongodb-query';
 import { InternalServerErrorException } from '@nestjs/common';
 
 type ConnectionOption = {
@@ -144,6 +152,7 @@ export class MongoDatabase {
               name: key,
               type: 'string',
               dataType: 'string',
+              udtName: 'string',
               defaultValue: null,
               isArray: false,
               isNullable: false,
@@ -275,11 +284,7 @@ export class MongoDatabase {
 
       const collection = db.collection(collectionName);
 
-      const items = values.flatMap((innerValues) =>
-        innerValues.map((value, index) => ({
-          [fieldNames[index]]: value,
-        })),
-      );
+      const items = convertArraysToObjects(fieldNames, values);
 
       await collection.insertMany(items);
 
@@ -330,7 +335,10 @@ export class MongoDatabase {
         for (let i = 0; i < where.length; i++) {
           const data = where[i];
 
-          await collection.deleteOne({ [data.name]: data.value });
+          await collection.deleteOne({
+            [data.name]:
+              data.name === '_id' ? new ObjectId(data.value) : data.value,
+          });
         }
       }
 

@@ -12,8 +12,11 @@ import { FieldCard } from "./field-card";
 import { Button } from "@/components/ui/button";
 import { MoonLoader } from "react-spinners";
 
-type Props = {};
+type Props = {
+  isMongodb: boolean;
+};
 export const RowUpdateCard = (props: Props) => {
+  const { isMongodb } = props;
   const { row, setRow } = useRowUpdateStore();
 
   const [data, setData] = useState<{ [key: string]: any }>({});
@@ -29,12 +32,14 @@ export const RowUpdateCard = (props: Props) => {
 
     for (let i = 0; i < row.field.length; i++) {
       const field = row.field[i];
+
+      if (isMongodb && field.name === "_id") continue;
       setData((value) => ({
         ...value,
         [field.name]: row.values[field.name],
       }));
     }
-  }, [row]);
+  }, [row, isMongodb]);
 
   return (
     <Fragment>
@@ -53,17 +58,22 @@ export const RowUpdateCard = (props: Props) => {
             <div className="h-full">
               <div className="space-y-5 h-[calc(100%-140px)] overflow-y-scroll py-6">
                 {row.field.map((f, index) => (
-                  <FieldCard
-                    key={index}
-                    {...f}
-                    value={data[f.name]}
-                    onChange={(value) => {
-                      setData({
-                        ...data,
-                        [f.name]: value,
-                      });
-                    }}
-                  />
+                  <Fragment key={index}>
+                    {isMongodb && f.name === "_id" ? (
+                      <Fragment />
+                    ) : (
+                      <FieldCard
+                        {...f}
+                        value={data[f.name]}
+                        onChange={(value) => {
+                          setData({
+                            ...data,
+                            [f.name]: value,
+                          });
+                        }}
+                      />
+                    )}
+                  </Fragment>
                 ))}
               </div>
               <div className="p-6 py-3 border-t-[1.5px] border-slate-100 dark:border-neutral-800 space-x-6 flex">

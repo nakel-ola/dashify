@@ -12,6 +12,7 @@ import {
   AddRowCard,
   AddNewRowCard,
   CSVAddRowsCard,
+  JsonRowsCard,
 } from "./features";
 import { useProjectStore } from "../../store/project-store";
 import { useQuery } from "@tanstack/react-query";
@@ -129,6 +130,7 @@ export default function ProjectCollection(props: Props) {
                 items={data.results}
                 currentPage={currentPage}
                 limit={Number(limit)}
+                isMongodb={project.database === "mongodb"}
               />
             ) : (
               <AddNewRowCard />
@@ -172,9 +174,13 @@ export default function ProjectCollection(props: Props) {
       <ColumnUpdateCard />
       <AddColumnCard />
       {/* TODO: Work on row update */}
-      <RowUpdateCard />
+      <RowUpdateCard isMongodb={project.database === "mongodb"} />
       <AddRowCard queryKey={queryKey} />
-      <CSVAddRowsCard queryKey={queryKey} />
+      <CSVAddRowsCard
+        queryKey={queryKey}
+        isMongodb={project.database === "mongodb"}
+      />
+      <JsonRowsCard queryKey={queryKey} />
     </Fragment>
   );
 }

@@ -14,10 +14,11 @@ type Props = {
   items: any[];
   currentPage: number;
   limit: number;
+  isMongodb: boolean;
 };
 
 export const CollectionsCard = (props: Props) => {
-  const { pageName, items, currentPage, limit } = props;
+  const { pageName, items, currentPage, limit, isMongodb } = props;
 
   const { setRow } = useRowUpdateStore();
 
@@ -34,9 +35,9 @@ export const CollectionsCard = (props: Props) => {
   return arrangedItems.map((item, index) => (
     <div
       key={index}
-      className="flex items-center divide-x-[1.5px] divide-slate-100 dark:divide-neutral-800 w-full"
+      className="flex items-center w-full"
     >
-      <div className="min-w-[100px] h-[42.67px] p-2 py-2.5 shrink-0 border-b-[1.5px] border-slate-100 dark:border-neutral-800 flex items-center justify-between px-5">
+      <div className="min-w-[100px] h-[42.67px] p-2 py-2.5 shrink-0 border-b-[1.5px] border-r-[1.5px] border-slate-100 dark:border-neutral-800 flex items-center justify-between px-5">
         <Checkbox
           checked={isSelected({
             currentPage,
@@ -70,13 +71,15 @@ export const CollectionsCard = (props: Props) => {
       {convertObjectToArray(item).map((value, inx) => (
         <div
           key={inx}
-          className="w-[250px] h-[42.67px] px-3 py-2 border-b-[1.5px] border-slate-100 dark:border-neutral-800 whitespace-nowrap break-normal overflow-hidden shrink-0"
+          className="w-[250px] h-[42.67px] px-3 py-2 border-b-[1.5px] border-r-[1.5px] border-slate-100 dark:border-neutral-800 whitespace-nowrap break-normal overflow-hidden shrink-0"
         >
           <p className="">{formatValue(value)}</p>
         </div>
       ))}
 
-      <div className="min-w-[100px] h-[42.67px] p-2 shrink-0 border-b-[1.5px] border-slate-100 dark:border-neutral-800"></div>
+      {!isMongodb ? (
+        <div className="min-w-[100px] h-[42.67px] p-2 shrink-0 border-b-[1.5px] border-r-[1.5px] border-slate-100 dark:border-neutral-800"></div>
+      ) : null}
     </div>
   ));
 };

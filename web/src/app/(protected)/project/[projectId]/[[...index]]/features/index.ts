@@ -8,3 +8,4 @@ export * from "./row-update";
 export * from "./add-row-card";
 export * from "./add-new-row-card";
 export * from "./csv-add-rows-card";
+export * from "./json-rows-card";

@@ -23,7 +23,7 @@ export const HeaderCard = (props: Props) => {
 
   return (
     <Fragment>
-      <div className="min-w-[250px] h-[43px] px-3 bg-white dark:bg-black border-y-[1.5px] border-slate-100 dark:border-neutral-800 flex items-center justify-between gap-2">
+      <div className="min-w-[250px] h-[43px] px-3 bg-white dark:bg-black border-y-[1.5px] border-r-[1.5px] border-slate-100 dark:border-neutral-800 flex items-center justify-between gap-2">
         <div className="flex items-center gap-1 py-2">
           <p className="">{name}</p>
 

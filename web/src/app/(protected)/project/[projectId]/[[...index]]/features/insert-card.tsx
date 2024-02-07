@@ -22,8 +22,9 @@ export const InsertCard = (props: Props) => {
   const [{ projectId, pageName }] = useQueries();
 
   const sortedFields = useProjectStore((store) => store.getFields(pageName));
+  const project = useProjectStore((store) => store.project);
 
-  const onClick = (type: "single" | "csv") => {
+  const onClick = (type: "single" | "csv" | "json") => {
     setRow({
       field: sortedFields,
       tableName: pageName,
@@ -41,7 +42,9 @@ export const InsertCard = (props: Props) => {
         </PopoverTrigger>
         <PopoverContent className="p-1">
           <div
-            onClick={() => onClick("single")}
+            onClick={() =>
+              onClick(project?.database === "mongodb" ? "json" : "single")
+            }
             className="flex items-center gap-2 p-2 hover:bg-slate-100 hover:dark:bg-neutral-800 rounded-md cursor-pointer transition-all duration-300"
           >
             <RowVertical size={20} />

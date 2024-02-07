@@ -8,7 +8,7 @@ type Props = TextareaProps & {
 export const TextareaCard = (props: Props) => {
   const { onChange, className, setNull, isNullable, ...rest } = props;
   return (
-    <div className="relative">
+    <div className="relative w-full">
       <Textarea
         rows={5}
         className={cn("relative", className)}

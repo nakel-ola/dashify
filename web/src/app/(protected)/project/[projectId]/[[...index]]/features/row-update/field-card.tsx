@@ -34,6 +34,7 @@ export const FieldCard = (props: Props) => {
       "float4",
       "float8",
       "numeric",
+      "number",
       "int",
       "tinyint",
       "smallint",
@@ -47,12 +48,18 @@ export const FieldCard = (props: Props) => {
   const isBoolean = ["bool", "boolean"].includes(udtName) && !isArray;
 
   const isString =
-    ["text", "varchar", "longtext", "mediumtext", "tinytext"].includes(
-      udtName
-    ) && !isArray;
+    [
+      "text",
+      "varchar",
+      "longtext",
+      "mediumtext",
+      "tinytext",
+      "string",
+    ].includes(udtName) && !isArray;
 
   const isDateTime =
-    ["timestamp", "timestamptz", "datetime"].includes(udtName) && !isArray;
+    ["timestamp", "timestamptz", "datetime", "Date"].includes(udtName) &&
+    !isArray;
   const isTime = ["time", "timetz"].includes(udtName) && !isArray;
 
   const isDate = ["date"].includes(udtName) && !isArray;
@@ -123,7 +130,12 @@ export const FieldCard = (props: Props) => {
           />
         ) : null}
         {isNone ? (
-          <TextareaCard {...commmonProps} setNull={() => onChange("")} />
+          <TextareaCard
+            {...commmonProps}
+            value={JSON.stringify(value)}
+            setNull={() => onChange("")}
+            disabled
+          />
         ) : null}
       </InputTemplate>
     </div>

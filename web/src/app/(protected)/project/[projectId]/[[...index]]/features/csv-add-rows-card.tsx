@@ -16,12 +16,14 @@ import { addNewDocuments } from "../../../services/add-new-documents";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { arrangeValues } from "../../../utils/arrange-values";
+import { useRefetchCollections } from "../../../hooks/use-refetch-collections";
 
 type Props = {
   queryKey: any[];
+  isMongodb: boolean;
 };
 export const CSVAddRowsCard = (props: Props) => {
-  const { queryKey } = props;
+  const { queryKey, isMongodb } = props;
   const { row, setRow } = useRowAddStore();
 
   const [isLoading, setIsLoading] = useState(false);
@@ -32,6 +34,8 @@ export const CSVAddRowsCard = (props: Props) => {
     header: [],
     file: null,
   });
+
+  const { refetch } = useRefetchCollections();
 
   const queryClient = useQueryClient();
 
@@ -63,6 +67,8 @@ export const CSVAddRowsCard = (props: Props) => {
     let results = [];
 
     const fieldsName = row.field.map((value) => value.name);
+
+    if (isMongodb) return [];
 
     const notFound = findDifferentValue(
       fieldsName,
@@ -100,6 +106,7 @@ export const CSVAddRowsCard = (props: Props) => {
     })
       .then(async () => {
         toast.success(`Rows added successfully`);
+        if (row?.field.length === 0 || isMongodb) await refetch();
         await queryClient.invalidateQueries({ queryKey });
 
         handleClose();

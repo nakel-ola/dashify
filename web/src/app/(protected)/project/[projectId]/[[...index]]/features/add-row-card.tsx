@@ -32,7 +32,7 @@ export const AddRowCard = (props: Props) => {
   const queryClient = useQueryClient();
 
   const handleClose = () => {
-    if (!isLoading) return;
+    if (isLoading) return;
     setRow(null);
 
     setData({});
@@ -111,7 +111,7 @@ export const AddRowCard = (props: Props) => {
 
               <Button
                 type="submit"
-                disabled={!isLoading}
+                disabled={isLoading}
                 onClick={handleSubmit}
                 className=""
               >

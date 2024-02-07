@@ -22,15 +22,33 @@ export const mongodbFilter = (str: string) => {
   return query;
 };
 
+const formatValue = (value: string): number | string => {
+  try {
+    // Try converting the input value to a number
+    const numberValue: number = parseFloat(value);
+    // Check if the value is an integer, if so, convert it to an integer
+    if (Number.isInteger(numberValue)) {
+      return parseInt(value);
+    } else {
+      return numberValue;
+    }
+  } catch (error) {
+    // If the input value cannot be converted to a number, return it as a string
+    return value;
+  }
+};
+
 const filter = (args: Filter) => {
   const { operator, value } = args;
 
-  if (operator === '=') return { $eq: value };
-  if (operator === '>') return { $gt: value };
-  if (operator === '<') return { $lt: value };
-  if (operator === '<>') return { $ne: value };
-  if (operator === '<=') return { $lte: value };
-  if (operator === '>=') return { $gte: value };
+  const newValue = formatValue(value);
+
+  if (operator === '=') return { $eq: newValue };
+  if (operator === '>') return { $gt: newValue };
+  if (operator === '<') return { $lt: newValue };
+  if (operator === '<>') return { $ne: newValue };
+  if (operator === '<=') return { $lte: newValue };
+  if (operator === '>=') return { $gte: newValue };
 };
 
 export const mongodbSort = (str: string) => {
@@ -45,4 +63,23 @@ export const mongodbSort = (str: string) => {
   }
 
   return query;
+};
+
+interface ObjectWithKeys {
+  [key: string]: any;
+}
+
+export const convertArraysToObjects = (
+  keys: string[],
+  arrays: any[][],
+): ObjectWithKeys[] => {
+  const result: ObjectWithKeys[] = [];
+  for (const arr of arrays) {
+    const obj: ObjectWithKeys = {};
+    for (let i = 0; i < keys.length; i++) {
+      obj[keys[i]] = i < arr.length ? arr[i] : null;
+    }
+    result.push(obj);
+  }
+  return result;
 };

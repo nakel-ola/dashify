@@ -113,8 +113,8 @@ export const PreviewTable = (props: Props) => {
             </p>
 
             {errors.map((error, index) => (
-              <div key={index} className="flex items-center gap-2">
-                <span className="h-[1.5px] w-[1.5px] shrink-0 rounded-full bg-gray-dark dark:bg-gray-light"></span>
+              <div key={index} className="flex gap-2">
+                <div className="h-[3.5px] w-[3.5px] mt-2 shrink-0 rounded-full bg-gray-dark dark:bg-gray-light"></div>
 
                 <p className="text-gray-dark dark:text-gray-light text-sm">
                   {error}
