@@ -287,7 +287,7 @@ export class PostgresQueryGenerator {
     let query = `UPDATE ${tableName}`;
 
     const set = data.set
-      .map((value) => `${value.name} = ${value.value}`)
+      .map((value) => `${value.name} = ${SqlString.escape(value.value)}`)
       .join(', ');
 
     query += ` SET ${set}`;
