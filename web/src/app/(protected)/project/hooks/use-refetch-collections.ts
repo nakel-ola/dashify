@@ -17,19 +17,22 @@ export const useRefetchCollections = () => {
     const projectId = project.projectId;
 
     await refetchCollections({ projectId })
-      .then(async () => {
-        toast.success(
-          `${
-            project.database === "mongodb" ? "Collections" : "Tables"
-          } refetched successfully`
-        );
+      .then(async (result) => {
+        if (result.ok) {
+          toast.success(
+            `${
+              project.database === "mongodb" ? "Collections" : "Tables"
+            } refetched successfully`
+          );
 
-        await queryClient.invalidateQueries({
-          queryKey: ["project", projectId],
-        });
+          await queryClient.invalidateQueries({
+            queryKey: ["project", projectId],
+          });
+        } else {
+          toast.error(result.message);
+        }
       })
       .catch((err) => {
-        console.log(err);
         toast.error(err.message);
       })
       .finally(() => setIsLoading(false));

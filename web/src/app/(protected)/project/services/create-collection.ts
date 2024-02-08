@@ -1,6 +1,8 @@
 "use server";
 
 import axios from "@/lib/axios";
+import { axiosFormatError } from "@/utils/axios-format-error";
+import { AxiosThrowError } from "@/utils/axios-throw-error";
 
 type Column = {
   name: string;
@@ -31,17 +33,17 @@ type CreateResponse = {
 export async function createCollection(args: Args) {
   const { projectId, name, columns } = args;
 
-  try {
-    const url = `/projects/${projectId}/create-new-collection`;
+  const url = `/projects/${projectId}/create-new-collection`;
 
-    const { data } = await axios.post<CreateResponse>(url, {
+  return axios
+    .post<CreateResponse>(url, {
       collectionName: name,
       columns,
+    })
+    .then((result) => {
+      return { ok: true, message: result.data.message };
+    })
+    .catch((err) => {
+      return { ok: false, message: axiosFormatError(err) };
     });
-
-    return data;
-  } catch (error: any) {
-    console.log(error);
-    throw new Error(error.message);
-  }
 }

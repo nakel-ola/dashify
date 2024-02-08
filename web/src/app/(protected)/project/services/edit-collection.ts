@@ -1,6 +1,7 @@
 "use server";
 
 import axios from "@/lib/axios";
+import { axiosFormatError } from "@/utils/axios-format-error";
 import { AxiosThrowError } from "@/utils/axios-throw-error";
 import { clean } from "@/utils/clean";
 
@@ -51,20 +52,21 @@ type CreateResponse = {
 export async function editCollection(args: Args) {
   const { projectId, name, newName, columns } = args;
 
-  try {
-    const url = `/projects/${projectId}/edit-collection`;
+  const url = `/projects/${projectId}/edit-collection`;
 
-    const { data } = await axios.put<CreateResponse>(
+  return axios
+    .put<CreateResponse>(
       url,
       clean({
         collectionName: name,
         newCollectionName: newName,
         columns,
       })
-    );
-
-    return data;
-  } catch (error: any) {
-    AxiosThrowError(error);
-  }
+    )
+    .then((result) => {
+      return { ok: true, message: result.data.message };
+    })
+    .catch((err) => {
+      return { ok: false, message: axiosFormatError(err) };
+    });
 }

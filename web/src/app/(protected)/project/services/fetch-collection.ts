@@ -1,6 +1,7 @@
 "use server";
 
 import axios from "@/lib/axios";
+import { AxiosThrowError } from "@/utils/axios-throw-error";
 
 type Args = {
   projectId: string;
@@ -28,6 +29,6 @@ export async function fetchCollection(args: Args) {
     return data;
   } catch (error: any) {
     console.log(error);
-    throw new Error(error.message);
+    AxiosThrowError(error);
   }
 }

@@ -25,13 +25,13 @@ export default async function Verify(props: Props) {
           </p>
 
           <p className="text-gray-dark dark:text-gray-light text-center pt-5">
-            You are invited to join the project {project.name}
+            You are invited to join the project {project?.name}
           </p>
 
           <div className="rounded-md border-[1.5px] border-slate-100 dark:border-neutral-800 flex   cursor-pointer p-2 my-10 gap-5">
             <div className="h-[50px] w-[50px]">
               <Image
-                src={project.logo!}
+                src={project?.logo!}
                 alt=""
                 className=""
                 width={100}

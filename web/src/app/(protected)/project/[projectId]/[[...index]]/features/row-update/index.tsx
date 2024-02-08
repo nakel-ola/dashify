@@ -59,11 +59,14 @@ export const RowUpdateCard = (props: Props) => {
       where,
       set,
     })
-      .then(async () => {
-        toast.success(`Row updated successfully`);
-        await queryClient.invalidateQueries({ queryKey });
-
-        handleClose();
+      .then(async (result) => {
+        if (result.ok) {
+          toast.success(`Row updated successfully`);
+          await queryClient.invalidateQueries({ queryKey });
+          handleClose();
+        } else {
+          toast.error(result.message);
+        }
       })
       .catch((err: any) => {
         toast.error(err.message);

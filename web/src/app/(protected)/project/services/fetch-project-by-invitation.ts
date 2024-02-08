@@ -1,10 +1,9 @@
 "use server";
 import { getAccessToken } from "@/lib/get-access-token";
 import axios from "@/lib/axios";
+import { AxiosThrowError } from "@/utils/axios-throw-error";
 
-export async function fetchProjectByInvitation(
-  projectId: string
-): Promise<Projects> {
+export async function fetchProjectByInvitation(projectId: string) {
   try {
     const accessToken = await getAccessToken();
 
@@ -16,6 +15,6 @@ export async function fetchProjectByInvitation(
 
     return data;
   } catch (error: any) {
-    throw new Error(error.message);
+    AxiosThrowError(error);
   }
 }

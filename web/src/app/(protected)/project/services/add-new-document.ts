@@ -1,6 +1,8 @@
 "use server";
 
 import axios from "@/lib/axios";
+import { axiosFormatError } from "@/utils/axios-format-error";
+import { AxiosThrowError } from "@/utils/axios-throw-error";
 
 type DocumentType = {
   name: string;
@@ -19,17 +21,17 @@ type Message = {
 export async function addNewDocument(args: Args) {
   const { projectId, collectionName, documents } = args;
 
-  try {
-    const url = `/projects/${projectId}/add-new-document`;
+  const url = `/projects/${projectId}/add-new-document`;
 
-    const { data } = await axios.post<Message>(url, {
+  return axios
+    .post<Message>(url, {
       collectionName,
       documents,
+    })
+    .then((result) => {
+      return { ok: true, message: result.data.message };
+    })
+    .catch((err) => {
+      return { ok: false, message: axiosFormatError(err) };
     });
-
-    return data;
-  } catch (error: any) {
-    console.log(error);
-    throw new Error(error.message);
-  }
 }

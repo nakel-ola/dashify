@@ -1,6 +1,7 @@
 "use server";
 
 import axios from "@/lib/axios";
+import { axiosFormatError } from "@/utils/axios-format-error";
 
 type Where = {
   name: string;
@@ -14,24 +15,30 @@ type Args = {
 };
 
 type Message = {
+  ok: false;
   message: string;
 };
 
-export async function updateDocument(args: Args) {
+type AxiosReturnType = {
+  ok: boolean;
+  message: string;
+};
+
+export async function updateDocument(args: Args): Promise<AxiosReturnType> {
   const { projectId, collectionName, where, set } = args;
 
-  try {
-    const url = `/projects/${projectId}/update-document`;
+  const url = `/projects/${projectId}/update-document`;
 
-    const { data } = await axios.post<Message>(url, {
+  return axios
+    .post<Message>(url, {
       collectionName,
       where,
       set,
+    })
+    .then((result) => {
+      return { ok: true, message: result.data.message };
+    })
+    .catch((err) => {
+      return { ok: false, message: axiosFormatError(err) };
     });
-
-    return data;
-  } catch (error: any) {
-    console.log(error);
-    throw new Error(error.message);
-  }
 }

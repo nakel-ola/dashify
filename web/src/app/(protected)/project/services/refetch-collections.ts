@@ -1,22 +1,28 @@
 "use server";
 
 import axios from "@/lib/axios";
+import { axiosFormatError } from "@/utils/axios-format-error";
 
 type Args = {
   projectId: string;
 };
 
-export async function refetchCollections(args: Args) {
+type AxiosReturnType = {
+  ok: boolean;
+  message?: string;
+  collections?: Collection[];
+};
+
+export async function refetchCollections(args: Args): Promise<AxiosReturnType> {
   const { projectId } = args;
+  const url = `/projects/${projectId}/refetch-collections`;
 
-  try {
-    const url = `/projects/${projectId}/refetch-collections`;
-
-    const { data } = await axios.get<Collection[]>(url);
-
-    return data;
-  } catch (error: any) {
-    console.log(error);
-    throw new Error(error.message);
-  }
+  return axios
+    .get<Collection[]>(url)
+    .then((result) => {
+      return { ok: true, collections: result.data };
+    })
+    .catch((err) => {
+      return { ok: false, message: axiosFormatError(err) };
+    });
 }
