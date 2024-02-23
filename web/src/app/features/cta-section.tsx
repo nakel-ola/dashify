@@ -20,16 +20,14 @@ export const CTASection = () => {
       }}
     >
       <div
-        className="mx-auto max-w-xl px-5 lg:px-10 py-20 pb-16  text-center lg:mx-0 lg:flex-auto lg:text-left  "
+        className="mx-auto max-w-2xl px-5 lg:px-5 py-20 pb-16  text-center lg:mx-0 lg:flex-auto lg:text-left  "
         style={{
           backgroundImage:
             "radial-gradient(ellipse 50% 80% at 50% 50%,rgba(93,52,221,0.4),transparent)",
         }}
       >
         <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl text-center">
-          Boost your productivity.
-          <br />
-          Start using our app today.
+          The most powerful database management <br /> tool for everyone
         </h2>
         <div className="mt-10 flex items-center justify-center gap-x-6">
           {status !== "authenticated" ? (

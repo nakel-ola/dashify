@@ -3,11 +3,10 @@ import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import React from "react";
 import {
-  IoLogoFacebook,
   IoLogoGithub,
   IoLogoInstagram,
   IoLogoTwitter,
-  IoLogoYoutube,
+  IoLogoLinkedin,
 } from "react-icons/io5";
 
 export const Footer = () => {
@@ -36,20 +35,33 @@ export const Footer = () => {
           </p>
 
           <div className="flex items-center space-x-5 text-2xl">
-            <Link href="">
-              <IoLogoFacebook className="text-gray-light hover:text-white" />
-            </Link>
-            <Link href="">
+            <Link
+              href="https://www.instagram.com/nakel_dev"
+              target="_blank"
+              rel="noreferrer"
+            >
               <IoLogoInstagram className="text-gray-light hover:text-white" />
             </Link>
-            <Link href="">
+            <Link
+              href="https://twitter.com/nakel_dev"
+              target="_blank"
+              rel="noreferrer"
+            >
               <IoLogoTwitter className="text-gray-light hover:text-white" />
             </Link>
-            <Link href="">
+            <Link
+              href="https://github.com/nakel-ola"
+              target="_blank"
+              rel="noreferrer"
+            >
               <IoLogoGithub className="text-gray-light hover:text-white" />
             </Link>
-            <Link href="">
-              <IoLogoYoutube className="text-gray-light hover:text-white" />
+            <Link
+              href="https://www.linkedin.com/in/olamilekan-nunu/"
+              target="_blank"
+              rel="noreferrer"
+            >
+              <IoLogoLinkedin className="text-gray-light hover:text-white" />
             </Link>
           </div>
         </div>

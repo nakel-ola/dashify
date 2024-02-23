@@ -26,7 +26,7 @@ export const HeroSection = () => {
         </h1>
 
         <p className="text-gray-light max-w-3xl text-center text-sm sm:text-lg leading-8 mt-5 translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:400ms] mx-2">
-          Take charge of your database like a pro. Our admin dashboard puts the
+          Take charge of your database like a pro. Our dashboard puts the
           power in your hands, enabling you to manage data efficiently and
           effectively
         </p>

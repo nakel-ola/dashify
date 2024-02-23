@@ -1,6 +1,9 @@
 import {
+  AddSquare,
   Chart,
+  Convertshape,
   Data,
+  Data2,
   People,
   Refresh,
   Setting3,
@@ -25,7 +28,7 @@ export const FeatureSection = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 mt-16">
-        {features.map(({ name, Icon, description }) => (
+        {items.map(({ name, Icon, description }) => (
           <div key={name} className="relative pl-9">
             <dt className="inline font-semibold text-dark-text dark:text-white">
               <Icon
@@ -80,5 +83,38 @@ const features = [
     description:
       "Collaborate seamlessly with team members. Work together on the same database while maintaining data integrity.",
     Icon: People,
+  },
+];
+
+const items = [
+  {
+    name: "Seamless Database Connectivity",
+    description:
+      "Connect to existing MongoDB, Postgres, or MySQL databases effortlessly, without the need to create new databases.",
+    Icon: Convertshape,
+  },
+  {
+    name: "Intuitive Table Modification",
+    description:
+      "Our intuitive user interface allows your team to modify existing tables with ease. Add, remove, or edit columns effortlessly to meet your project requirements.",
+    Icon: Data2,
+  },
+  {
+    name: "Efficient Table Creation",
+    description:
+      "Create new tables within your existing databases quickly and intuitively. Define column names, data types, and constraints effortlessly through our streamlined interface.",
+    Icon: AddSquare,
+  },
+  {
+    name: "Visual Data Modeling",
+    description:
+      "Visualize your database schema with ease, helping your team understand the structure of the database and facilitating better decision-making during development.",
+    Icon: Data,
+  },
+  {
+    name: "Role-Based Access Control",
+    description:
+      "Maintain control over database management tasks with role-based access control. Define user roles and permissions to ensure data security and integrity.",
+    Icon: ShieldSecurity,
   },
 ];
