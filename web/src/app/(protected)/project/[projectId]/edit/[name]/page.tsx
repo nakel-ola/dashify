@@ -18,7 +18,7 @@ import { findChangedObjects } from "./utils/find-changed-objects";
 import { formatColumns } from "./utils/format-columns";
 import { findDeletedObjects } from "./utils/find-deleted-objects";
 import { ForeignSheet } from "../../create/features/foreign-sheet";
-import { useEffectOnce } from "@/hooks/use-effect-once";
+import { useEffectOnce } from "usehooks-ts";
 
 type Props = {
   params: { name: string };

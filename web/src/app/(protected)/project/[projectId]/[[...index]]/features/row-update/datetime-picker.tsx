@@ -11,7 +11,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { TimeCard, type TimeValue } from "./time-card";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
-import { useEffectOnce } from "@/hooks/use-effect-once";
+import { useEffectOnce } from "usehooks-ts";
 
 type Props = {
   value?: Date;
