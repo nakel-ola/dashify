@@ -7,11 +7,12 @@ import CustomInput from "@/components/custom-input";
 import { useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { MoonLoader } from "react-spinners";
-import { useEffectOnce } from "usehooks-ts";
+// import { useEffectOnce } from "usehooks-ts";
 import { clean } from "@/utils/clean";
 import { updateUser } from "../services/update-user";
 import { toast } from "sonner";
 import { UserImage } from "./user-image";
+import { useEffectOnce } from "@/hooks/use-effect-once";
 
 const Schema = Yup.object().shape({
   firstName: Yup.string().min(3).max(50).required("First Name is required"),

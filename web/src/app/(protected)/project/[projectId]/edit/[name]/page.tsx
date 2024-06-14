@@ -6,7 +6,6 @@ import { ColumnType, Schema, SchemaType } from "../../create/schema";
 import CustomInput from "@/components/custom-input";
 import { Button } from "@/components/ui/button";
 import { MoonLoader } from "react-spinners";
-import { useEffectOnce } from "usehooks-ts";
 import { editCollection } from "../../../services/edit-collection";
 import { clean } from "@/utils/clean";
 import { toast } from "sonner";
@@ -19,6 +18,7 @@ import { findChangedObjects } from "./utils/find-changed-objects";
 import { formatColumns } from "./utils/format-columns";
 import { findDeletedObjects } from "./utils/find-deleted-objects";
 import { ForeignSheet } from "../../create/features/foreign-sheet";
+import { useEffectOnce } from "@/hooks/use-effect-once";
 
 type Props = {
   params: { name: string };
