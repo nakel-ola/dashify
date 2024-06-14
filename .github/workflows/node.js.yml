@@ -13,6 +13,9 @@ jobs:
   web-build:
 
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./app
 
     strategy:
       matrix:
@@ -27,9 +30,7 @@ jobs:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
     - run: npm i
-      working-directory: ./web
     - run: npm run build
-      working-directory: ./web
   server-build:
 
     runs-on: ubuntu-latest
