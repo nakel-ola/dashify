@@ -7,7 +7,7 @@ type Input = {
   email: string;
   password: string;
 };
-type DecodedData = {
+export type DecodedData = {
   sub: string;
   email: string;
   emailVerified: boolean;

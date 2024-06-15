@@ -96,7 +96,7 @@ export default function ResetPassword(props: Props) {
       <Head>
         <title>Reset Password | Dashify</title>
       </Head>
-      <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+      <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-md">
         <form className="space-y-6" onSubmit={handleSubmit}>
           <div className="flex gap-3">
             <CustomInput
@@ -177,13 +177,13 @@ export default function ResetPassword(props: Props) {
             <Button
               disabled={!isValid || isSubmitting}
               type="submit"
-              className="w-full mt-5"
+              className="w-full mt-5 py-5 rounded-md"
             >
               Submit
               <MoonLoader
                 size={20}
                 color="white"
-                className="ml-2 text-white"
+                className="ml-2 text-white "
                 loading={isSubmitting}
               />
             </Button>

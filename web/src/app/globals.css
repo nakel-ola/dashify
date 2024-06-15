@@ -166,7 +166,7 @@ body {
 }
 
 .pincode-input-text {
-  @apply rounded-md !border-[1.5px] !border-slate-100 dark:!border-neutral-800 !text-black dark:!text-white !h-10 !w-10;
+  @apply rounded-md !border-[1.5px] !border-slate-100 dark:!border-neutral-800 !text-black dark:!text-white !h-12 !w-12;
 }
 
 input[type="number"]::-webkit-inner-spin-button,
