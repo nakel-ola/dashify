@@ -27,7 +27,7 @@ export default function AuthLayout({ children }: PropsWithChildren) {
 
         <BlackGradientCard
           classes={{
-            root: '-mt-[72px] h-screen col-span-6 bg-transparent hidden lg:block [background-image:_linear-gradient(to_right,_rgb(209_213_219)_1px,_transparent_1px),_linear-gradient(to_bottom,_rgb(209_213_219)_1px,_transparent_1px)] dark:[background-image:_linear-gradient(to_right,_#262626_1px,_transparent_1px),_linear-gradient(to_bottom,_#262626_1px,_transparent_1px)]',
+            root: '-mt-[72px] min-h-[100vh] col-span-6 bg-transparent hidden lg:block [background-image:_linear-gradient(to_right,_rgb(209_213_219)_1px,_transparent_1px),_linear-gradient(to_bottom,_rgb(209_213_219)_1px,_transparent_1px)] dark:[background-image:_linear-gradient(to_right,_#262626_1px,_transparent_1px),_linear-gradient(to_bottom,_#262626_1px,_transparent_1px)]',
             child:
               'flex items-center justify-center flex-col page-max-width [background:_radial-gradient(ellipse_50%_80%_at_50%_50%,rgba(93,52,221,0.0),transparent)] overflow-hidden',
           }}

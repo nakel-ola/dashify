@@ -1,9 +1,7 @@
-import { getServerSession } from "next-auth";
-import { nextAuthOptions } from "./auth/next-auth-options";
+import { fetchUser } from '@/app/services/fetch-user';
 
 export async function getUser() {
-  const session = await getServerSession(nextAuthOptions);
-  const user = session?.user;
+  const data = await fetchUser();
 
-  return user;
+  return data.user;
 }
