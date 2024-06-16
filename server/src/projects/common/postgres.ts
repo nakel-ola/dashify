@@ -121,7 +121,6 @@ export class PostgresDatabase {
     try {
       await this.client.connect();
     } catch (error: any) {
-      console.error('Error connecting to PostgreSQL database:', error);
       throw new InternalServerErrorException(error.message);
     }
   }
