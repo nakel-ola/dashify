@@ -16,7 +16,7 @@ import { Repository } from 'typeorm';
 import { v4 } from 'uuid';
 import clean from '../common/clean';
 import { customAlphabet } from '../common/nanoid';
-import { User } from '../users/entities/user.entity';
+import { PROVIDER, User } from '../users/entities/user.entity';
 import { UserType } from '../users/types/user.type';
 import {
   ChangePasswordDto,
@@ -24,6 +24,7 @@ import {
   LoginAuthDto,
   RegisterAuthDto,
   ResetAuthDto,
+  SigninAuthDto,
   UpdateAuthDto,
   UpdatePasswordDto,
   ValidateEmailDto,
@@ -120,6 +121,61 @@ export class AuthService {
     );
 
     // then return the access token and refresh token
+    return tokens;
+  }
+
+  async signInProviders(args: SigninAuthDto) {
+    const { email, firstName, lastName, provider } = args;
+
+    // searching database if user with email is already registered
+    const user: Pick<
+      UserType,
+      'emailVerified' | 'password' | 'email' | 'uid' | 'providers'
+    > = await this.userRepository.findOne({
+      where: { email },
+      select: ['password', 'email', 'emailVerified', 'uid', 'providers'],
+    });
+
+    // if user exists and if the provider exists
+    if (user && user.providers.includes(provider)) {
+      return await this.signTokens(user.uid, email, user.emailVerified);
+    }
+
+    // if user exists and if the provider does not exists
+    if (user && !user.providers.includes(provider)) {
+      await this.userRepository.update(
+        { email },
+        { providers: [...(user.providers as PROVIDER[]), PROVIDER[provider]] },
+      );
+      return await this.signTokens(user.uid, email, user.emailVerified);
+    }
+
+    // generating user id
+    const uid = v4();
+
+    // if user doesn't exists
+    const newUser = await this.userRepository.save({
+      uid,
+      firstName,
+      lastName,
+      email,
+      providers: [PROVIDER[provider]],
+      emailVerified: false,
+    });
+
+    // checking if there was an error creating user if there was throw an error
+    if (!newUser)
+      throw new BadRequestException(
+        'A server error has occurred, please try again',
+      );
+
+    const tokens = await this.signTokens(
+      newUser.uid,
+      email,
+      newUser.emailVerified,
+    );
+
+    // return token
     return tokens;
   }
 

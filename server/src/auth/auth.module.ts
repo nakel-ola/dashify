@@ -21,7 +21,7 @@ import { VerificationCode } from './entities/verification-code.entity';
     ThrottlerModule.forRoot([
       {
         ttl: 60 * 1000, // 1 minute
-        limit: 5, // 5 requests per minute
+        limit: 10, // 5 requests per minute
       },
     ]),
   ],
