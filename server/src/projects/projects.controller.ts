@@ -74,6 +74,13 @@ export class ProjectsController {
     return this.projectsService.findOne(projectId, req.user.uid);
   }
 
+  @ApiOperation({ summary: 'Try to connect to the project database' })
+  @ApiParam({ name: 'projectId', example: 'finance-tracker-78493' })
+  @Get(':projectId/connect-to-db')
+  connectToDB(@Request() req, @Param('projectId') projectId: string) {
+    return this.projectsService.connectToDB(projectId, req.user.uid);
+  }
+
   @ApiOperation({ summary: 'Get project by projectId' })
   @ApiParam({ name: 'projectId', example: 'finance-tracker-78493' })
   @Get(':projectId/by-invitation')

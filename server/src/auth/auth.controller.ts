@@ -7,6 +7,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import {
+  ApiBadRequestResponse,
   ApiHeader,
   ApiOkResponse,
   ApiOperation,
@@ -20,6 +21,7 @@ import {
   MessageDto,
   RegisterAuthDto,
   ResetAuthDto,
+  SigninAuthDto,
   TokensDto,
   UpdateAuthDto,
   UpdatePasswordDto,
@@ -45,6 +47,18 @@ export class AuthController {
   @Post('/login')
   login(@Body() args: LoginAuthDto) {
     return this.authService.login(args);
+  }
+
+  @ApiOkResponse({
+    description: 'User successfully logged in',
+    type: TokensDto,
+  })
+  @ApiBadRequestResponse({
+    description: 'A server error has occurred, please try again',
+  })
+  @Post('/signin')
+  signInProviders(@Body() args: SigninAuthDto) {
+    return this.authService.signInProviders(args);
   }
 
   @ApiOperation({ summary: 'Validate email address' })

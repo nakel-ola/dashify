@@ -7,6 +7,11 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
+export enum PROVIDER {
+  GOOGLE = 'GOOGLE',
+  EMAIL = 'EMAIL',
+}
+
 @Entity('users')
 export class User {
   @ObjectIdColumn()
@@ -32,6 +37,9 @@ export class User {
 
   @Column()
   password: string;
+
+  @Column({ type: 'enum', array: true, enum: PROVIDER, nullable: false })
+  providers: PROVIDER[];
 
   @CreateDateColumn()
   createdAt: Date;

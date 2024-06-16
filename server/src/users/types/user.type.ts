@@ -6,6 +6,7 @@ export type UserType = {
   email: string;
   photoUrl: string;
   emailVerified: boolean;
+  providers: ('EMAIL' | 'GOOGLE')[];
   password: string;
   createdAt: Date;
   updatedAt: Date;

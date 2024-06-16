@@ -9,3 +9,4 @@ export * from './update-auth.dto';
 export * from './validate-email.dto';
 export * from './validate-reset-token.dto';
 export * from './delete-account.dto';
+export * from './signin-auth.dto';

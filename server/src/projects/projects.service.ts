@@ -47,6 +47,7 @@ import type {
   ProjectType,
 } from './types/project.type';
 import { GetCollectionDataArgs } from './types/service.type';
+import { connectToDBs } from './common/connectToDBs';
 
 @Injectable()
 export class ProjectsService {
@@ -138,6 +139,19 @@ export class ProjectsService {
 
     const newProject = await this.formatProject(project);
     return newProject;
+  }
+
+  async connectToDB(projectId: string, uid: string) {
+    const project = await this.projectRepository.findOne({
+      where: { members: { $elemMatch: { uid } } as any, projectId },
+    });
+
+    if (!project)
+      throw new NotFoundException(`Project with id ${projectId} not found`);
+
+    const dbConfig = this.decryptDatabaseConfig(project.databaseConfig);
+
+    await connectToDBs(dbConfig);
   }
 
   async findOneByInvitation(projectId: string, user: User) {
@@ -975,19 +989,7 @@ export class ProjectsService {
     const memberIds = project.members.map((member) => member.uid);
     const users = await this.usersService.getUserByBatch(memberIds ?? []);
 
-    const key = this.configService.get('PROJECT_DATABASE_SECRET');
-    const cryptr = new Cryptr(key);
-
-    const dbConfig = project.databaseConfig;
-
-    const databaseConfig = {
-      name: cryptr.decrypt(dbConfig.name),
-      host: cryptr.decrypt(dbConfig.host),
-      dbType: dbConfig.dbType,
-      port: Number(cryptr.decrypt(dbConfig.port)),
-      username: cryptr.decrypt(dbConfig.username),
-      password: cryptr.decrypt(dbConfig.password),
-    };
+    const databaseConfig = this.decryptDatabaseConfig(project.databaseConfig);
 
     const members = users.map((user) => {
       const member = project.members.find((member) => member.uid === user.uid)!;
